@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $app_settings['nama_aplikasi'] ?? 'HERA' }} - {{ $app_settings['deskripsi'] ?? 'App' }}</title>
+    <title>{{ $app_settings['app_name'] ?? 'HERA' }} - {{ $app_settings['app_description'] ?? 'Real-time Hexavalent Chromium Monitoring System' }}</title>
     
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,10 +73,14 @@
     <aside class="w-64 glass-panel border-r border-gray-800 flex-shrink-0 fixed h-full z-20 transition-all duration-300">
         <div class="h-16 flex items-center px-6 border-b border-gray-800/50">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <h1 class="text-xl font-bold tracking-tight text-gradient">{{ $app_settings['nama_aplikasi'] ?? 'HERA' }} </h1>
+                @if(!empty($app_settings['app_logo']))
+                    <img src="{{ asset($app_settings['app_logo']) }}" alt="App Logo" class="w-8 h-8 object-contain">
+                @else
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                @endif
+                <h1 class="text-xl font-bold tracking-tight text-gradient">{{ $app_settings['app_name'] ?? 'HERA' }} <span class="text-xs text-gray-500">{{ $app_settings['app_version'] ?? '' }}</span></h1>
             </div>
         </div>
         
@@ -92,7 +96,7 @@
                 <span class="font-medium text-sm">Monitoring</span>
             </a>
 
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('laporan*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group">
+            <a href="{{ route('laporan.index') }}" class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('laporan*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group">
                 <svg class="w-5 h-5 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 <span class="font-medium text-sm">Laporan</span>
             </a>
@@ -104,6 +108,10 @@
                 <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2.5 {{ request()->routeIs('admin.users*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group">
                     <svg class="w-5 h-5 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span class="font-medium text-sm">Manajemen Akun</span>
+                </a>
+                <a href="{{ route('settings.index') }}" class="flex items-center gap-3 px-3 py-2.5 mt-1 {{ request()->routeIs('settings*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group">
+                    <svg class="w-5 h-5 group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="font-medium text-sm">Pengaturan</span>
                 </a>
             </div>
             @endif
@@ -150,9 +158,18 @@
         <div class="fixed top-[-15%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[150px] pointer-events-none z-0"></div>
         <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-purple-900/15 blur-[150px] pointer-events-none z-0"></div>
 
-        <div class="relative z-10 w-full p-6 lg:p-8">
+        <div class="relative z-10 w-full p-6 lg:p-8 flex-1">
             @yield('content')
         </div>
+
+        <!-- Footer -->
+        <footer class="relative z-10 w-full p-6 border-t border-gray-800/50 mt-auto hidden md:block">
+            <div class="text-center text-sm text-gray-500">
+                &copy; {{ $app_settings['app_year'] ?? date('Y') }} <span class="text-gray-400 font-medium">{{ $app_settings['app_copyright'] ?? 'Universitas Hasanuddin' }}</span>. All rights reserved.
+                <br>
+                {{ $app_settings['app_institution'] ?? '' }}
+            </div>
+        </footer>
     </main>
     
     @stack('scripts')

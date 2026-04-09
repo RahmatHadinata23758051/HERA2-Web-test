@@ -30,7 +30,9 @@ class SensorController extends Controller
         $query = SensorReading::query();
 
         if ($request->has('from') && $request->has('to')) {
-            $query->whereBetween('created_at', [$request->from, $request->to]);
+            $from = \Carbon\Carbon::parse($request->from)->setTimezone(config('app.timezone', 'UTC'))->toDateTimeString();
+            $to = \Carbon\Carbon::parse($request->to)->setTimezone(config('app.timezone', 'UTC'))->toDateTimeString();
+            $query->whereBetween('created_at', [$from, $to]);
         }
 
         // Limit data if a custom limit is passed, else max 1000 to prevent crashing the browser

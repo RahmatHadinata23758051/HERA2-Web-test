@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — {{ $app_settings['nama_aplikasi'] ?? 'HERA 2.0' }}</title>
+    <title>Login — {{ $app_settings['app_name'] ?? 'HERA' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -51,13 +51,17 @@
 
         {{-- Header --}}
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-500/30 mb-5">
-                <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold tracking-tight text-white">{{ $app_settings['nama_aplikasi'] ?? 'HERA 2.0' }}</h1>
-            <p class="mt-2 text-sm text-gray-400">{{ $app_settings['deskripsi'] ?? 'Hexavalent Chromium Real-time Analytics' }}</p>
+            @if(!empty($app_settings['app_logo']))
+                <img src="{{ asset($app_settings['app_logo']) }}" alt="App Logo" class="w-16 h-16 object-contain mx-auto mb-5">
+            @else
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-500/30 mb-5">
+                    <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+            @endif
+            <h1 class="text-3xl font-bold tracking-tight text-white">{{ $app_settings['app_name'] ?? 'HERA' }}</h1>
+            <p class="mt-2 text-sm text-gray-400">{{ $app_settings['app_description'] ?? 'Real-time Hexavalent Chromium Monitoring System' }}</p>
         </div>
 
         {{-- Card --}}
@@ -131,7 +135,7 @@
         </div>
 
         <p class="text-center mt-6 text-xs text-gray-600">
-            © {{ $app_settings['tahun'] ?? date('Y') }} {{ $app_settings['nama_aplikasi'] ?? 'HERA' }} — {{ $app_settings['copyright'] ?? 'Universitas Hasanuddin' }}. All rights reserved.
+            © {{ $app_settings['app_year'] ?? date('Y') }} {{ $app_settings['app_name'] ?? 'HERA' }} — {{ $app_settings['app_copyright'] ?? 'Universitas Hasanuddin' }}. All rights reserved.
         </p>
     </div>
 
