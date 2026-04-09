@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HERA 2.0 - Water Quality Analytics</title>
+    <title>{{ $app_settings['nama_aplikasi'] ?? 'HERA' }} - {{ $app_settings['deskripsi'] ?? 'App' }}</title>
     
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -76,7 +76,7 @@
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
-                <h1 class="text-xl font-bold tracking-tight text-gradient">HERA <span class="text-sm font-medium text-gray-400">2.0</span></h1>
+                <h1 class="text-xl font-bold tracking-tight text-gradient">{{ $app_settings['nama_aplikasi'] ?? 'HERA' }} </h1>
             </div>
         </div>
         

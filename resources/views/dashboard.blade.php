@@ -177,7 +177,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script type="module">
     // Init state vars from backend
     let sensorCache = @json($initialData); // chronologically sorted (last item is newest)
     let isPaused = false;

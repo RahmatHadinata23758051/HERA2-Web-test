@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — HERA 2.0</title>
+    <title>Login — {{ $app_settings['nama_aplikasi'] ?? 'HERA 2.0' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -56,8 +56,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold tracking-tight text-white">HERA <span class="text-indigo-400">2.0</span></h1>
-            <p class="mt-2 text-sm text-gray-400">Hexavalent Chromium Real-time Analytics</p>
+            <h1 class="text-3xl font-bold tracking-tight text-white">{{ $app_settings['nama_aplikasi'] ?? 'HERA 2.0' }}</h1>
+            <p class="mt-2 text-sm text-gray-400">{{ $app_settings['deskripsi'] ?? 'Hexavalent Chromium Real-time Analytics' }}</p>
         </div>
 
         {{-- Card --}}
@@ -131,7 +131,7 @@
         </div>
 
         <p class="text-center mt-6 text-xs text-gray-600">
-            © {{ date('Y') }} HERA — Universitas Hasanuddin. All rights reserved.
+            © {{ $app_settings['tahun'] ?? date('Y') }} {{ $app_settings['nama_aplikasi'] ?? 'HERA' }} — {{ $app_settings['copyright'] ?? 'Universitas Hasanuddin' }}. All rights reserved.
         </p>
     </div>
 
