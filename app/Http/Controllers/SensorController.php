@@ -25,10 +25,19 @@ class SensorController extends Controller
         );
     }
 
-    public function history()
+    public function history(Request $request)
     {
+        $query = SensorReading::query();
+
+        if ($request->has('from') && $request->has('to')) {
+            $query->whereBetween('created_at', [$request->from, $request->to]);
+        }
+
+        // Limit data if a custom limit is passed, else max 1000 to prevent crashing the browser
+        $limit = $request->input('limit', 1000);
+
         return response()->json(
-            SensorReading::orderBy('id', 'desc')->paginate(50)
+            $query->orderBy('id', 'desc')->take($limit)->get()->reverse()->values()
         );
     }
 }

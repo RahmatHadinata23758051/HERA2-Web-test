@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', fn() => redirect('/dashboard'));
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/monitoring', [App\Http\Controllers\MonitoringController::class, 'index'])->name('monitoring');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
