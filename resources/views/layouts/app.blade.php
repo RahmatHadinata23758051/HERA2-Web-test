@@ -66,6 +66,7 @@
     </style>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('head')
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex selection:bg-indigo-500 selection:text-white">
 

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('head')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endpush
+
 @section('content')
 <div class="space-y-6">
     <!-- Header Title -->
@@ -222,6 +226,31 @@
                 </table>
             </div>
         </div>
+    </div>
+</div>
+
+{{-- Section 4: Peta Lokasi Sensor (Card 9.2) --}}
+<div class="mt-6 space-y-3">
+    <div>
+        <h3 class="text-xl font-bold text-white">Lokasi Perangkat IoT</h3>
+        <p class="text-sm text-gray-400 mt-1">Posisi real-time perangkat sensor di lapangan.</p>
+    </div>
+
+    <div class="glass-card rounded-2xl overflow-hidden border border-gray-800/50">
+        {{-- Map Header Bar --}}
+        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800/60">
+            <div class="flex items-center gap-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-sm font-semibold text-white">Sensor HERA — Aktif</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-400 font-mono">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                -6.914744, 107.609810
+            </div>
+        </div>
+
+        {{-- Leaflet Map Container --}}
+        <div id="sensorMap" style="height: 400px; width: 100%; background: #111827;"></div>
     </div>
 </div>
 
@@ -614,3 +643,103 @@
 
 </script>
 @endpush
+
+@push('scripts')
+{{-- Leaflet.js for Sensor Map (Card 9.2) --}}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function initSensorMap() {
+    const mapEl = document.getElementById('sensorMap');
+    if (!mapEl) return;
+
+    // Default coordinates: Bandung
+    const LAT = -6.914744;
+    const LNG = 107.609810;
+    const LOCATION_NAME = 'Bandung, Jawa Barat';
+
+    // Initialize Leaflet map
+    const map = L.map('sensorMap', {
+        center: [LAT, LNG],
+        zoom: 15,
+        zoomControl: true,
+        attributionControl: true,
+    });
+
+    // Dark tile layer (CartoDB Dark Matter — fits glassmorphism theme)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20,
+    }).addTo(map);
+
+    // Custom pulse marker icon
+    const dangerIcon = L.divIcon({
+        className: '',
+        html: `
+            <div style="position: relative; width: 40px; height: 40px;">
+                <div style="
+                    position: absolute; top: 50%; left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 40px; height: 40px;
+                    border-radius: 50%;
+                    background: rgba(34, 197, 94, 0.2);
+                    animation: mapPulse 2s ease-out infinite;
+                "></div>
+                <div style="
+                    position: absolute; top: 50%; left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 18px; height: 18px;
+                    background: #22c55e;
+                    border: 3px solid white;
+                    border-radius: 50%;
+                    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.4), 0 2px 8px rgba(0,0,0,0.6);
+                "></div>
+            </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -24],
+    });
+
+    // Place marker and popup
+    const marker = L.marker([LAT, LNG], { icon: dangerIcon }).addTo(map);
+    marker.bindPopup(`
+        <div style="font-family: 'Inter', sans-serif; min-width: 180px;">
+            <div style="font-weight: 700; font-size: 14px; color: #111; margin-bottom: 6px;">
+                📍 Sensor HERA
+            </div>
+            <div style="font-size: 12px; color: #555; margin-bottom: 4px;">
+                ${LOCATION_NAME}
+            </div>
+            <div style="font-size: 11px; color: #888; font-family: monospace;">
+                ${LAT}, ${LNG}
+            </div>
+            <div style="margin-top: 8px; padding: 4px 8px; background: #dcfce7; border-radius: 4px; font-size: 11px; font-weight: 600; color: #166534; display: inline-block;">
+                ● AKTIF
+            </div>
+        </div>
+    `, { maxWidth: 240 });
+
+    // Open popup by default
+    marker.openPopup();
+
+    // Inject CSS animation keyframe
+    if (!document.getElementById('leaflet-pulse-style')) {
+        const style = document.createElement('style');
+        style.id = 'leaflet-pulse-style';
+        style.textContent = `
+            @keyframes mapPulse {
+                0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.8; }
+                100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+            }
+            .leaflet-popup-content-wrapper {
+                border-radius: 12px !important;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+})();
+</script>
+@endpush
+
