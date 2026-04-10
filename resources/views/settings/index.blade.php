@@ -8,12 +8,6 @@
         <p class="text-gray-400">Kelola identitas, logo, dan preferensi inti sistem HERA.</p>
     </div>
 
-    @if(session('success'))
-        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl flex items-center gap-3">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            {{ session('success') }}
-        </div>
-    @endif
 
     <div class="glass-card rounded-2xl p-8 border border-gray-800/50">
         <form action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data" 

@@ -174,7 +174,7 @@
     
     <!-- Global Flash Notification Component -->
     <div x-data="toastNotification()" x-init="initToast()"
-         class="fixed bottom-6 right-6 z-[99999] flex flex-col gap-3 pointer-events-none" style="max-width: 320px;">
+         style="position: fixed !important; top: 1.5rem; right: 1.5rem; left: auto; z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; width: 320px;">
         
         <template x-for="toast in toasts" :key="toast.id">
             <div x-show="toast.visible"
@@ -184,27 +184,49 @@
                  x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100 translate-x-0"
                  x-transition:leave-end="opacity-0 translate-x-8"
-                 class="pointer-events-auto w-80 glass-panel rounded-xl shadow-2xl p-4 flex items-start gap-4 border"
-                 :class="{
-                     'border-emerald-500/50 bg-emerald-500/10': toast.type === 'success',
-                     'border-red-500/50 bg-red-500/10': toast.type === 'error',
-                     'border-amber-500/50 bg-amber-500/10': toast.type === 'warning',
-                     'border-blue-500/50 bg-blue-500/10': toast.type === 'info'
+                 role="alert"
+                 :style="{
+                     'pointer-events': 'auto',
+                     'border-radius': '0.5rem',
+                     'padding': '0.6rem 0.75rem',
+                     'display': 'flex',
+                     'align-items': 'center',
+                     'gap': '0.5rem',
+                     'border-left': '4px solid',
+                     'transition': 'all 0.3s ease',
+                     'cursor': 'default',
+                     'background': toast.type === 'success' ? '#052e16' :
+                                   toast.type === 'error'   ? '#450a0a' :
+                                   toast.type === 'warning' ? '#422006' :
+                                                              '#172554',
+                     'border-left-color': toast.type === 'success' ? '#15803d' :
+                                          toast.type === 'error'   ? '#b91c1c' :
+                                          toast.type === 'warning' ? '#a16207' :
+                                                                     '#1d4ed8',
+                     'color': toast.type === 'success' ? '#bbf7d0' :
+                              toast.type === 'error'   ? '#fecaca' :
+                              toast.type === 'warning' ? '#fef08a' :
+                                                         '#bfdbfe'
                  }">
                 <!-- Icon -->
-                <div class="flex-shrink-0 mt-0.5">
-                    <svg x-show="toast.type === 'success'" class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <svg x-show="toast.type === 'error'" class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <svg x-show="toast.type === 'warning'" class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    <svg x-show="toast.type === 'info'" class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
+                <svg :style="{
+                         'width': '20px',
+                         'height': '20px',
+                         'flex-shrink': '0',
+                         'color': toast.type === 'success' ? '#4ade80' :
+                                  toast.type === 'error'   ? '#f87171' :
+                                  toast.type === 'warning' ? '#facc15' :
+                                                             '#60a5fa'
+                     }"
+                     stroke="currentColor" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 16h-1v-4h1m0-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+                </svg>
                 <!-- Message -->
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-white break-words" x-text="toast.message"></p>
-                </div>
+                <p style="font-size:0.75rem; font-weight:600; flex:1; margin:0; word-break:break-word;" x-text="toast.message"></p>
                 <!-- Close Button -->
-                <button @click="remove(toast.id)" class="flex-shrink-0 text-gray-400 hover:text-white transition-colors focus:outline-none">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button @click="remove(toast.id)" style="flex-shrink:0; background:none; border:none; cursor:pointer; padding:0; opacity:0.6; line-height:1;"
+                        :style="{ 'color': toast.type === 'success' ? '#86efac' : toast.type === 'error' ? '#fca5a5' : toast.type === 'warning' ? '#fde68a' : '#93c5fd' }">
+                    <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
         </template>

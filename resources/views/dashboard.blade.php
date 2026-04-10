@@ -49,6 +49,57 @@
         </div>
     </div>
 
+    {{-- Section 1.5: Ringkasan Harian (Card 9.1) --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {{-- Total Pembacaan --}}
+        <div class="glass-card rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Hari Ini</p>
+                <p class="text-2xl font-bold text-white mt-0.5">{{ number_format($dailyStats['total']) }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">pembacaan sensor</p>
+            </div>
+        </div>
+
+        {{-- Warning Events --}}
+        <div class="glass-card rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-yellow-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Peringatan</p>
+                <p class="text-2xl font-bold text-yellow-400 mt-0.5">{{ number_format($dailyStats['warning']) }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">event warning hari ini</p>
+            </div>
+        </div>
+
+        {{-- Danger Events --}}
+        <div class="glass-card rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-red-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Bahaya</p>
+                <p class="text-2xl font-bold text-red-400 mt-0.5">{{ number_format($dailyStats['danger']) }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">event danger hari ini</p>
+            </div>
+        </div>
+
+        {{-- Avg Cr --}}
+        <div class="glass-card rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-purple-500/15 flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Rata-rata Cr</p>
+                <p class="text-2xl font-bold text-purple-400 mt-0.5">{{ $dailyStats['avg_cr'] }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">µg/L hari ini</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Section 2: Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
@@ -376,6 +427,10 @@
                     if(record.status === 'warning' || record.status === 'danger') {
                         prependAlertLog(record, true);
                     }
+                    // Card 9.3: Trigger browser notification on danger
+                    if (record.status === 'danger') {
+                        triggerDangerNotification(record);
+                    }
                 }
             });
     }
@@ -518,5 +573,44 @@
                 document.getElementById('aiHealthText').innerText = 'Offline';
             });
     }
+
+    // ─────────────────────────────────────────────
+    // Card 9.3: Browser Web Notification System
+    // ─────────────────────────────────────────────
+
+    // Request notification permission once on page load
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+
+    let lastDangerNotifTime = 0; // Throttle: don't spam every second
+
+    function triggerDangerNotification(record) {
+        const now = Date.now();
+        // Throttle: only once every 30 seconds
+        if (now - lastDangerNotifTime < 30000) return;
+        lastDangerNotifTime = now;
+
+        const crVal = parseFloat(record.cr_estimated).toFixed(2);
+
+        // Update browser tab title to alert user even if minimized
+        const originalTitle = document.title;
+        document.title = `⚠️ DANGER! Cr = ${crVal} µg/L`;
+        setTimeout(() => { document.title = originalTitle; }, 8000);
+
+        // Send native OS notification if permission granted
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const notif = new Notification('⚠️ HERA — Peringatan Bahaya!', {
+                body: `Kadar Chromium terdeteksi ${crVal} µg/L — Melebihi batas aman (>100 µg/L)!`,
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+                tag: 'hera-danger',       // Replace existing notif with same tag
+                requireInteraction: true   // Stay until user dismisses
+            });
+            // Click notification -> focus dashboard tab
+            notif.onclick = () => { window.focus(); notif.close(); };
+        }
+    }
+
 </script>
 @endpush

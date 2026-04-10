@@ -87,7 +87,7 @@ class SensorBroadcast extends Command
                 $this->error("Fast API Request failed.");
             }
 
-            sleep(3);
+            sleep(15);
         }
     }
 }
