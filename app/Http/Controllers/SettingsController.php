@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppSetting;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,8 +29,9 @@ class SettingsController extends Controller
         ];
 
         $settings = array_merge($defaultSettings, $settings);
+        $logs = ActivityLog::with('user')->orderBy('created_at', 'desc')->take(50)->get();
 
-        return view('settings.index', compact('settings'));
+        return view('settings.index', compact('settings', 'logs'));
     }
 
     /**
@@ -71,6 +73,12 @@ class SettingsController extends Controller
                 ['value' => $value]
             );
         }
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action'  => 'Update Settings',
+            'details' => 'User updated global application settings'
+        ]);
 
         return redirect()->route('settings.index')->with('success', 'Pengaturan aplikasi berhasil diperbarui!');
     }

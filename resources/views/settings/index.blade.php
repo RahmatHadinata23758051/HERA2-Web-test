@@ -113,6 +113,63 @@
         </form>
     </div>
 </div>
+
+    {{-- Activity Logs Module (Audit Trail) --}}
+    @if(auth()->user()->role === 'direksi')
+    <div class="mt-8">
+        <div>
+            <h3 class="text-2xl font-bold tracking-tight text-white mb-2">Log Aktivitas Sistem</h3>
+            <p class="text-gray-400 mb-6">Riwayat mutakhir penggunaan dan perubahan pada aplikasi HERA.</p>
+        </div>
+        
+        <div class="glass-card rounded-2xl border border-gray-800/50 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="bg-gray-800/50 text-xs uppercase text-gray-400 border-b border-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-4">Waktu</th>
+                            <th scope="col" class="px-6 py-4">Pengguna</th>
+                            <th scope="col" class="px-6 py-4">Aksi</th>
+                            <th scope="col" class="px-6 py-4">Rincian</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800">
+                        @forelse($logs as $log)
+                        <tr class="hover:bg-gray-800/30 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-400">
+                                {{ \Carbon\Carbon::parse($log->created_at)->timezone(config('app.timezone', 'Asia/Makassar'))->format('d M Y, H:i:s') }}
+                            </td>
+                            <td class="px-6 py-4 font-medium text-white flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-bold">
+                                    {{ strtoupper(substr($log->user->name ?? '?', 0, 1)) }}
+                                </div>
+                                {{ $log->user->name ?? 'Sistem / Terhapus' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-medium border
+                                    @if($log->action == 'Login' || $log->action == 'Logout') bg-blue-500/10 text-blue-400 border-blue-500/20
+                                    @elseif($log->action == 'Delete User') bg-red-500/10 text-red-400 border-red-500/20
+                                    @elseif($log->action == 'Update User' || $log->action == 'Update Settings') bg-amber-500/10 text-amber-400 border-amber-500/20
+                                    @else bg-emerald-500/10 text-emerald-400 border-emerald-500/20 @endif">
+                                    {{ $log->action }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-gray-400">{{ $log->details ?? '-' }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                Belum ada catatan aktivitas.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @endif
+</div>
 @endsection
 
 @push('scripts')

@@ -82,7 +82,11 @@ def predict(data: SensorData):
     
     try:
         scaled_data = scaler.transform(df_input)
-        prediction = model.predict(scaled_data)
+        
+        # Convert the scaled output back to a DataFrame to preserve feature names
+        scaled_df = pd.DataFrame(scaled_data, columns=feature_names)
+        
+        prediction = model.predict(scaled_df)
         
         cr_val = float(prediction[0])
         

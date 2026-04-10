@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Models\ActivityLog;
 
 class UserController extends Controller
 {
@@ -34,11 +35,17 @@ class UserController extends Controller
             'role'     => ['required', 'in:petugas,direksi'],
         ]);
 
-        User::create([
+        $newUser = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'role'     => $request->role,
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action'  => 'Create User',
+            'details' => "Mendaftarkan akun baru: {$newUser->email} ({$newUser->role})"
         ]);
 
         return redirect()->route('admin.users.index')
@@ -73,6 +80,12 @@ class UserController extends Controller
 
         $user->save();
 
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action'  => 'Update User',
+            'details' => "Memperbarui data akun: {$user->email}"
+        ]);
+
         return redirect()->route('admin.users.index')
             ->with('success', "Data pengguna '{$user->name}' berhasil diperbarui.");
     }
@@ -86,6 +99,12 @@ class UserController extends Controller
 
         $name = $user->name;
         $user->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action'  => 'Delete User',
+            'details' => "Menghapus akun: {$name}"
+        ]);
 
         return redirect()->route('admin.users.index')
             ->with('success', "Akun '{$name}' berhasil dihapus.");

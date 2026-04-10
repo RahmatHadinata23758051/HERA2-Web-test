@@ -172,6 +172,79 @@
         </footer>
     </main>
     
+    <!-- Global Flash Notification Component -->
+    <div x-data="toastNotification()" x-init="initToast()"
+         class="fixed bottom-6 right-6 z-[99999] flex flex-col gap-3 pointer-events-none" style="max-width: 320px;">
+        
+        <template x-for="toast in toasts" :key="toast.id">
+            <div x-show="toast.visible"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-x-8"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-x-0"
+                 x-transition:leave-end="opacity-0 translate-x-8"
+                 class="pointer-events-auto w-80 glass-panel rounded-xl shadow-2xl p-4 flex items-start gap-4 border"
+                 :class="{
+                     'border-emerald-500/50 bg-emerald-500/10': toast.type === 'success',
+                     'border-red-500/50 bg-red-500/10': toast.type === 'error',
+                     'border-amber-500/50 bg-amber-500/10': toast.type === 'warning',
+                     'border-blue-500/50 bg-blue-500/10': toast.type === 'info'
+                 }">
+                <!-- Icon -->
+                <div class="flex-shrink-0 mt-0.5">
+                    <svg x-show="toast.type === 'success'" class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg x-show="toast.type === 'error'" class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg x-show="toast.type === 'warning'" class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <svg x-show="toast.type === 'info'" class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <!-- Message -->
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-white break-words" x-text="toast.message"></p>
+                </div>
+                <!-- Close Button -->
+                <button @click="remove(toast.id)" class="flex-shrink-0 text-gray-400 hover:text-white transition-colors focus:outline-none">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </template>
+    </div>
+
     @stack('scripts')
+    
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('toastNotification', () => ({
+                toasts: [],
+                initToast() {
+                    let type = null;
+                    let message = null;
+                    
+                    @if(session('success')) type = 'success'; message = "{!! addslashes(session('success')) !!}"; @endif
+                    @if(session('error')) type = 'error'; message = "{!! addslashes(session('error')) !!}"; @endif
+                    @if(session('warning')) type = 'warning'; message = "{!! addslashes(session('warning')) !!}"; @endif
+                    @if(session('info')) type = 'info'; message = "{!! addslashes(session('info')) !!}"; @endif
+
+                    if (type && message) {
+                        this.add(type, message);
+                    }
+                },
+                add(type, message) {
+                    const id = Date.now();
+                    this.toasts.push({ id, type, message, visible: true });
+                    setTimeout(() => this.remove(id), 4000); // Auto dismiss after 4 seconds
+                },
+                remove(id) {
+                    const toast = this.toasts.find(t => t.id === id);
+                    if (toast) {
+                        toast.visible = false;
+                        setTimeout(() => {
+                            this.toasts = this.toasts.filter(t => t.id !== id);
+                        }, 300); // Wait for exit animation
+                    }
+                }
+            }));
+        });
+    </script>
 </body>
 </html>

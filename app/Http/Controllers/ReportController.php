@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Exports\SensorReadingsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\ActivityLog;
 
 class ReportController extends Controller
 {
@@ -33,13 +34,16 @@ class ReportController extends Controller
     {
         $format = $request->query('format', 'xlsx');
         
-        if ($format === 'csv') {
-            $filename = 'HERA_Laporan_' . date('Ymd_His') . '.csv';
-            return Excel::download(new SensorReadingsExport($request), $filename, \Maatwebsite\Excel\Excel::CSV);
-        }
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action'  => 'Export Laporan',
+            'details' => 'User mengekspor laporan dalam format ' . strtoupper($format)
+        ]);
 
-        $filename = 'HERA_Laporan_' . date('Ymd_His') . '.xlsx';
-        return Excel::download(new SensorReadingsExport($request), $filename, \Maatwebsite\Excel\Excel::XLSX);
+        $filename = 'HERA_Laporan_' . date('Ymd_His') . '.' . $format;
+        $exportFormat = $format === 'csv' ? \Maatwebsite\Excel\Excel::CSV : \Maatwebsite\Excel\Excel::XLSX;
+        
+        return Excel::download(new SensorReadingsExport($request), $filename, $exportFormat);
     }
 
     public function exportPdf(Request $request)
@@ -65,6 +69,12 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadView('laporan.pdf', compact('readings'))->setPaper('a4', 'landscape');
         
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action'  => 'Export Laporan',
+            'details' => 'User mengekspor laporan dalam format PDF'
+        ]);
+
         $filename = 'HERA_Laporan_' . date('Ymd_His') . '.pdf';
         return $pdf->download($filename);
     }

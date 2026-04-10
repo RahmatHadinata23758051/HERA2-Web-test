@@ -12,11 +12,11 @@ class UserSeeder extends Seeder
     {
         // Akun Direksi (Super Admin)
         User::updateOrCreate(
-            ['email' => 'direksi@hera.ac.id'],
+            ['email' => env('ADMIN_EMAIL', 'direksi@hera.ac.id')],
             [
                 'name'     => 'Direksi HERA',
-                'email'    => 'direksi@hera.ac.id',
-                'password' => Hash::make('hera12345'),
+                'email'    => env('ADMIN_EMAIL', 'direksi@hera.ac.id'),
+                'password' => Hash::make(env('ADMIN_PASSWORD', 'hera12345')),
                 'role'     => 'direksi',
             ]
         );
