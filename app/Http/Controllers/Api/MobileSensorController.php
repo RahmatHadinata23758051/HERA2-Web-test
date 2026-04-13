@@ -3,19 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SensorReading;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Repositories\InfluxSensorRepository;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class MobileSensorController extends Controller
 {
-    /**
-     * GET /api/mobile/sensor/latest
-     * Returns the single most recent sensor reading.
-     */
+    protected $influxRepo;
+
+    public function __construct(InfluxSensorRepository $influxRepo)
+    {
+        $this->influxRepo = $influxRepo;
+    }
+
     public function latest()
     {
-        $reading = SensorReading::orderBy('id', 'desc')->first();
+        $readings = $this->influxRepo->getReportData(null, null, 'Semua');
+        $reading = $readings->first();
 
         if (!$reading) {
             return response()->json([
@@ -32,50 +38,41 @@ class MobileSensorController extends Controller
         ]);
     }
 
-    /**
-     * GET /api/mobile/sensor/history?limit=50&from_date=...&to_date=...&status=...
-     * Returns paginated historical sensor data with optional filters.
-     */
     public function history(Request $request)
     {
-        $query = SensorReading::orderBy('id', 'desc');
+        $from = $request->filled('from_date') ? $request->from_date . ' 00:00:00' : null;
+        $to = $request->filled('to_date') ? $request->to_date . ' 23:59:59' : null;
+        $status = $request->filled('status') && $request->status !== 'all' ? $request->status : 'Semua';
 
-        if ($request->filled('from_date')) {
-            $query->whereDate('created_at', '>=', $request->from_date);
-        }
-        if ($request->filled('to_date')) {
-            $query->whereDate('created_at', '<=', $request->to_date);
-        }
-        if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
-        }
+        $data = $this->influxRepo->getReportData($from, $to, $status);
 
-        $limit = min((int) $request->get('limit', 50), 500); // Max 500 per request
-        $data  = $query->paginate($limit);
+        $limit = min((int) $request->get('limit', 50), 500);
+        $currentPage = Paginator::resolveCurrentPage();
+        
+        $items = array_slice($data->toArray(), ($currentPage - 1) * $limit, $limit);
+        $paginated = new LengthAwarePaginator($items, $data->count(), $limit, $currentPage);
 
         return response()->json([
             'status'  => true,
             'message' => 'OK',
-            'data'    => $data->items(),
+            'data'    => $paginated->items(),
             'meta'    => [
-                'current_page' => $data->currentPage(),
-                'last_page'    => $data->lastPage(),
-                'per_page'     => $data->perPage(),
-                'total'        => $data->total(),
+                'current_page' => $paginated->currentPage(),
+                'last_page'    => $paginated->lastPage(),
+                'per_page'     => $paginated->perPage(),
+                'total'        => $paginated->total(),
             ],
         ]);
     }
 
-    /**
-     * GET /api/mobile/sensor/alerts
-     * Returns the last 20 warning/danger events.
-     */
     public function alerts()
     {
-        $alerts = SensorReading::whereIn('status', ['warning', 'danger'])
-            ->orderBy('id', 'desc')
-            ->take(20)
-            ->get();
+        // Fetch 100 recent data, filter warning/danger, take 20.
+        $recentData = $this->influxRepo->getReportData(null, null, 'Semua');
+        
+        $alerts = $recentData->filter(function($item) {
+            return in_array($item->status, ['warning', 'danger']);
+        })->take(20)->values();
 
         return response()->json([
             'status'  => true,
@@ -84,26 +81,20 @@ class MobileSensorController extends Controller
         ]);
     }
 
-    /**
-     * GET /api/mobile/sensor/daily-stats
-     * Returns today's summary statistics.
-     */
     public function dailyStats()
     {
         $today = Carbon::today();
+        $stats = $this->influxRepo->getDailyStats();
 
         return response()->json([
             'status'  => true,
             'message' => 'OK',
             'data'    => [
                 'date'    => $today->toDateString(),
-                'total'   => SensorReading::whereDate('created_at', $today)->count(),
-                'warning' => SensorReading::whereDate('created_at', $today)->where('status', 'warning')->count(),
-                'danger'  => SensorReading::whereDate('created_at', $today)->where('status', 'danger')->count(),
-                'avg_cr'  => round(
-                    SensorReading::whereDate('created_at', $today)->whereNotNull('cr_estimated')->avg('cr_estimated') ?? 0,
-                    2
-                ),
+                'total'   => $stats['total'],
+                'warning' => $stats['warning'],
+                'danger'  => $stats['danger'],
+                'avg_cr'  => $stats['avg_cr'],
             ],
         ]);
     }

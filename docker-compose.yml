@@ -1,0 +1,84 @@
+services:
+  # -------------------------------------------------------------
+  # Fase 2-6: Commented Out (Menunggu integrasi sistem bertahap)
+  # -------------------------------------------------------------
+  
+  # 1. Nginx (Reverse Proxy)
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+
+  # 2. Backend Laravel
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: unless-stopped
+
+  # 3. AI Service (FastAPI)
+  # ai_service:
+  #   build:
+  #     context: ../fastapi-model
+  #   ports:
+  #     - "8001:8001"
+
+  # 5. PostgreSQL (Relational DB)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   ports:
+  #     - "5432:5432"
+
+  # 6. Redis (Cache & Queue)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # 7. Mosquitto (MQTT Broker)
+  mqtt:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  # 8. WebSockets (Soketi)
+  websockets:
+    image: quay.io/soketi/soketi:1.6-16-alpine
+    ports:
+      - "6001:6001"
+    environment:
+      - SOKETI_DEBUG=1
+      - SOKETI_DEFAULT_APP_ID=hera
+      - SOKETI_DEFAULT_APP_KEY=hera-key
+      - SOKETI_DEFAULT_APP_SECRET=hera-secret
+
+  # -------------------------------------------------------------
+  # Fase 1: Aktif Saat Ini
+  # -------------------------------------------------------------
+
+  # 4. InfluxDB (Time-Series DB)
+  influxdb:
+    image: influxdb:2
+    container_name: hera_influxdb
+    ports:
+      - "8686:8086"
+    volumes:
+      - influxdb2_data:/var/lib/influxdb2
+      - influxdb2_config:/etc/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=herapassword123
+      - DOCKER_INFLUXDB_INIT_ORG=hera
+      - DOCKER_INFLUXDB_INIT_BUCKET=hera_sensor_data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=hera-super-secret-token-12345
+    restart: unless-stopped
+
+volumes:
+  # Define volumes used by active services
+  influxdb2_data:
+  influxdb2_config:

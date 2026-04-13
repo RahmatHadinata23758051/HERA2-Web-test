@@ -466,8 +466,7 @@
 
     function processIncomingData(data, isInitial = false) {
         // Update Time
-        const tsMatch = data.created_at.match(/T(\d{2}:\d{2}:\d{2})/);
-        const hmString = tsMatch ? tsMatch[1] : new Date(data.created_at).toLocaleTimeString();
+        const hmString = new Date(data.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         document.getElementById('lastUpdateText').innerText = hmString;
 
         // Update CR
@@ -527,8 +526,7 @@
     }
 
     function prependAlertLog(data, animate) {
-        const tsMatch = data.created_at.match(/T(\d{2}:\d{2}:\d{2})/);
-        const timeStr = tsMatch ? tsMatch[1] : new Date(data.created_at).toLocaleTimeString();
+        const timeStr = new Date(data.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         
         const container = document.getElementById('alertContainer');
         const col = colors[data.status];
@@ -557,8 +555,7 @@
         tb.innerHTML = '';
         
         rows.forEach((row, i) => {
-            const tsMatch = row.created_at.match(/T(\d{2}:\d{2}:\d{2})/);
-            const timeStr = tsMatch ? tsMatch[1] : new Date(row.created_at).toLocaleTimeString();
+            const timeStr = new Date(row.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
             let bgClass = "hover:bg-gray-800/20";
             let animClass = "";
@@ -653,9 +650,9 @@
     if (!mapEl) return;
 
     // Default coordinates: Bandung
-    const LAT = -6.914744;
-    const LNG = 107.609810;
-    const LOCATION_NAME = 'Bandung, Jawa Barat';
+    const LAT = -6.967585;
+    const LNG = 107.6590634;
+    const LOCATION_NAME = 'Makerindo, Bandung, Jawa Barat';
 
     // Initialize Leaflet map
     const map = L.map('sensorMap', {

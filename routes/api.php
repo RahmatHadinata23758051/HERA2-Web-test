@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\MobileSensorController;
 // ────────────────────────────────────────────────────────────────
 // Internal SPA Routes (Web Dashboard — session/cookie auth)
 // ────────────────────────────────────────────────────────────────
+Route::post('/v1/telemetry/ingest', [\App\Http\Controllers\Api\SensorController::class, 'ingest'])
+    ->middleware(\App\Http\Middleware\IotTokenAuth::class)
+    ->name('api.sensor.ingest');
+
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/health-check', function () {
         try {

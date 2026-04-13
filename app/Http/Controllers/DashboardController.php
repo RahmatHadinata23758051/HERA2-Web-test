@@ -8,19 +8,13 @@ use App\Models\SensorReading;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(\App\Repositories\InfluxSensorRepository $repo)
     {
         // Get newest 30 and reverse so chronological order for chart
-        $initialData = SensorReading::orderBy('id', 'desc')->take(30)->get()->reverse()->values();
+        $initialData = array_reverse($repo->getReportData(null, null, 'Semua')->take(30)->toArray());
 
-        // Daily summary stats (Card 9.1)
-        $today = Carbon::today();
-        $dailyStats = [
-            'total'   => SensorReading::whereDate('created_at', $today)->count(),
-            'warning' => SensorReading::whereDate('created_at', $today)->where('status', 'warning')->count(),
-            'danger'  => SensorReading::whereDate('created_at', $today)->where('status', 'danger')->count(),
-            'avg_cr'  => round(SensorReading::whereDate('created_at', $today)->whereNotNull('cr_estimated')->avg('cr_estimated') ?? 0, 2),
-        ];
+        // Daily summary stats 
+        $dailyStats = $repo->getDailyStats();
 
         return view('dashboard', compact('initialData', 'dailyStats'));
     }

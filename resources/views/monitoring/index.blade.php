@@ -184,8 +184,7 @@
         let seriesData = { cr_estimated: [], ec: [], tds: [], ph: [], suhu_air: [], suhu_lingkungan: [], kelembapan: [] };
         
         dataArray.forEach(row => {
-            const tsMatch = row.created_at.match(/T(\d{2}:\d{2}:\d{2})/);
-            let ts = tsMatch ? new Date(row.created_at).getTime() : Date.parse(row.created_at);
+            let ts = new Date(row.created_at).getTime();
 
             Object.keys(seriesData).forEach(key => {
                 seriesData[key].push([ts, row[key]]);
@@ -206,8 +205,7 @@
                 if (currentFilter !== 'live') return;
                 
                 const record = e.sensorData || e;
-                const tsMatch = record.created_at.match(/T(\d{2}:\d{2}:\d{2})/);
-                let ts = tsMatch ? new Date(record.created_at).getTime() : Date.parse(record.created_at);
+                let ts = new Date(record.created_at).getTime();
 
                 Object.keys(globalCharts).forEach(key => {
                     let chart = globalCharts[key];

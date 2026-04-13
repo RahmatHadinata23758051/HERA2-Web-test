@@ -2,15 +2,15 @@
 
 namespace App\Exports;
 
-use App\Models\SensorReading;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use App\Repositories\InfluxSensorRepository;
 
-class SensorReadingsExport implements FromQuery, WithHeadings, WithMapping, WithStyles
+class SensorReadingsExport implements FromCollection, WithHeadings, WithMapping, WithStyles
 {
     protected $request;
 
@@ -19,27 +19,19 @@ class SensorReadingsExport implements FromQuery, WithHeadings, WithMapping, With
         $this->request = $request;
     }
 
-    public function query()
+    public function collection()
     {
-        $query = SensorReading::query();
+        $repo = app(InfluxSensorRepository::class);
+        $from = $this->request->filled('from_date') ? $this->request->from_date . ' 00:00:00' : null;
+        $to = $this->request->filled('to_date') ? $this->request->to_date . ' 23:59:59' : null;
+        $status = $this->request->input('status', 'Semua');
 
-        if ($this->request->filled('from_date') && $this->request->filled('to_date')) {
-            $from = $this->request->from_date . ' 00:00:00';
-            $to = $this->request->to_date . ' 23:59:59';
-            $query->whereBetween('created_at', [$from, $to]);
-        }
-
-        if ($this->request->filled('status') && $this->request->status !== 'Semua') {
-            $query->where('status', $this->request->status);
-        }
-
-        return $query->orderBy('id', 'desc');
+        return $repo->getReportData($from, $to, $status);
     }
 
     public function headings(): array
     {
         return [
-            'ID',
             'Tanggal & Waktu',
             'Tegangan (V)',
             'Suhu Air (°C)',
@@ -56,7 +48,6 @@ class SensorReadingsExport implements FromQuery, WithHeadings, WithMapping, With
     public function map($reading): array
     {
         return [
-            $reading->id,
             $reading->created_at->format('Y-m-d H:i:s'),
             $reading->tegangan,
             $reading->suhu_air,
@@ -73,7 +64,6 @@ class SensorReadingsExport implements FromQuery, WithHeadings, WithMapping, With
     public function styles(Worksheet $sheet)
     {
         return [
-            // Style the first row as bold text
             1    => ['font' => ['bold' => true]],
         ];
     }

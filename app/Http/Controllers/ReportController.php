@@ -2,30 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SensorReading;
 use Illuminate\Http\Request;
 use App\Exports\SensorReadingsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ActivityLog;
+use App\Repositories\InfluxSensorRepository;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class ReportController extends Controller
 {
+    protected $influxRepo;
+
+    public function __construct(InfluxSensorRepository $influxRepo)
+    {
+        $this->influxRepo = $influxRepo;
+    }
+
     public function index(Request $request)
     {
-        $query = SensorReading::query();
+        $from = $request->filled('from_date') ? $request->from_date . ' 00:00:00' : null;
+        $to = $request->filled('to_date') ? $request->to_date . ' 23:59:59' : null;
+        $status = $request->input('status', 'Semua');
 
-        if ($request->filled('from_date') && $request->filled('to_date')) {
-            $from = $request->from_date . ' 00:00:00';
-            $to = $request->to_date . ' 23:59:59';
-            $query->whereBetween('created_at', [$from, $to]);
-        }
+        $data = $this->influxRepo->getReportData($from, $to, $status);
 
-        if ($request->filled('status') && $request->status !== 'Semua') {
-            $query->where('status', $request->status);
-        }
-
-        $readings = $query->orderBy('id', 'desc')->paginate(50)->withQueryString();
+        // Paginate manually for InfluxDB Array mapped data
+        $currentPage = Paginator::resolveCurrentPage();
+        $perPage = 50;
+        $items = array_slice($data->toArray(), ($currentPage - 1) * $perPage, $perPage);
+        $readings = new LengthAwarePaginator($items, $data->count(), $perPage, $currentPage, [
+            'path' => $request->url(),
+            'query' => $request->query()
+        ]);
 
         return view('laporan.index', compact('readings'));
     }
@@ -35,7 +45,7 @@ class ReportController extends Controller
         $format = $request->query('format', 'xlsx');
         
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action'  => 'Export Laporan',
             'details' => 'User mengekspor laporan dalam format ' . strtoupper($format)
         ]);
@@ -48,29 +58,20 @@ class ReportController extends Controller
 
     public function exportPdf(Request $request)
     {
-        // Increase memory limit dynamically because DOMPDF consumes a lot of RAM parsing tables
         ini_set('memory_limit', '512M');
         ini_set('max_execution_time', '300');
 
-        $query = SensorReading::query();
+        $from = $request->filled('from_date') ? $request->from_date . ' 00:00:00' : null;
+        $to = $request->filled('to_date') ? $request->to_date . ' 23:59:59' : null;
+        $status = $request->input('status', 'Semua');
 
-        if ($request->filled('from_date') && $request->filled('to_date')) {
-            $from = $request->from_date . ' 00:00:00';
-            $to = $request->to_date . ' 23:59:59';
-            $query->whereBetween('created_at', [$from, $to]);
-        }
-
-        if ($request->filled('status') && $request->status !== 'Semua') {
-            $query->where('status', $request->status);
-        }
-
-        // Limit data for PDF to prevent memory exhaustion (DOMPDF is heavy)
-        $readings = $query->orderBy('id', 'desc')->take(500)->get();
+        $data = $this->influxRepo->getReportData($from, $to, $status);
+        $readings = $data->take(500);
 
         $pdf = Pdf::loadView('laporan.pdf', compact('readings'))->setPaper('a4', 'landscape');
         
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action'  => 'Export Laporan',
             'details' => 'User mengekspor laporan dalam format PDF'
         ]);
