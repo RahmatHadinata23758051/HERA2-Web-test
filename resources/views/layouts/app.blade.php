@@ -14,23 +14,24 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .glass-panel {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(17, 24, 39, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .bottom-tier-bg {
+            background: rgba(31, 41, 55, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .glass-card {
             background: rgba(31, 41, 55, 0.6);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .text-gradient {
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #60A5FA, #A78BFA);
+            background-image: linear-gradient(to right, #60A5FA, #3b82f6);
         }
         
         /* Custom Scrollbar for tables */
@@ -39,205 +40,182 @@
         ::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.8); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 1); }
         
-        .value-update-flash {
-            animation: textFlash 1.5s ease-out;
-        }
+        .value-update-flash { animation: textFlash 1.5s ease-out; }
         @keyframes textFlash {
             0% { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
             100% { color: inherit; text-shadow: none; }
-        }
-        .row-enter {
-            animation: rowSlideIn 0.5s ease-out forwards;
-        }
-        @keyframes rowSlideIn {
-            0% { opacity: 0; transform: translateX(-10px); background-color: rgba(59, 130, 246, 0.2); }
-            100% { opacity: 1; transform: translateX(0); background-color: transparent; }
-        }
-        .row-highlight-danger { animation: highlightDanger 2s ease-out forwards; }
-        @keyframes highlightDanger {
-            0% { background-color: rgba(239, 68, 68, 0.3); }
-            100% { background-color: transparent; }
-        }
-        .row-highlight-warning { animation: highlightWarning 2s ease-out forwards; }
-        @keyframes highlightWarning {
-            0% { background-color: rgba(245, 158, 11, 0.3); }
-            100% { background-color: transparent; }
-        }
-
-        /* Sidebar tooltip overrides */
-        .sidebar-tooltip {
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .group:hover .sidebar-tooltip {
-            visibility: visible;
-            opacity: 1;
         }
     </style>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex selection:bg-indigo-500 selection:text-white" x-data="{ sidebarOpen: true }">
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white" x-data="{ mobileMenuOpen: false }">
 
-    <!-- Sidebar -->
-    <aside :class="sidebarOpen ? 'w-64' : 'w-20'" class="glass-panel border-r border-gray-800 flex-shrink-0 fixed h-full z-20 transition-all duration-300">
-        <!-- Logo & Header -->
-        <div class="h-16 flex items-center justify-between px-4 border-b border-gray-800/50">
-            <div class="flex items-center gap-3 overflow-hidden" :class="sidebarOpen ? 'ml-2' : 'ml-0.5'">
-                @if(!empty($app_settings['app_logo']))
-                    <img src="{{ asset($app_settings['app_logo']) }}" alt="App Logo" class="w-8 h-8 object-contain shrink-0">
-                @else
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30 shrink-0">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    </div>
-                @endif
-                <h1 x-show="sidebarOpen" x-transition.opacity.duration.300ms class="text-xl font-bold tracking-tight text-gradient whitespace-nowrap">{{ $app_settings['app_name'] ?? 'HERA' }} <span class="text-xs text-gray-500">{{ $app_settings['app_version'] ?? '' }}</span></h1>
-            </div>
-            
-            <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-white transition-colors shrink-0" :class="!sidebarOpen && 'hidden'">
-                <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
-            </button>
-            
-            <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-white transition-colors shrink-0 mx-auto" x-show="!sidebarOpen" style="display: none;">
-                <svg class="w-5 h-5 transition-transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
-            </button>
-        </div>
-        
-        <nav class="p-3 space-y-1 overflow-x-hidden">
-            <!-- Dashboard Menu -->
-            <a href="{{ route('dashboard') }}" class="flex items-center px-3 py-2.5 {{ request()->routeIs('dashboard') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div class="flex items-center" :class="sidebarOpen ? 'justify-start w-full' : 'justify-center w-full'">
-                    <svg class="shrink-0 w-5 h-5 {{ request()->routeIs('dashboard') ? 'text-blue-400' : 'group-hover:text-blue-400' }} relative z-10 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span x-show="sidebarOpen" x-transition.opacity.duration.300ms class="ml-3 font-medium text-sm relative z-10 whitespace-nowrap">Live Dashboard</span>
-                </div>
+    <!-- 2-Tier Top Navbar (Inspired by HERA V1.0) -->
+    <header class="fixed top-0 w-full z-50">
+        <!-- Top Tier: Branding & Profile -->
+        <div class="h-14 glass-panel border-b border-gray-800">
+            <div class="px-4 mx-auto md:px-14 lg:px-24 h-full flex items-center justify-between">
                 
-                <div x-show="!sidebarOpen" class="sidebar-tooltip absolute left-14 bg-gray-800 border border-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-50">Live Dashboard</div>
-            </a>
-
-            <!-- Monitoring Menu -->
-            <a href="{{ route('monitoring') }}" class="flex items-center px-3 py-2.5 {{ request()->routeIs('monitoring*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group relative">
-                <div class="flex items-center" :class="sidebarOpen ? 'justify-start w-full' : 'justify-center w-full'">
-                    <svg class="shrink-0 w-5 h-5 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    <span x-show="sidebarOpen" x-transition.opacity.duration.300ms class="ml-3 font-medium text-sm whitespace-nowrap">Monitoring</span>
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    @if(!empty($app_settings['app_logo']))
+                        <img src="{{ asset($app_settings['app_logo']) }}" alt="App Logo" class="h-8 object-contain">
+                    @else
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                    @endif
+                    <h1 class="text-xl font-bold tracking-tight text-white whitespace-nowrap">{{ $app_settings['app_name'] ?? 'HERA' }}</h1>
                 </div>
 
-                <div x-show="!sidebarOpen" class="sidebar-tooltip absolute left-14 bg-gray-800 border border-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-50">Monitoring</div>
-            </a>
+                <!-- Right Section: User Profile & Mobile Toggle -->
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:block">
+                        <div x-data="{ userMenu: false }" @click.away="userMenu = false" class="relative">
+                            <button @click="userMenu = !userMenu" class="flex items-center gap-2 pl-3 pr-2 py-1 rounded-full hover:bg-gray-800/60 transition-colors border border-transparent hover:border-gray-700/50 focus:outline-none">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&rounded=true" alt="Avatar" class="w-7 h-7 rounded-full ring-1 ring-gray-700">
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="userMenu ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            
+                            <!-- User Dropdown Menu -->
+                            <div x-show="userMenu" x-transition.opacity.duration.200ms style="display: none;" class="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-1 z-50">
+                                <div class="px-4 py-2 border-b border-gray-700/50 mb-1">
+                                    <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name }}</p>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400 truncate">{{ auth()->user()->role }}</p>
+                                </div>
+                                <a href="{{ route('profile') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    Edit Profil
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                        Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Laporan Menu -->
-            <a href="{{ route('laporan.index') }}" class="flex items-center px-3 py-2.5 {{ request()->routeIs('laporan*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group relative">
-                <div class="flex items-center" :class="sidebarOpen ? 'justify-start w-full' : 'justify-center w-full'">
-                    <svg class="shrink-0 w-5 h-5 group-hover:text-green-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span x-show="sidebarOpen" x-transition.opacity.duration.300ms class="ml-3 font-medium text-sm whitespace-nowrap">Laporan</span>
-                </div>
-
-                <div x-show="!sidebarOpen" class="sidebar-tooltip absolute left-14 bg-gray-800 border border-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-50">Laporan</div>
-            </a>
-
-            <!-- Analisis Data Excel Dropdown -->
-            <div x-data="{ openAnalisis: {{ request()->routeIs('analisis.*') ? 'true' : 'false' }} }" class="relative">
-                <button @click="openAnalisis = !openAnalisis; if(!sidebarOpen) sidebarOpen = true;" class="w-full flex items-center px-3 py-2.5 {{ request()->routeIs('analisis.*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group">
-                    <div class="flex items-center flex-1" :class="sidebarOpen ? 'justify-start' : 'justify-center'">
-                        <svg class="shrink-0 w-5 h-5 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                    <!-- Mobile Menu Button -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-400 hover:text-white p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            <path x-show="mobileMenuOpen" style="display:none;" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                        <span x-show="sidebarOpen" x-transition.opacity.duration.300ms class="ml-3 font-medium text-sm whitespace-nowrap">Analisis Excel</span>
-                    </div>
-                    
-                    <svg x-show="sidebarOpen" x-transition.opacity class="w-4 h-4 transition-transform duration-200" :class="openAnalisis ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                
-                <div x-show="!sidebarOpen" class="sidebar-tooltip absolute left-14 top-2 bg-gray-800 border border-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-50">Analisis Excel</div>
-
-                <div x-show="openAnalisis && sidebarOpen" x-collapse class="pl-11 pr-3 py-2 space-y-1">
-                    <a href="{{ route('analisis.rq.nitrat') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.nitrat') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors whitespace-nowrap">RQ Nitrat</a>
-                    <a href="{{ route('analisis.rq.pb') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.pb') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors whitespace-nowrap">RQ Pb</a>
-                    <a href="{{ route('analisis.rq.cd') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.cd') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors whitespace-nowrap">RQ Cd</a>
-                    <a href="{{ route('analisis.rq.ph') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.ph') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors whitespace-nowrap">RQ Ph</a>
-                    <a href="{{ route('analisis.rq.f') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.f') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors whitespace-nowrap">RQ F</a>
-                    <div class="h-px bg-gray-800 my-1 w-full"></div>
-                    <a href="{{ route('analisis.input') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.input') ? 'text-blue-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors whitespace-nowrap">Input Data</a>
+                    </button>
                 </div>
             </div>
+        </div>
 
-            {{-- Admin only --}}
+        <!-- Bottom Tier: Navigation Links -->
+        <div class="hidden md:block h-14 bottom-tier-bg border-b border-gray-800 shadow-sm">
+            <div class="px-4 mx-auto md:px-14 lg:px-24 h-full flex items-center justify-start gap-8">
+                
+                <!-- Dashboard -->
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('dashboard') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('dashboard') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Dashboard
+                </a>
+                
+                <!-- Monitoring -->
+                <a href="{{ route('monitoring') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('monitoring*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('monitoring*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    Monitoring
+                </a>
+
+                <!-- Analisis Excel Dropdown -->
+                <div x-data="{ openAnalysis: false }" @mouseenter="openAnalysis = true" @mouseleave="openAnalysis = false" class="relative h-full flex items-center">
+                    <button @click="openAnalysis = !openAnalysis" class="flex items-center gap-2 h-full text-sm font-medium outline-none transition-colors border-b-2 {{ request()->routeIs('analisis.*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('analisis.*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                        Analisis Data Excel
+                        <svg class="w-3 h-3 transition-transform" :class="openAnalysis ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <!-- Dropdown -->
+                    <div x-show="openAnalysis" x-transition.opacity.duration.200ms style="display: none;" class="absolute top-14 left-0 w-48 bg-gray-800 border border-gray-700 rounded-b-lg shadow-xl py-1 z-50">
+                        <a href="{{ route('analisis.rq.nitrat') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.nitrat') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Nitrat</a>
+                        <a href="{{ route('analisis.rq.pb') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.pb') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Pb</a>
+                        <a href="{{ route('analisis.rq.cd') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.cd') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Cd</a>
+                        <a href="{{ route('analisis.rq.ph') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.ph') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Ph</a>
+                        <a href="{{ route('analisis.rq.f') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.f') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ F</a>
+                        <div class="border-t border-gray-700/50 my-1"></div>
+                        <a href="{{ route('analisis.input') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.input') ? 'bg-gray-700/50 text-emerald-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">Input Data Manual</a>
+                    </div>
+                </div>
+
+                @if(auth()->user()->isDireksi())
+                <!-- Manajemen Akun -->
+                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('admin.users*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('admin.users*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Manajemen Akun
+                </a>
+                @endif
+                
+                <!-- Laporan -->
+                <a href="{{ route('laporan.index') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('laporan*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('laporan*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Laporan
+                </a>
+
+                @if(auth()->user()->isDireksi())
+                <!-- Pengaturan -->
+                <a href="{{ route('settings.index') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('settings*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('settings*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Pengaturan
+                </a>
+                @endif
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div x-show="mobileMenuOpen" x-transition.opacity.duration.300ms style="display:none;" class="md:hidden bg-gray-900 border-b border-gray-800 pb-4 px-2 space-y-1 z-50">
+            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Dashboard</a>
+            <a href="{{ route('monitoring') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Monitoring</a>
+            <div class="px-3 py-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Analisis Data Excel</p>
+                <div class="mt-2 pl-3 border-l border-gray-800 space-y-1">
+                    <a href="{{ route('analisis.rq.nitrat') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Nitrat</a>
+                    <a href="{{ route('analisis.rq.pb') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Pb</a>
+                    <a href="{{ route('analisis.rq.cd') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Cd</a>
+                    <a href="{{ route('analisis.rq.ph') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Ph</a>
+                    <a href="{{ route('analisis.rq.f') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ F</a>
+                    <a href="{{ route('analisis.input') }}" class="block text-sm text-blue-400 py-1 mt-1">Input Data Manual</a>
+                </div>
+            </div>
             @if(auth()->user()->isDireksi())
-            <div class="pt-3 mt-2 border-t border-gray-800/50">
-                <p x-show="sidebarOpen" x-transition.opacity.duration.300ms class="px-3 mb-1 text-[10px] font-bold uppercase tracking-widest text-gray-600 whitespace-nowrap">Administrasi</p>
-                <div x-show="!sidebarOpen" class="h-px bg-gray-700/30 w-8 mx-auto mb-2 mt-4"></div>
-                
-                <a href="{{ route('admin.users.index') }}" class="flex items-center px-3 py-2.5 {{ request()->routeIs('admin.users*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group relative">
-                    <div class="flex items-center" :class="sidebarOpen ? 'justify-start w-full' : 'justify-center w-full'">
-                        <svg class="shrink-0 w-5 h-5 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        <span x-show="sidebarOpen" x-transition.opacity.duration.300ms class="ml-3 font-medium text-sm whitespace-nowrap">Manajemen Akun</span>
-                    </div>
-
-                    <div x-show="!sidebarOpen" class="sidebar-tooltip absolute left-14 bg-gray-800 border border-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-50">Manajemen Akun</div>
-                </a>
-                
-                <a href="{{ route('settings.index') }}" class="flex items-center px-3 py-2.5 mt-1 {{ request()->routeIs('settings*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group relative">
-                    <div class="flex items-center" :class="sidebarOpen ? 'justify-start w-full' : 'justify-center w-full'">
-                        <svg class="shrink-0 w-5 h-5 group-hover:text-amber-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span x-show="sidebarOpen" x-transition.opacity.duration.300ms class="ml-3 font-medium text-sm whitespace-nowrap">Pengaturan</span>
-                    </div>
-
-                    <div x-show="!sidebarOpen" class="sidebar-tooltip absolute left-14 bg-gray-800 border border-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap z-50">Pengaturan</div>
-                </a>
-            </div>
+                <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Manajemen Akun</a>
             @endif
-        </nav>
-        
-        <div class="absolute bottom-0 w-full p-3 border-t border-gray-800/50 transition-all duration-300" x-data="{ open: false }" @click.away="open = false" :class="sidebarOpen ? 'bg-gray-900/40' : 'bg-transparent text-center px-1'">
-            {{-- User Info Toggle --}}
-            <button @click="if(sidebarOpen) open = !open; else sidebarOpen = true;" class="flex items-center rounded-lg hover:bg-gray-800/50 transition-colors group" :class="sidebarOpen ? 'w-full px-2 py-2 gap-3' : 'px-2 py-2 justify-center'">
-                <img 
-                    src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&rounded=true" 
-                    alt="Avatar" 
-                    class="w-9 h-9 rounded-full ring-2 ring-gray-700 shrink-0 mx-auto"
-                >
-                <div x-show="sidebarOpen" x-transition.opacity.duration.300ms class="flex-1 text-left min-w-0">
-                    <p class="text-sm font-medium text-gray-200 truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-[10px] font-semibold uppercase tracking-wider {{ auth()->user()->isDireksi() ? 'text-purple-400' : 'text-blue-400' }}">
-                        {{ auth()->user()->role }}
-                    </p>
-                </div>
-                <svg x-show="sidebarOpen" x-transition.opacity class="w-4 h-4 text-gray-500 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
-
-            {{-- Dropdown Menu --}}
-            <div x-show="open && sidebarOpen" x-transition class="mt-2 bg-gray-800/95 backdrop-blur-md border border-gray-700/50 rounded-lg overflow-hidden shadow-xl absolute bottom-[4.5rem] w-[calc(100%-1.5rem)] left-3 z-50">
-                <a href="{{ route('profile') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    Edit Profil
-                </a>
-                <div class="border-t border-gray-700/50"></div>
+            <a href="{{ route('laporan.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Laporan</a>
+            @if(auth()->user()->isDireksi())
+                <a href="{{ route('settings.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Pengaturan</a>
+            @endif
+            <div class="px-3 pt-4 border-t border-gray-800 mt-2 flex flex-col gap-2">
+                <a href="{{ route('profile') }}" class="block text-gray-300 hover:text-white text-sm">Edit Profil</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                        Keluar
-                    </button>
+                    <button type="submit" class="w-full text-left text-red-400 hover:text-red-300 text-sm py-1">Keluar</button>
                 </form>
             </div>
         </div>
-    </aside>
+    </header>
 
     <!-- Main Content -->
-    <main :class="sidebarOpen ? 'ml-64' : 'ml-20'" class="flex-1 flex flex-col min-h-screen relative overflow-x-hidden transition-all duration-300 ease-in-out">
+    <!-- pt-28 to clear the 7rem height of the 2-tier header (14+14 = 28 / 7rem) + 1rem padding -->
+    <main class="pt-[8rem] flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
         <!-- Ambient Background Glows -->
-        <div class="fixed top-[-15%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[150px] pointer-events-none z-0"></div>
-        <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-purple-900/15 blur-[150px] pointer-events-none z-0"></div>
+        <div class="absolute top-0 right-0 w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[150px] pointer-events-none z-0"></div>
+        <div class="absolute bottom-0 left-0 w-[40%] h-[50%] rounded-full bg-purple-900/10 blur-[150px] pointer-events-none z-0"></div>
 
-        <div class="relative z-10 w-full p-6 lg:p-8 flex-1">
+        <div class="relative z-10 w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto pb-8 flex-1">
             @yield('content')
         </div>
 
         <!-- Footer -->
-        <footer class="relative z-10 w-full p-6 border-t border-gray-800/50 mt-auto hidden md:block">
-            <div class="text-center text-sm text-gray-500">
+        <footer class="relative z-10 w-full border-t border-gray-800/50 mt-auto hidden md:block">
+            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-gray-500">
                 &copy; {{ $app_settings['app_year'] ?? date('Y') }} <span class="text-gray-400 font-medium">{{ $app_settings['app_copyright'] ?? 'Universitas Hasanuddin' }}</span>. All rights reserved.
                 <br>
                 {{ $app_settings['app_institution'] ?? '' }}
@@ -247,7 +225,7 @@
     
     <!-- Global Flash Notification Component -->
     <div x-data="toastNotification()" x-init="initToast()"
-         style="position: fixed !important; top: 1.5rem; right: 1.5rem; left: auto; z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; width: 320px;">
+         style="position: fixed !important; top: 8rem; right: 1.5rem; left: auto; z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; width: 320px;">
         
         <template x-for="toast in toasts" :key="toast.id">
             <div x-show="toast.visible"
