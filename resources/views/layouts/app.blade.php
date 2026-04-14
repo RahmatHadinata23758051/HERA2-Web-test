@@ -154,11 +154,20 @@
                 </a>
                 @endif
                 
-                <!-- Laporan -->
-                <a href="{{ route('laporan.index') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('laporan*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
-                    <svg class="w-5 h-5 {{ request()->routeIs('laporan*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Laporan
-                </a>
+                <!-- Laporan Dropdown -->
+                <div x-data="{ openLaporan: false }" @mouseenter="openLaporan = true" @mouseleave="openLaporan = false" class="relative h-full flex items-center">
+                    <button @click="openLaporan = !openLaporan" class="flex items-center gap-2 h-full text-sm font-medium outline-none transition-colors border-b-2 {{ request()->routeIs('laporan.*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
+                        <svg class="w-5 h-5 {{ request()->routeIs('laporan.*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Laporan
+                        <svg class="w-3 h-3 transition-transform" :class="openLaporan ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <!-- Dropdown -->
+                    <div x-show="openLaporan" x-transition.opacity.duration.200ms style="display: none;" class="absolute top-14 left-0 w-60 bg-gray-800 border border-gray-700 rounded-b-lg shadow-xl py-1 z-50">
+                        <a href="{{ route('laporan.index') }}" class="block px-4 py-3 text-sm {{ request()->routeIs('laporan.index') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">Laporan Historis</a>
+                        <div class="border-t border-gray-700/50 mx-2"></div>
+                        <a href="{{ route('laporan.pengujian.index') }}" class="block px-4 py-3 text-sm {{ request()->routeIs('laporan.pengujian.*') ? 'bg-gray-700/50 text-emerald-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">Data Pengujian Lapangan</a>
+                    </div>
+                </div>
 
                 @if(auth()->user()->isDireksi())
                 <!-- Pengaturan -->
@@ -188,7 +197,13 @@
             @if(auth()->user()->isDireksi())
                 <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Manajemen Akun</a>
             @endif
-            <a href="{{ route('laporan.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Laporan</a>
+            <div class="px-3 py-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Laporan & Pengujian</p>
+                <div class="mt-2 pl-3 border-l border-gray-800 space-y-1">
+                    <a href="{{ route('laporan.index') }}" class="block text-sm text-gray-400 py-1 hover:text-blue-400">Laporan Historis</a>
+                    <a href="{{ route('laporan.pengujian.index') }}" class="block text-sm text-emerald-400 py-1 hover:text-white">Data Pengujian Lapangan</a>
+                </div>
+            </div>
             @if(auth()->user()->isDireksi())
                 <a href="{{ route('settings.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Pengaturan</a>
             @endif

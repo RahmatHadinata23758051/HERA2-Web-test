@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     
     // Laporan & Export
     Route::get('/laporan', [App\Http\Controllers\ReportController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/pengujian', [App\Http\Controllers\WebFieldTestController::class, 'index'])->name('laporan.pengujian.index');
     Route::get('/laporan/export/excel', [App\Http\Controllers\ReportController::class, 'exportExcel'])->name('laporan.export.excel');
     Route::get('/laporan/export/pdf', [App\Http\Controllers\ReportController::class, 'exportPdf'])->name('laporan.export.pdf');
 

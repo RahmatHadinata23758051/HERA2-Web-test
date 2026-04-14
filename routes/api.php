@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\SensorController;
 use App\Http\Controllers\Api\MobileAuthController;
 use App\Http\Controllers\Api\MobileSensorController;
+use App\Http\Controllers\Api\MobileTestController;
 
 // ────────────────────────────────────────────────────────────────
 // Internal SPA Routes (Web Dashboard — session/cookie auth)
@@ -51,5 +52,9 @@ Route::prefix('mobile')->name('mobile.')->middleware('auth:sanctum')->group(func
     Route::get('/sensor/history',     [MobileSensorController::class, 'history'])->name('sensor.history');
     Route::get('/sensor/alerts',      [MobileSensorController::class, 'alerts'])->name('sensor.alerts');
     Route::get('/sensor/daily-stats', [MobileSensorController::class, 'dailyStats'])->name('sensor.daily-stats');
+
+    // Field Testing Data (Smartphone Trigger)
+    Route::post('/testing/location',  [MobileTestController::class, 'store'])->name('testing.location');
+    Route::get('/testing/history',    [MobileTestController::class, 'history'])->name('testing.history');
 });
 
