@@ -59,7 +59,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/import',           [\App\Http\Controllers\AnalisisController::class, 'import'])->name('import');
         Route::get('/export/{type}',     [\App\Http\Controllers\AnalisisController::class, 'export'])->name('export');
 
-        // Delete
-        Route::delete('/{id}', [\App\Http\Controllers\AnalisisController::class, 'destroy'])->name('destroy');
+        // CRUD
+        Route::get('/edit/{id}',         [\App\Http\Controllers\AnalisisController::class, 'edit'])->name('edit');
+        Route::put('/{id}',              [\App\Http\Controllers\AnalisisController::class, 'update'])->name('update');
+        Route::delete('/{id}',           [\App\Http\Controllers\AnalisisController::class, 'destroy'])->name('destroy');
     });
 });

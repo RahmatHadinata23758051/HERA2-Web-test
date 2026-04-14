@@ -83,15 +83,19 @@
                 <tbody class="divide-y divide-gray-800/50">
                     @forelse($records as $row)
                     <tr class="hover:bg-gray-800/30 transition-colors">
-                        <td class="px-4 py-3 border-r border-gray-700/50 text-center">
-                            <form action="{{ route('analisis.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Hapus data responden ini?');">
+                        <td class="px-4 py-3 border-r border-gray-700/50 text-center flex flex-col sm:flex-row gap-2 justify-center items-center h-full min-h-[48px]">
+                            <a href="{{ route('analisis.edit', $row->id) }}" class="text-blue-400 hover:text-blue-300 hover:scale-110 transition-transform" title="Edit">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </a>
+                            <div class="w-px h-4 bg-gray-700 hidden sm:block"></div>
+                            <form action="{{ route('analisis.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Hapus data responden ini?');" class="flex">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="text-red-400 hover:text-red-300">
+                                <button type="submit" class="text-red-400 hover:text-red-300 hover:scale-110 transition-transform" title="Hapus">
                                     <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
                             </form>
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-300">{{ $row->no_responden ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-300 font-mono">{{ $loop->iteration }}</td>
                         <td class="px-4 py-3 text-sm text-gray-200 font-medium whitespace-nowrap">{{ $row->nama }}</td>
                         <td class="px-4 py-3 text-sm text-gray-400">{{ $row->umur }}</td>
                         <td class="px-4 py-3 text-sm text-gray-400 border-r border-gray-700/50">{{ $row->wb }}</td>

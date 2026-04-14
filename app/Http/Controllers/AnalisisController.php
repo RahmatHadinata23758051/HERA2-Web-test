@@ -130,6 +130,42 @@ class AnalisisController extends Controller
     }
 
     // =========================================================
+    // EDIT & UPDATE
+    // =========================================================
+    public function edit(Request $request, int $id)
+    {
+        $record = RqAnalysis::findOrFail($id);
+        return view('analisis.edit', compact('record'));
+    }
+
+    public function update(Request $request, int $id)
+    {
+        $record = RqAnalysis::findOrFail($id);
+
+        $validated = $request->validate([
+            'pollutant_type' => 'required|in:nitrat,pb,cd,ph,f',
+            'nama'           => 'required|string|max:255',
+            'umur'           => 'required|numeric|min:0',
+            'wb'             => 'required|numeric|min:0.1',
+            'f'              => 'required|numeric|min:0',
+            'c'              => 'required|numeric|min:0',
+            'r'              => 'required|numeric|min:0',
+            'rfd'            => 'required|numeric|min:0.000001',
+            'tavg'           => 'required|numeric|min:1',
+            'dt_input'       => 'required|numeric|min:0',
+        ]);
+
+        // Hitung ulang Intake & RQ menggunakan service
+        $calculations = $this->rqService->calculate($validated);
+
+        $record->update(array_merge($validated, $calculations));
+
+        return redirect()
+            ->route('analisis.rq.' . $validated['pollutant_type'])
+            ->with('success', 'Data responden berhasil diubah dan dikalkulasi ulang.');
+    }
+
+    // =========================================================
     // DELETE
     // =========================================================
     public function destroy(Request $request, int $id)
