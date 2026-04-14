@@ -95,7 +95,7 @@
             <tr>
                 <th width="5%">No</th>
                 <th width="15%">Tanggal & Waktu</th>
-                <th width="10%">Cr (µg/L)</th>
+                <th width="10%">Cr (mg/L)</th>
                 <th width="8%">pH</th>
                 <th width="10%">EC (µS/cm)</th>
                 <th width="10%">TDS (mg/L)</th>

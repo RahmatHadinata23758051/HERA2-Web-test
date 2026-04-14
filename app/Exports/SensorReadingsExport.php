@@ -40,7 +40,7 @@ class SensorReadingsExport implements FromCollection, WithHeadings, WithMapping,
             'TDS (mg/L)',
             'EC (µS/cm)',
             'pH',
-            'Cr Estimated (µg/L)',
+            'Cr Estimated (mg/L)',
             'Status'
         ];
     }

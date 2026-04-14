@@ -44,7 +44,7 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         @php
             $params = [
-                ['id' => 'cr_estimated', 'title' => 'Hexavalent Chromium (Cr)', 'unit' => 'µg/L', 'color' => '#F97316', 'min' => 0],
+                ['id' => 'cr_estimated', 'title' => 'Hexavalent Chromium (Cr)', 'unit' => 'mg/L', 'color' => '#F97316', 'min' => 0],
                 ['id' => 'ec', 'title' => 'Electrical Conductivity (EC)', 'unit' => 'µS/cm', 'color' => '#3B82F6', 'min' => 0],
                 ['id' => 'tds', 'title' => 'Total Dissolved Solids (TDS)', 'unit' => 'mg/L', 'color' => '#10B981', 'min' => 0],
                 ['id' => 'ph', 'title' => 'Acidity (pH)', 'unit' => '', 'color' => '#A855F7', 'min' => 0],

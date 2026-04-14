@@ -13,11 +13,11 @@ class SensorReadingSeeder extends Seeder
     public function run(): void
     {
         for ($i = 0; $i < 50; $i++) {
-            $cr = rand(10, 150);
+            $cr = rand(10, 150) / 1000.0;
             $status = 'normal';
-            if ($cr >= 50 && $cr <= 100) {
+            if ($cr >= 0.05 && $cr <= 0.10) {
                 $status = 'warning';
-            } elseif ($cr > 100) {
+            } elseif ($cr > 0.10) {
                 $status = 'danger';
             }
 

@@ -82,7 +82,7 @@
                 <thead class="text-xs text-gray-400 uppercase bg-gray-800/80 border-b border-gray-700/50">
                     <tr>
                         <th class="px-5 py-4 whitespace-nowrap">Tanggal & Waktu</th>
-                        <th class="px-5 py-4 text-center">Cr (µg/L)</th>
+                        <th class="px-5 py-4 text-center">Cr (mg/L)</th>
                         <th class="px-5 py-4 text-center">pH</th>
                         <th class="px-5 py-4 text-center">EC (µS/cm)</th>
                         <th class="px-5 py-4 text-center">TDS (mg/L)</th>

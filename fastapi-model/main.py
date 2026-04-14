@@ -88,20 +88,21 @@ def predict(data: SensorData):
         
         prediction = model.predict(scaled_df)
         
-        cr_val = float(prediction[0])
+        cr_val_ug = float(prediction[0])
+        cr_val = cr_val_ug / 1000.0
         
-        # Determine status
-        if cr_val < 50:
+        # Determine status based on mg/L thresholds (50 µg/L = 0.05 mg/L)
+        if cr_val < 0.05:
             status = "normal"
-        elif cr_val <= 100:
+        elif cr_val <= 0.1:
             status = "warning"
         else:
             status = "danger"
             
         return {
-            "cr_estimated": round(cr_val, 2),
+            "cr_estimated": round(cr_val, 5),
             "status": status,
-            "unit": "µg/L"
+            "unit": "mg/L"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

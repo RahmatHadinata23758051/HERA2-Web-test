@@ -99,7 +99,7 @@
             <div>
                 <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Rata-rata Cr</p>
                 <p class="text-2xl font-bold text-purple-400 mt-0.5">{{ $dailyStats['avg_cr'] }}</p>
-                <p class="text-xs text-gray-500 mt-0.5">µg/L hari ini</p>
+                <p class="text-xs text-gray-500 mt-0.5">mg/L hari ini</p>
             </div>
         </div>
     </div>
@@ -120,7 +120,7 @@
                 </div>
                 <div class="mt-4 flex items-baseline gap-2">
                     <span class="text-4xl font-bold tracking-tight text-white transition-all duration-300" id="val-cr">--</span>
-                    <span class="text-sm text-gray-400 font-medium">µg/L</span>
+                    <span class="text-sm text-gray-400 font-medium">mg/L</span>
                 </div>
                 <div class="mt-4 text-xs text-gray-500 flex justify-between">
                     <span>Model: RF Soft Sensor</span>
@@ -166,8 +166,8 @@
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-semibold text-white">Chromium Prediction Trend</h3>
                 <div class="text-xs text-gray-400 flex items-center gap-3">
-                    <span class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-500 rounded-full"></div> Warning (>50)</span>
-                    <span class="flex items-center gap-1"><div class="w-2 h-2 bg-red-500 rounded-full"></div> Danger (>100)</span>
+                    <span class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-500 rounded-full"></div> Warning (>0.05)</span>
+                    <span class="flex items-center gap-1"><div class="w-2 h-2 bg-red-500 rounded-full"></div> Danger (>0.10)</span>
                 </div>
             </div>
             <div id="chartCr" class="w-full h-64"></div>
@@ -212,7 +212,7 @@
                     <thead class="text-xs text-gray-500 uppercase bg-gray-800/30 border-b border-gray-700">
                         <tr>
                             <th class="px-4 py-3 font-medium">Time</th>
-                            <th class="px-4 py-3 font-medium text-right">Cr (µg/L)</th>
+                            <th class="px-4 py-3 font-medium text-right">Cr (mg/L)</th>
                             <th class="px-4 py-3 font-medium text-right">EC</th>
                             <th class="px-4 py-3 font-medium text-right">TDS</th>
                             <th class="px-4 py-3 font-medium text-right">pH</th>
@@ -336,11 +336,11 @@
             colors: ['#F97316'],
             fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 100] } },
             xaxis: { type: 'datetime', labels: { style: { colors: '#9ca3af' } } },
-            yaxis: { title: { text: 'µg/L' }, labels: { style: { colors: '#9ca3af' } }, min: 0 },
+            yaxis: { title: { text: 'mg/L' }, labels: { style: { colors: '#9ca3af' } }, min: 0 },
             annotations: {
                 y: [
-                    { y: 50, borderColor: '#EAB308', strokeDashArray: 3, label: { borderColor: '#EAB308', style: { color: '#fff', background: '#EAB308' }, text: 'Warning (50)' } },
-                    { y: 100, borderColor: '#EF4444', strokeDashArray: 2, label: { borderColor: '#EF4444', style: { color: '#fff', background: '#EF4444' }, text: 'Danger (100)' } }
+                    { y: 0.05, borderColor: '#EAB308', strokeDashArray: 3, label: { borderColor: '#EAB308', style: { color: '#fff', background: '#EAB308' }, text: 'Warning (0.05)' } },
+                    { y: 0.10, borderColor: '#EF4444', strokeDashArray: 2, label: { borderColor: '#EF4444', style: { color: '#fff', background: '#EF4444' }, text: 'Danger (0.10)' } }
                 ]
             }
         };
@@ -538,7 +538,7 @@
                         <span class="text-xs text-gray-400 font-mono">${timeStr}</span>
                         <div class="h-1.5 w-1.5 rounded-full ${data.status==='danger'?'bg-red-500':'bg-yellow-400'}"></div>
                     </div>
-                    <p class="text-sm font-medium text-gray-200 mt-1">Cr Estimated: <span class="${col.text} font-bold">${data.cr_estimated.toFixed(2)} µg/L</span></p>
+                    <p class="text-sm font-medium text-gray-200 mt-1">Cr Estimated: <span class="${col.text} font-bold">${data.cr_estimated.toFixed(5)} mg/L</span></p>
                 </div>
                 <div class="px-2 py-1 rounded ${col.tailwindBg} ${col.text} text-xs font-bold uppercase">${data.status}</div>
             </div>
@@ -617,17 +617,17 @@
         if (now - lastDangerNotifTime < 30000) return;
         lastDangerNotifTime = now;
 
-        const crVal = parseFloat(record.cr_estimated).toFixed(2);
+        const crVal = parseFloat(record.cr_estimated).toFixed(5);
 
         // Update browser tab title to alert user even if minimized
         const originalTitle = document.title;
-        document.title = `⚠️ DANGER! Cr = ${crVal} µg/L`;
+        document.title = `⚠️ DANGER! Cr = ${crVal} mg/L`;
         setTimeout(() => { document.title = originalTitle; }, 8000);
 
         // Send native OS notification if permission granted
         if ('Notification' in window && Notification.permission === 'granted') {
             const notif = new Notification('⚠️ HERA — Peringatan Bahaya!', {
-                body: `Kadar Chromium terdeteksi ${crVal} µg/L — Melebihi batas aman (>100 µg/L)!`,
+                body: `Kadar Chromium terdeteksi ${crVal} mg/L — Melebihi batas aman (>0.10 mg/L)!`,
                 icon: '/favicon.ico',
                 badge: '/favicon.ico',
                 tag: 'hera-danger',       // Replace existing notif with same tag
