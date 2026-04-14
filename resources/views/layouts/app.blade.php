@@ -102,6 +102,29 @@
                 <span class="font-medium text-sm">Laporan</span>
             </a>
 
+            <!-- Analisis Data Excel Dropdown -->
+            <div x-data="{ openAnalisis: {{ request()->routeIs('analisis.*') ? 'true' : 'false' }} }">
+                <button @click="openAnalisis = !openAnalisis" class="w-full flex items-center justify-between px-3 py-2.5 {{ request()->routeIs('analisis.*') ? 'bg-gray-800/50 text-white border border-gray-700/50' : 'text-gray-400 hover:text-white hover:bg-gray-800/30' }} rounded-lg transition-all group">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                        </svg>
+                        <span class="font-medium text-sm">Analisis Data Excel</span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-200" :class="openAnalisis ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                
+                <div x-show="openAnalisis" x-collapse class="pl-11 pr-3 py-2 space-y-1">
+                    <a href="{{ route('analisis.rq.nitrat') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.nitrat') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors">RQ Nitrat</a>
+                    <a href="{{ route('analisis.rq.pb') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.pb') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors">RQ Pb</a>
+                    <a href="{{ route('analisis.rq.cd') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.cd') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors">RQ Cd</a>
+                    <a href="{{ route('analisis.rq.ph') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.ph') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors">RQ Ph</a>
+                    <a href="{{ route('analisis.rq.f') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.rq.f') ? 'text-emerald-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors">RQ F</a>
+                    <div class="h-px bg-gray-800 my-1"></div>
+                    <a href="{{ route('analisis.input') }}" class="block px-2 py-1.5 text-sm {{ request()->routeIs('analisis.input') ? 'text-blue-400 font-medium' : 'text-gray-500 hover:text-gray-300' }} transition-colors">Input Data</a>
+                </div>
+            </div>
+
             {{-- Admin only --}}
             @if(auth()->user()->isDireksi())
             <div class="pt-3 mt-2 border-t border-gray-800/50">

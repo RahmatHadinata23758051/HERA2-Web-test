@@ -39,4 +39,27 @@ Route::middleware('auth')->group(function () {
         Route::get('/pengaturan', [\App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
         Route::put('/pengaturan', [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
     });
+
+    // =========================================================
+    // Analisis Data Excel (RQ Risk Quotient) — semua auth user
+    // =========================================================
+    Route::prefix('analisis')->name('analisis.')->group(function () {
+        // Sub-modul per polutan
+        Route::get('/rqnitrat', [\App\Http\Controllers\AnalisisController::class, 'rqNitrat'])->name('rq.nitrat');
+        Route::get('/rqpb',     [\App\Http\Controllers\AnalisisController::class, 'rqPb'])->name('rq.pb');
+        Route::get('/rqcd',     [\App\Http\Controllers\AnalisisController::class, 'rqCd'])->name('rq.cd');
+        Route::get('/rqph',     [\App\Http\Controllers\AnalisisController::class, 'rqPh'])->name('rq.ph');
+        Route::get('/rqf',      [\App\Http\Controllers\AnalisisController::class, 'rqF'])->name('rq.f');
+
+        // Input data manual
+        Route::get('/input',    [\App\Http\Controllers\AnalisisController::class, 'inputData'])->name('input');
+        Route::post('/store',   [\App\Http\Controllers\AnalisisController::class, 'store'])->name('store');
+
+        // Import & Export Excel
+        Route::post('/import',           [\App\Http\Controllers\AnalisisController::class, 'import'])->name('import');
+        Route::get('/export/{type}',     [\App\Http\Controllers\AnalisisController::class, 'export'])->name('export');
+
+        // Delete
+        Route::delete('/{id}', [\App\Http\Controllers\AnalisisController::class, 'destroy'])->name('destroy');
+    });
 });
