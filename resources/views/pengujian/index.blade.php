@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@push('head')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+@endpush
+
 @section('content')
 <div class="space-y-6">
     <!-- Header Section -->
@@ -45,10 +50,12 @@
                         <td class="px-4 py-3 text-sm text-gray-300 font-mono text-center border-r border-gray-700/50">{{ $test->created_at->format('d M Y - H:i') }}</td>
                         <td class="px-4 py-3 text-sm text-gray-200 font-medium whitespace-nowrap text-center border-r border-gray-700/50">{{ optional($test->user)->name ?? 'Unknown' }}</td>
                         <td class="px-4 py-3 text-sm text-blue-400 text-center border-r border-gray-700/50">
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ $test->latitude }},{{ $test->longitude }}" target="_blank" class="hover:underline flex items-center justify-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                {{ number_format($test->latitude, 5) }}, {{ number_format($test->longitude, 5) }}
-                            </a>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="font-mono">{{ number_format($test->latitude, 4) }}, {{ number_format($test->longitude, 4) }}</span>
+                                <button onclick="toggleMap({{ $test->id }}, {{ $test->latitude }}, {{ $test->longitude }})" class="p-1 rounded bg-blue-500/20 text-blue-400 hover:bg-blue-500/40 hover:text-white transition" title="Buka/Tutup Peta">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                </button>
+                            </div>
                         </td>
                         
                         <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center bg-emerald-900/5">{{ $test->ph ?? '-' }}</td>
@@ -61,6 +68,15 @@
 
                         <!-- CR Estimated (Predicted value by ML) -->
                         <td class="px-4 py-3 text-sm font-mono font-bold text-purple-300 text-center bg-purple-900/5">{{ $test->cr_estimated ?? '-' }}</td>
+                    </tr>
+                    
+                    <!-- Accordion Map Row -->
+                    <tr id="map-row-{{ $test->id }}" class="hidden bg-gray-900/30 border-b border-gray-700/50">
+                        <td colspan="11" class="p-4">
+                            <div class="rounded-lg overflow-hidden border border-gray-700" id="map-container-{{ $test->id }}" style="height: 300px; width: 100%;">
+                                <!-- Leaflet Init Point -->
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     <tr>
@@ -84,3 +100,39 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Memori Maps Cache (Biar gak re-init map instansi yang sama)
+    const mapInstances = {};
+
+    function toggleMap(id, lat, lng) {
+        const row = document.getElementById('map-row-' + id);
+        row.classList.toggle('hidden');
+
+        if (!row.classList.contains('hidden')) {
+            // Jika row terbuka, Inisiasi Map secara "Lazy" jika belum ada
+            setTimeout(() => {
+                const mapId = 'map-container-' + id;
+                if (!mapInstances[mapId]) {
+                    const map = L.map(mapId).setView([lat, lng], 16);
+                    
+                    L.tileLayer('http://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                        maxZoom: 20,
+                        attribution: '&copy; <a href="https://www.google.com/maps">Google Maps Satellite</a>'
+                    }).addTo(map);
+
+                    L.marker([lat, lng]).addTo(map)
+                        .bindPopup('<b>Titik Posisi Lapangan</b><br>ID: ' + id)
+                        .openPopup();
+
+                    mapInstances[mapId] = map;
+                } else {
+                    // Update size jika sebelumnya map glitch di hidden div
+                    mapInstances[mapId].invalidateSize();
+                }
+            }, 50); // delay sekejap agar transisi DOM clear
+        }
+    }
+</script>
+@endpush

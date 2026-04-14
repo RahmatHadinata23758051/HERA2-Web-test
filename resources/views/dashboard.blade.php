@@ -662,10 +662,9 @@
         attributionControl: true,
     });
 
-    // Dark tile layer (CartoDB Dark Matter — fits glassmorphism theme)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
+    // Google Maps Satellite layer
+    L.tileLayer('http://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        attribution: '&copy; <a href="https://www.google.com/maps">Google Maps Satellite</a>',
         maxZoom: 20,
     }).addTo(map);
 
