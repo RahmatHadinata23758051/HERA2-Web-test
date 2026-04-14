@@ -1,34 +1,73 @@
 services:
   # -------------------------------------------------------------
-  # Fase 2-6: Commented Out (Menunggu integrasi sistem bertahap)
+  # Infrastruktur Nginx & Web App Laravel
   # -------------------------------------------------------------
   
   # 1. Nginx (Reverse Proxy)
-  # nginx:
-  #   image: nginx:alpine
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www
+    depends_on:
+      - app
 
-  # 2. Backend Laravel
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   restart: unless-stopped
+  # 2. Backend Laravel (PHP-FPM)
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - INFLUXDB_URL=http://influxdb:8686
+      - AI_SERVICE_URL=http://ai_service:8001
+      - MQTT_HOST=mqtt
 
-  # 3. AI Service (FastAPI)
-  # ai_service:
-  #   build:
-  #     context: ../fastapi-model
-  #   ports:
-  #     - "8001:8001"
+  # 3. Worker Antrean (Queue) Laravel
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: php artisan queue:work --tries=3
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    depends_on:
+      - redis
+      - app
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - INFLUXDB_URL=http://influxdb:8686
+      - AI_SERVICE_URL=http://ai_service:8001
+      - MQTT_HOST=mqtt
+
+  # 4. AI Service (FastAPI)
+  ai_service:
+    build:
+      context: ./fastapi-model
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
 
   # 5. PostgreSQL (Relational DB)
-  # postgres:
-  #   image: postgres:15-alpine
-  #   ports:
-  #     - "5432:5432"
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_DATABASE:-hera}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   # 6. Redis (Cache & Queue)
   redis:
@@ -82,3 +121,4 @@ volumes:
   # Define volumes used by active services
   influxdb2_data:
   influxdb2_config:
+  postgres_data:

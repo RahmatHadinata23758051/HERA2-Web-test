@@ -1,0 +1,31 @@
+# Dependensi (akan diinstall ulang di dalam container)
+node_modules
+vendor
+
+# Symlink yang dibuat artisan (tidak bisa di-copy oleh Docker)
+public/storage
+public/hot
+
+# File cache / kompilasi
+bootstrap/cache/*.php
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+
+# File environment sensitif (jangan masuk ke image)
+.env
+.env.*
+
+# File development
+.git
+.gitignore
+.dockerignore
+*.md
+tests
+
+# Build artifacts
+docker
+nginx
+fastapi-model
+hera-python-emulator

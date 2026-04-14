@@ -26,8 +26,9 @@ class ProcessSensorIngestion implements ShouldQueue
     public function handle(InfluxSensorRepository $influxRepo): void
     {
         try {
-            // 1. Minta Prediksi dari AI Service (FastAPI Docker)
-            $response = Http::timeout(5)->post('http://localhost:8001/predict', $this->sensorData);
+            // 1. Minta Prediksi dari AI Service (FastAPI Docker atau Local)
+            $aiUrl = env('AI_SERVICE_URL', 'http://localhost:8001') . '/predict';
+            $response = Http::timeout(5)->post($aiUrl, $this->sensorData);
             
             if ($response->successful()) {
                 $json = $response->json();
