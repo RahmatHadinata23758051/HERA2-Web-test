@@ -84,12 +84,16 @@
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Manrope', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         /* Custom Scrollbar for tables */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Prevent sidebar flash on page load */
+        [x-cloak] { display: none !important; }
         
         .value-update-flash { animation: textFlash 1.5s ease-out; }
         @keyframes textFlash {
@@ -102,7 +106,7 @@
     @stack('head')
 </head>
 
-<body class="bg-background text-on-surface min-h-screen" x-data="{ mobileMenuOpen: false, sidebarOpen: false }">
+<body class="bg-background text-on-surface min-h-screen overflow-x-hidden" x-data="{ mobileMenuOpen: false, sidebarOpen: false }">
 
 <!-- TopNavBar -->
 <header class="bg-white border-b border-surface-container-high flex justify-between items-center w-full px-4 lg:px-8 h-16 max-w-full fixed top-0 z-50 shadow-sm">
@@ -164,8 +168,9 @@
     </div>
 </header>
 
-<!-- SideNavBar -->
-<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-lowest lg:bg-transparent lg:translate-x-0 transition-transform duration-300 ease-in-out z-40 border-r border-surface-container-high lg:flex lg:flex-col p-4 overflow-y-auto hidden-scroll bg-white">
+<!-- SideNavBar: always visible on lg+, toggleable on mobile via translate -->
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+       class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-white -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-40 border-r border-surface-container-high flex flex-col p-4 overflow-y-auto no-scrollbar">
     <div class="mb-6 px-4 py-2">
         <h2 class="text-sm font-bold text-on-surface font-headline uppercase tracking-wider text-primary">Modul Utama</h2>
     </div>
@@ -246,7 +251,7 @@
 <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity class="fixed inset-0 bg-on-surface/20 z-30 lg:hidden" style="display:none;"></div>
 
 <!-- Main Content Area -->
-<main class="lg:ml-64 pt-24 pb-12 px-4 sm:px-8 min-h-screen relative z-10 w-full overflow-x-hidden">
+<main class="lg:ml-64 pt-20 pb-12 px-4 sm:px-6 lg:px-8 min-h-screen relative z-10 w-full overflow-x-hidden">
     <!-- Optional: Subtle Background Patterns -->
     <div class="fixed top-0 right-0 w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-[-1]"></div>
     
