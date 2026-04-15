@@ -75,7 +75,11 @@
                     <div class="hidden md:block">
                         <div x-data="{ userMenu: false }" @click.away="userMenu = false" class="relative">
                             <button @click="userMenu = !userMenu" class="flex items-center gap-2 pl-3 pr-2 py-1 rounded-full hover:bg-gray-800/60 transition-colors border border-transparent hover:border-gray-700/50 focus:outline-none">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&rounded=true" alt="Avatar" class="w-7 h-7 rounded-full ring-1 ring-gray-700">
+                                @if(auth()->user()->picture)
+                                    <img src="{{ asset('storage/' . auth()->user()->picture) }}" alt="Avatar" class="w-7 h-7 rounded-full object-cover ring-1 ring-gray-700">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&rounded=true" alt="Avatar" class="w-7 h-7 rounded-full ring-1 ring-gray-700">
+                                @endif
                                 <svg class="w-4 h-4 text-gray-400 transition-transform" :class="userMenu ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
                             
