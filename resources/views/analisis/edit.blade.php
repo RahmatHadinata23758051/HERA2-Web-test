@@ -2,19 +2,32 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
-    <div>
+
+    {{-- Page Header --}}
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-surface-container-high">
         <div class="flex items-center gap-3">
-            <a href="{{ route('analisis.rq.' . $record->pollutant_type) }}" class="p-1.5 rounded-lg bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <a href="{{ route('analisis.rq.' . $record->pollutant_type) }}"
+               class="p-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
             </a>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Edit Data Responden #{{ $record->id }}</h1>
+            <div>
+                <h2 class="text-2xl font-extrabold tracking-tight text-on-surface font-headline">
+                    Edit Responden <span class="text-primary">#{{ $record->id }}</span>
+                </h2>
+                <p class="text-on-surface-variant text-sm mt-0.5">Ubah parameter untuk merubah hasil kalkulasi Intake & Risk Quotient.</p>
+            </div>
         </div>
-        <p class="text-gray-400 text-sm mt-1 ml-10">Ubah parameter untuk merubah hasil kalkulasi Intake & Risk Quotient.</p>
     </div>
 
+    {{-- Error Alert --}}
     @if($errors->any())
-    <div class="p-4 bg-red-900/40 border border-red-500/50 rounded-xl">
-        <ul class="list-disc list-inside text-sm text-red-300 space-y-1">
+    <div class="p-4 bg-error-container border border-error/30 rounded-xl flex items-start gap-3">
+        <svg class="w-5 h-5 text-error flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <ul class="list-disc list-inside text-sm text-error space-y-0.5">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
@@ -22,19 +35,26 @@
     </div>
     @endif
 
-    <div class="glass-card rounded-xl border border-gray-800/60 overflow-hidden shadow-xl">
-        <div class="bg-gray-800/40 border-b border-gray-700/50 px-6 py-4">
-            <h3 class="font-medium text-gray-200">Formulator Ubah Data</h3>
+    {{-- Form Card --}}
+    <div class="bg-white rounded-xl border border-surface-container-high overflow-hidden shadow-sm">
+        
+        {{-- Card Header --}}
+        <div class="bg-surface-container-lowest border-b border-surface-container-high px-6 py-4 flex items-center justify-between">
+            <h3 class="font-bold text-on-surface text-sm font-headline">Formulir Ubah Data</h3>
+            <span class="text-xs font-bold text-on-surface-variant bg-surface-container px-2.5 py-1 rounded-full">
+                ID #{{ $record->id }}
+            </span>
         </div>
         
         <form action="{{ route('analisis.update', $record->id) }}" method="POST" class="p-6 space-y-6">
             @csrf
             @method('PUT')
 
-            <!-- Block 1 -->
+            {{-- Polutan Selector --}}
             <div>
-                <label class="block text-sm font-medium text-gray-300 mb-2">Target Polutan</label>
-                <select name="pollutant_type" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                <label class="block text-sm font-bold text-on-surface mb-1.5">Target Polutan</label>
+                <select name="pollutant_type" required
+                        class="w-full bg-white border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all text-sm">
                     <option value="" disabled>Pilih Polutan...</option>
                     @foreach(\App\Models\RqAnalysis::$pollutantLabels as $key => $label)
                         <option value="{{ $key }}" {{ $record->pollutant_type === $key ? 'selected' : '' }}>
@@ -44,63 +64,74 @@
                 </select>
             </div>
 
-            <hr class="border-gray-800">
+            <hr class="border-surface-container-high">
 
-            <!-- Block 2 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- Two Column Grid --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                {{-- Informasi Responden --}}
                 <div class="space-y-4">
-                    <h4 class="text-sm font-semibold text-blue-400 uppercase tracking-widest">Informasi Responden</h4>
+                    <h4 class="text-xs font-black text-primary uppercase tracking-widest border-b border-primary/20 pb-2">
+                        Informasi Responden
+                    </h4>
                     
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Nama Subjek</label>
-                        <input type="text" name="nama" value="{{ old('nama', $record->nama) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Nama Subjek</label>
+                        <input type="text" name="nama" value="{{ old('nama', $record->nama) }}" required
+                               class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                     </div>
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Umur (tahun)</label>
-                        <input type="number" step="1" name="umur" value="{{ old('umur', $record->umur) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Umur (tahun)</label>
+                        <input type="number" step="1" name="umur" value="{{ old('umur', $record->umur) }}" required
+                               class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                     </div>
                     <div>
-                        <label class="block text-sm text-gray-400 mb-1">Berat Badan - Wb (kg)</label>
-                        <input type="number" step="0.1" name="wb" value="{{ old('wb', $record->wb) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none focus:border-blue-500 transition-colors">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-1.5">Berat Badan — Wb (kg)</label>
+                        <input type="number" step="0.1" name="wb" value="{{ old('wb', $record->wb) }}" required
+                               class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                     </div>
                 </div>
 
+                {{-- Variabel Rumus --}}
                 <div class="space-y-4">
-                    <h4 class="text-sm font-semibold text-emerald-400 uppercase tracking-widest">Variabel Rumus</h4>
-                    
-                    <div class="grid grid-cols-2 gap-4">
+                    <h4 class="text-xs font-black text-secondary uppercase tracking-widest border-b border-secondary/20 pb-2">
+                        Variabel Rumus
+                    </h4>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        @php
+                            $varFields = [
+                                ['name'=>'c',        'label'=>'Konsentrasi (C)',     'step'=>'0.0001',   'value'=> $record->c],
+                                ['name'=>'r',        'label'=>'Laju Asupan (R)',     'step'=>'0.01',     'value'=> $record->r],
+                                ['name'=>'f',        'label'=>'Frekuensi (f) /th',   'step'=>'1',        'value'=> $record->f],
+                                ['name'=>'rfd',      'label'=>'RfD (Dosis Acuan)',    'step'=>'0.000001', 'value'=> $record->rfd],
+                                ['name'=>'tavg',     'label'=>'Waktu Avg (tavg)',     'step'=>'1',        'value'=> $record->tavg],
+                                ['name'=>'dt_input', 'label'=>'Durasi Pajanan (Dt)', 'step'=>'1',        'value'=> $record->dt_input],
+                            ];
+                        @endphp
+                        @foreach($varFields as $field)
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">Konsentrasi (C)</label>
-                            <input type="number" step="0.0001" name="c" value="{{ old('c', $record->c) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-emerald-500">
+                            <label class="block text-xs font-medium text-on-surface-variant mb-1.5">{{ $field['label'] }}</label>
+                            <input type="number" step="{{ $field['step'] }}" name="{{ $field['name'] }}"
+                                   value="{{ old($field['name'], $field['value']) }}" required
+                                   class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-3 py-2 text-on-surface text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Laju Asupan (R)</label>
-                            <input type="number" step="0.01" name="r" value="{{ old('r', $record->r) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Frekuensi (f) /th</label>
-                            <input type="number" step="1" name="f" value="{{ old('f', $record->f) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">RfD (Dosis acuan)</label>
-                            <input type="number" step="0.000001" name="rfd" value="{{ old('rfd', $record->rfd) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Waktu Avg (tavg)</label>
-                            <input type="number" step="1" name="tavg" value="{{ old('tavg', $record->tavg) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Durasi Pajanan (Dt)</label>
-                            <input type="number" step="1" name="dt_input" value="{{ old('dt_input', $record->dt_input) }}" required class="w-full bg-gray-900/50 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-emerald-500">
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
 
-            <div class="pt-4 flex justify-end gap-3 border-t border-gray-800">
-                <a href="{{ route('analisis.rq.' . $record->pollutant_type) }}" class="px-5 py-2 rounded-lg border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors">Batal</a>
-                <button type="submit" class="px-5 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 shadow-lg shadow-blue-500/20 transition-colors flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            {{-- Form Actions --}}
+            <div class="pt-4 flex justify-end gap-3 border-t border-surface-container-high">
+                <a href="{{ route('analisis.rq.' . $record->pollutant_type) }}"
+                   class="px-5 py-2.5 rounded-lg border border-surface-container-high text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-medium">
+                    Batal
+                </a>
+                <button type="submit"
+                        class="px-5 py-2.5 rounded-lg bg-primary text-on-primary font-bold hover:brightness-110 shadow-sm transition-all text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                    </svg>
                     Simpan Perubahan
                 </button>
             </div>
