@@ -108,40 +108,38 @@
     <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden rounded-xl bg-surface-container-lowest botanical-shadow">
         
         <!-- Left Side: Visual/Brand Side (Clinical Conservatory Aesthetic) -->
-        <div class="hidden lg:flex lg:col-span-5 biological-gradient relative flex-col justify-between p-12 text-on-primary">
-            <div class="relative z-10">
-                <div class="mb-8">
-                    <p class="text-[10px] uppercase tracking-[0.2em] text-primary-fixed/60 font-bold mb-3">{{ $app_settings['app_institution'] ?? 'Institutional Partner' }}</p>
+        <div class="hidden lg:flex lg:col-span-5 biological-gradient relative flex-col justify-between p-8 text-on-primary">
+            
+            <div class="relative z-10 flex flex-col items-center text-center mt-8">
+                <div class="mb-8 flex flex-col items-center">
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-primary-fixed/60 font-bold mb-4">{{ $app_settings['app_institution'] ?? 'Institutional Partner' }}</p>
                     @if(!empty($app_settings['app_logo']))
-                        <div class="w-auto inline-block h-16 bg-white shrink-0 rounded-lg p-2.5 shadow-lg border border-white/20">
+                        <div class="w-auto inline-block h-32 bg-white shrink-0 rounded-2xl p-4 shadow-2xl border border-white/20">
                             <img src="{{ asset($app_settings['app_logo']) }}" alt="Institution Logo" class="h-full w-auto object-contain">
                         </div>
                     @else
-                        <div class="w-32 h-12 border-2 border-dashed border-white/20 rounded flex items-center justify-center">
-                            <span class="material-symbols-outlined text-white/30 text-2xl">domain</span>
+                        <div class="w-40 h-40 border-2 border-dashed border-white/20 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white/30 text-5xl">domain</span>
                         </div>
                     @endif
                 </div>
-                <div class="flex items-center gap-2 mb-10">
-                    <span class="material-symbols-outlined text-4xl" data-icon="clinical_notes">clinical_notes</span>
-                    <span class="text-2xl font-black tracking-tighter">HERA 2.0</span>
-                </div>
-                <h1 class="text-4xl font-extrabold leading-tight mb-6">
-                    Precision Monitoring <br/> for Vital Ecosystems.
-                </h1>
-                <p class="text-primary-fixed opacity-90 text-lg leading-relaxed max-w-sm">
-                    Advanced clinical water analysis and system health monitoring in a unified, high-integrity platform.
+                
+                <h1 class="text-5xl font-black tracking-tighter mb-1">HERA</h1>
+                <h2 class="text-md uppercase tracking-[0.1em] font-bold text-white mb-6">Heavy Element Risk Analyzer</h2>
+                
+                <p class="text-primary-fixed opacity-90 text-sm leading-relaxed max-w-sm">
+                    Platform pemantauan kualitas air dan analisis risiko bahan kimia berbahaya terintegrasi secara cerdas dan <i>real-time</i>.
                 </p>
             </div>
             
             <!-- Bottom decorative element/Social proof -->
-            <div class="relative z-10 space-y-6">
-                <div class="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/10">
-                    <div class="flex items-center gap-4 mb-4">
-                        <span class="material-symbols-outlined text-primary-fixed" data-icon="verified_user">verified_user</span>
-                        <span class="text-sm font-semibold uppercase tracking-wider">Enterprise Security</span>
+            <div class="relative z-10 flex justify-center mt-0">
+                <div class="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/10 max-w-sm text-left">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="material-symbols-outlined text-primary-fixed text-sm" data-icon="verified_user">verified_user</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">Enterprise Security</span>
                     </div>
-                    <p class="text-sm opacity-80">
+                    <p class="text-xs opacity-80 leading-relaxed">
                         End-to-end encryption for sensitive clinical data and automated compliance reporting.
                     </p>
                 </div>
@@ -154,7 +152,7 @@
         </div>
 
         <!-- Right Side: Authentication Form -->
-        <div class="lg:col-span-7 flex flex-col justify-center p-8 md:p-16 lg:p-24 bg-surface-container-lowest relative z-10">
+        <div class="lg:col-span-7 flex flex-col justify-center p-8 lg:p-12 bg-surface-container-lowest relative z-10">
             <div class="max-w-md w-full mx-auto">
                 <!-- Mobile Logo (Hidden on desktop) -->
                 <div class="flex lg:hidden items-center gap-2 mb-12">
@@ -198,7 +196,6 @@
                     <div class="space-y-2">
                         <div class="flex justify-between items-center px-1">
                             <label class="text-sm font-semibold text-on-surface-variant" for="password">Password</label>
-                            <a class="text-xs font-bold text-primary hover:underline transition-all" href="#">Forgot?</a>
                         </div>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -230,12 +227,9 @@
                 </form>
 
                 <!-- Footer Links -->
-                <div class="mt-12 pt-8 border-t border-surface-container-high flex flex-col sm:flex-row justify-between items-center gap-4 text-sm font-medium text-on-surface-variant">
-                    <span>New to the platform? <a class="text-primary font-bold hover:underline" href="#">Contact Admin</a></span>
-                    <div class="flex gap-6">
-                        <a class="hover:text-on-surface transition-colors" href="#">Privacy</a>
-                        <a class="hover:text-on-surface transition-colors" href="#">Terms</a>
-                    </div>
+                <div class="mt-8 pt-6 border-t border-surface-container-high flex items-center justify-end gap-6 text-sm font-medium text-on-surface-variant">
+                    <a class="hover:text-on-surface transition-colors" href="#">Privacy</a>
+                    <a class="hover:text-on-surface transition-colors" href="#">Terms</a>
                 </div>
             </div>
 
