@@ -147,7 +147,7 @@
             
             <!-- Subtle Organic Texture Overlay -->
             <div class="absolute inset-0 opacity-20 pointer-events-none">
-                <img alt="Macro photography of clean water ripples" class="w-full h-full object-cover mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbmxlnXaB9dhfs0QJeTcNDgWV7oS69MgjO0ytZ38stj1HekopLhlqHoNPAakoa8Xvb0bM8KzlQOoVHQ-9veU2M6qpCQbGTtTAUSXWv84neDg54-0IYLnNXXn-Ts7hQNVhZPY9l7Dqm64vBdQYkbx5PfUFxTlnfh3HhT7jltrfctAqiJ-BshdWxhHw7S2W2X5ehBp2uo-hHWhTXg8kK1dWrjqqPafFA4gPKcTrheFoNm3XA-Kn_gkQfdN-hzfkM7pYWMGZHpNYMSbo"/>
+                <img alt="Macro photography of clean water ripples" class="w-full h-full object-cover mix-blend-overlay" src="{{ asset('img/water_overlay.jpg') }}"/>
             </div>
         </div>
 
