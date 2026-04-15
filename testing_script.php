@@ -17,8 +17,8 @@ try {
 
 echo "\n\n--- 2. TEST PAYLOAD SUKSES (Valid API Simulation) ---\n";
 $goodRequest = Illuminate\Http\Request::create('/api/mobile/testing/location', 'POST', [
-    'latitude' => -6.914744,
-    'longitude' => 107.609808,
+    'latitude' => -5.358139,
+    'longitude' => 105.232986,
     'suhu_air' => 28.5,
     'suhu_lingkungan' => 33.1,
     'kelembapan' => 81.0,

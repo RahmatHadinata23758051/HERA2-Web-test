@@ -197,26 +197,76 @@
     function addMarkerToMap(id, lat, lng) {
         if (!mainMap) return;
         
+        // Desain icon modern, minimalis & clean dengan animasi pulse bawaan CSS
         const customIcon = L.divIcon({
-            html: `<div style="position: relative; width: 56px; height: 68px; display: flex; align-items: center; justify-content: center;"><svg width="56" height="68" viewBox="0 0 56 68" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"><defs><linearGradient id="pinBody${id}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" /><stop offset="50%" style="stop-color:#0d9488;stop-opacity:1" /><stop offset="100%" style="stop-color:#0f766e;stop-opacity:1" /></linearGradient><filter id="shadow${id}" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3"/></filter></defs><g filter="url(#shadow${id})"><path d="M28 3 C38.5 3 47 10 47 20 C47 32 28 62 28 62 C28 62 9 32 9 20 C9 10 17.5 3 28 3 Z" fill="url(#pinBody${id})" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/></g><circle cx="28" cy="20" r="11" fill="white" opacity="1" stroke="#0d9488" stroke-width="1.5"/><circle cx="28" cy="20" r="7" fill="#14b8a6"/><circle cx="26" cy="18" r="2.5" fill="white" opacity="0.8"/></svg></div>`,
-            iconSize: [56, 68],
-            iconAnchor: [28, 62]
+            className: '', // Kosongkan nama class bawaan leaflet agar styling murni kita
+            html: `
+                <div class="modern-marker-container">
+                    <div class="modern-marker-pulse"></div>
+                    <div class="modern-marker-dot"></div>
+                </div>
+            `,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20],
+            popupAnchor: [0, -10]
         });
 
         const marker = L.marker([lat, lng], { icon: customIcon }).addTo(mainMap);
         markers[id] = marker;
         
-        marker.getElement().style.cursor = 'pointer';
-        marker.getElement().style.transition = 'all 0.2s ease';
-        marker.getElement().addEventListener('mouseenter', function() {
-            marker.getElement().style.transform = 'scale(1.15)';
-            marker.getElement().style.filter = 'drop-shadow(0 8px 16px rgba(20, 184, 166, 0.5))';
-        });
-        marker.getElement().addEventListener('mouseleave', function() {
-            marker.getElement().style.transform = 'scale(1)';
-            marker.getElement().style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))';
-        });
+        // HAPUS event listener style.transform JS karena Leaflet menggunakan transform translate3d untuk posisi absolutnya!
+        // (Menggeser style.transform via JS akan menghapus translate3d Leaflet yang membuat marker lari/kabur).
+        // Efek hover sekarang murni diserahkan pada CSS internal "modern-marker-dot" agar 100% aman dan mulus.
     }
+</script>
+
+<style>
+/* Desain UI CSS Marker Modern Clean */
+.modern-marker-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.modern-marker-dot {
+    width: 14px;
+    height: 14px;
+    background-color: #10b981; /* emerald-500 */
+    border: 3px solid #064e3b; /* emerald-900 border untuk efek solid */
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-marker-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(16, 185, 129, 0.4);
+    border-radius: 50%;
+    z-index: 1;
+    animation: markerPulse 2s infinite ease-out;
+}
+
+/* Transisi Halus pada Hover, Membesarkan titik bagian dalam tanpa merusak parent box / translate3D */
+.modern-marker-container:hover .modern-marker-dot {
+    transform: scale(1.6);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.9);
+    background-color: #34d399; /* emerald lebih terang */
+    border-color: #ffffff;
+}
+
+@keyframes markerPulse {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(2.2); opacity: 0; }
+}
+</style>
 
     function jumpToMarker(id, lat, lng) {
         if (mainMap) {
