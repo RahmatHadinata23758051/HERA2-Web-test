@@ -18,13 +18,13 @@ try {
 echo "\n\n--- 2. TEST PAYLOAD SUKSES (Valid API Simulation) ---\n";
 $goodRequest = Illuminate\Http\Request::create('/api/mobile/testing/location', 'POST', [
     'latitude' => -6.914744,
-    'longitude' => 107.609810,
+    'longitude' => 107.609808,
     'suhu_air' => 28.5,
-    'suhu_lingkungan' => 30.1,
-    'kelembapan' => 85.0,
-    'ec' => 450,
-    'tds' => 300,
-    'ph' => 7.5,
+    'suhu_lingkungan' => 33.1,
+    'kelembapan' => 81.0,
+    'ec' => 41,
+    'tds' => 230,
+    'ph' => 4.5,
     'tegangan' => 3.9
 ]);
 $goodRequest->setUserResolver(function () use ($user) { return $user; });
