@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
             [
                 'name'     => 'Direksi HERA',
                 'email'    => env('ADMIN_EMAIL', 'direksi@hera.ac.id'),
-                'password' => Hash::make(env('ADMIN_PASSWORD', 'hera12345')),
+                'password' => Hash::make(env('ADMIN_PASSWORD', 'test12345')),
                 'role'     => 'direksi',
             ]
         );
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             [
                 'name'     => 'Petugas Monitoring',
                 'email'    => 'petugas@hera.ac.id',
-                'password' => Hash::make('hera12345'),
+                'password' => Hash::make('test12345'),
                 'role'     => 'petugas',
             ]
         );
