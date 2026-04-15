@@ -7,120 +7,125 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Header Section -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+    {{-- Header --}}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl shadow-sm border border-surface-container-high">
         <div>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Laporan Data Pengujian Lapangan</h1>
-            <p class="text-gray-400 text-sm mt-1">Rekam jejak spesifik pembacaan sensor yang divalidasi langsung di lapangan melalui perangkat Mobile.</p>
+            <h2 class="text-2xl font-extrabold tracking-tight text-on-surface font-headline">Laporan Pengujian Lapangan</h2>
+            <p class="text-on-surface-variant text-sm mt-1">Rekam jejak pembacaan sensor yang divalidasi langsung di lapangan melalui perangkat Mobile.</p>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface-container rounded-lg px-3 py-2 border border-surface-container-high">
+            <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+            <span class="font-bold">{{ $tests->total() }} titik</span> terekam
         </div>
     </div>
 
-    <!-- Tab Navigation -->
-    <div class="flex gap-2 border-b border-gray-700">
-        <button id="tab-table" onclick="switchTab('table')" class="px-6 py-3 font-semibold text-white border-b-2 border-emerald-500 transition-all hover:text-emerald-400">
-            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-            Tabel Data
-        </button>
-        <button id="tab-maps" onclick="switchTab('maps')" class="px-6 py-3 font-semibold text-gray-400 border-b-2 border-transparent hover:text-white transition-all">
-            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 16.382V5.618a1 1 0 00-1.447-.894L15 7m0 13V7m0 0L9 4"></path></svg>
-            Peta Pengujian
-        </button>
-    </div>
+    {{-- Tab Navigation --}}
+    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
+        <div class="flex border-b border-surface-container-high">
+            <button id="tab-table" onclick="switchTab('table')"
+                    class="flex items-center gap-2 px-6 py-3.5 text-sm font-bold text-primary border-b-2 border-primary transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                Tabel Data
+            </button>
+            <button id="tab-maps" onclick="switchTab('maps')"
+                    class="flex items-center gap-2 px-6 py-3.5 text-sm font-medium text-on-surface-variant border-b-2 border-transparent hover:text-primary hover:border-primary/40 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 16.382V5.618a1 1 0 00-1.447-.894L15 7m0 13V7m0 0L9 4"/></svg>
+                Peta Pengujian
+            </button>
+        </div>
 
-    <!-- Tab 1: Tabel Data View -->
-    <div id="view-table" class="tab-view">
-        <div class="glass-card rounded-xl overflow-hidden border border-gray-800/60 shadow-2xl">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[1200px]">
-                    <thead>
-                        <tr class="bg-gray-800/80 border-b border-gray-700">
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center border-r border-gray-700/50">Waktu Validasi</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center border-r border-gray-700/50">Nama Petugas</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center border-r border-gray-700/50">Koordinat GPS</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-emerald-300 uppercase tracking-wider text-center border-b border-r border-gray-700/50 bg-emerald-900/10" colspan="7">Data Sensor Terkalibrasi</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-purple-300 uppercase tracking-wider text-center border-b border-gray-700/50 bg-purple-900/10">Prediksi AI</th>
-                        </tr>
-                        <tr class="bg-gray-800/50 border-b border-gray-700">
-                            <!-- Empty Headers for Spanning -->
-                            <th class="px-4 py-2 border-r border-gray-700/50"></th>
-                            <th class="px-4 py-2 border-r border-gray-700/50"></th>
-                            <th class="px-4 py-2 border-r border-gray-700/50"></th>
-                            <!-- Metrics -->
-                            <th class="px-4 py-2 text-xs font-medium text-emerald-400 whitespace-nowrap text-center">pH</th>
-                            <th class="px-4 py-2 text-xs font-medium text-emerald-400 whitespace-nowrap text-center">TDS (ppm)</th>
-                            <th class="px-4 py-2 text-xs font-medium text-emerald-400 whitespace-nowrap text-center">EC (mS)</th>
-                            <th class="px-4 py-2 text-xs font-medium text-emerald-400 whitespace-nowrap text-center">Suhu Air (°C)</th>
-                            <th class="px-4 py-2 text-xs font-medium text-emerald-400 whitespace-nowrap text-center">Suhu Udr (°C)</th>
-                            <th class="px-4 py-2 text-xs font-medium text-emerald-400 whitespace-nowrap text-center">Kelembapan (%)</th>
-                            <th class="px-4 py-2 text-xs font-medium text-emerald-400 whitespace-nowrap text-center border-r border-gray-700/50">Tegangan (V)</th>
-                            <!-- ML -->
-                            <th class="px-4 py-2 text-xs font-medium text-purple-400 whitespace-nowrap text-center">CR Est. (mg/L)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-800/50">
-                        @forelse($tests as $test)
-                        <tr class="hover:bg-gray-800/30 transition-colors">
-                            <td class="px-4 py-3 text-sm text-gray-300 font-mono text-center border-r border-gray-700/50">{{ $test->created_at->format('d M Y - H:i') }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-200 font-medium whitespace-nowrap text-center border-r border-gray-700/50">{{ optional($test->user)->name ?? 'Unknown' }}</td>
-                            <td class="px-4 py-3 text-sm text-blue-400 text-center border-r border-gray-700/50">
-                                <span class="font-mono">{{ number_format($test->latitude, 4) }}, {{ number_format($test->longitude, 4) }}</span>
-                            </td>
-                            
-                            <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center bg-emerald-900/5">{{ $test->ph ?? '-' }}</td>
-                            <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center bg-emerald-900/5">{{ $test->tds ?? '-' }}</td>
-                            <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center bg-emerald-900/5">{{ $test->ec ?? '-' }}</td>
-                            <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center bg-emerald-900/5">{{ $test->suhu_air ?? '-' }}</td>
-                            <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center bg-emerald-900/5">{{ $test->suhu_lingkungan ?? '-' }}</td>
-                            <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center bg-emerald-900/5">{{ $test->kelembapan ?? '-' }}</td>
-                            <td class="px-4 py-3 text-sm font-mono text-emerald-200 text-center border-r border-gray-700/50 bg-emerald-900/5">{{ $test->tegangan ?? '-' }}</td>
+        {{-- Tab 1: Tabel Data --}}
+        <div id="view-table" class="tab-view overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[1200px]">
+                <thead>
+                    {{-- Group row --}}
+                    <tr class="border-b border-surface-container-high bg-surface-container-low">
+                        <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Waktu Validasi</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Nama Petugas</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Koordinat GPS</th>
+                        <th colspan="7" class="px-4 py-2.5 text-[10px] font-black text-emerald-700 uppercase tracking-widest text-center border-b border-r border-surface-container-high bg-emerald-50">Data Sensor Terkalibrasi</th>
+                        <th class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
+                    </tr>
+                    {{-- Sub-column row --}}
+                    <tr class="border-b-2 border-surface-container-high bg-surface-container-low text-[10px] font-bold uppercase tracking-wider">
+                        <th class="px-4 py-2 border-r border-surface-container-high"></th>
+                        <th class="px-4 py-2 border-r border-surface-container-high"></th>
+                        <th class="px-4 py-2 border-r border-surface-container-high"></th>
+                        <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center">pH</th>
+                        <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center">TDS (ppm)</th>
+                        <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center">EC (mS)</th>
+                        <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Suhu Air (°C)</th>
+                        <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Suhu Udr (°C)</th>
+                        <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Kelembapan (%)</th>
+                        <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center border-r border-surface-container-high whitespace-nowrap">Tegangan (V)</th>
+                        <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap">CR Est. (mg/L)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container-high">
+                    @forelse($tests as $test)
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="px-4 py-3 text-xs text-on-surface-variant font-mono text-center border-r border-surface-container-high whitespace-nowrap">{{ $test->created_at->format('d M Y - H:i') }}</td>
+                        <td class="px-4 py-3 text-sm text-on-surface font-bold text-center border-r border-surface-container-high whitespace-nowrap">{{ optional($test->user)->name ?? 'Unknown' }}</td>
+                        <td class="px-4 py-3 text-xs text-primary font-mono text-center border-r border-surface-container-high">
+                            {{ number_format($test->latitude, 4) }}, {{ number_format($test->longitude, 4) }}
+                        </td>
+                        <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->ph ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->tds ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->ec ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->suhu_air ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->suhu_lingkungan ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->kelembapan ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center border-r border-surface-container-high bg-emerald-50/40">{{ $test->tegangan ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono font-bold text-purple-700 text-center bg-purple-50/40">{{ $test->cr_estimated ?? '-' }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="11" class="px-4 py-16 text-center">
+                            <div class="flex flex-col items-center gap-3">
+                                <div class="p-4 bg-surface-container rounded-full">
+                                    <svg class="h-10 w-10 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                </div>
+                                <p class="font-bold text-on-surface">Belum ada Riwayat Pengujian Lapangan.</p>
+                                <p class="text-sm text-on-surface-variant max-w-sm text-center">Gunakan aplikasi mobile dan tekan tombol <span class="font-bold text-primary">"Simpan Data Pengujian"</span> di lokasi rujukan.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
 
-                            <!-- CR Estimated (Predicted value by ML) -->
-                            <td class="px-4 py-3 text-sm font-mono font-bold text-purple-300 text-center bg-purple-900/5">{{ $test->cr_estimated ?? '-' }}</td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="11" class="px-4 py-12 text-center text-gray-500">
-                                <svg class="mx-auto h-12 w-12 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                <p class="text-lg font-medium">Belum ada Riwayat Pengujian Lapangan.</p>
-                                <p class="mt-1">Gunakan aplikasi mobile dan tekan tombol "Simpan Data Pengujian" di lokasi rujukan untuk mengisi riwayat ini.</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Pagination Links -->
+            {{-- Pagination --}}
             @if($tests->hasPages())
-            <div class="px-4 py-3 border-t border-gray-800 bg-gray-900/50">
+            <div class="px-5 py-4 border-t border-surface-container-high bg-surface-container-lowest">
                 {{ $tests->links() }}
             </div>
             @endif
         </div>
-    </div>
 
-    <!-- Tab 2: Peta Pengujian View -->
-    <div id="view-maps" class="tab-view hidden">
-        <div class="glass-card rounded-xl overflow-hidden border border-gray-800/60 shadow-2xl" style="height: 600px;">
+        {{-- Tab 2: Peta Pengujian --}}
+        <div id="view-maps" class="tab-view hidden" style="height: 600px;">
             <div class="flex h-full">
-                <!-- Maps Container (Left) -->
-                <div class="flex-1 border-r border-gray-700">
+                {{-- Map (Left) --}}
+                <div class="flex-1 border-r border-surface-container-high">
                     <div id="map-container-main" style="width: 100%; height: 100%;"></div>
                 </div>
 
-                <!-- Sidebar List (Right) -->
-                <div class="w-80 bg-gray-800/80 border-l border-gray-700 overflow-y-auto">
-                    <div class="p-4 space-y-3">
-                        <h3 class="text-base font-bold text-white mb-4 border-b border-gray-700 pb-3">Daftar Titik Pengujian</h3>
+                {{-- Sidebar List (Right) --}}
+                <div class="w-72 bg-surface-container-lowest border-l border-surface-container-high overflow-y-auto no-scrollbar">
+                    <div class="p-4 space-y-2.5">
+                        <h3 class="text-sm font-black text-on-surface uppercase tracking-widest border-b border-surface-container-high pb-3 mb-4">
+                            Daftar Titik Pengujian
+                        </h3>
                         @forelse($tests as $test)
-                        <div class="marker-item bg-gray-700/40 rounded-lg p-3 border-l-4 border-emerald-500 cursor-pointer hover:bg-gray-700/60 transition" 
+                        <div class="marker-item bg-white rounded-xl p-3.5 border border-surface-container-high border-l-4 border-l-primary cursor-pointer hover:shadow-md hover:border-primary/40 transition-all"
                              onclick="jumpToMarker({{ $test->id }}, {{ $test->latitude }}, {{ $test->longitude }})">
-                            <p class="text-xs text-gray-400 mb-1">{{ $test->created_at->format('d M Y, H:i') }}</p>
-                            <p class="text-sm font-semibold text-white">{{ optional($test->user)->name ?? 'Unknown' }}</p>
-                            <p class="text-xs text-blue-400 font-mono mt-1">{{ number_format($test->latitude, 4) }}, {{ number_format($test->longitude, 4) }}</p>
+                            <p class="text-xs text-on-surface-variant font-mono mb-1">{{ $test->created_at->format('d M Y, H:i') }}</p>
+                            <p class="text-sm font-bold text-on-surface">{{ optional($test->user)->name ?? 'Unknown' }}</p>
+                            <p class="text-xs text-primary font-mono mt-1">{{ number_format($test->latitude, 4) }}, {{ number_format($test->longitude, 4) }}</p>
                         </div>
                         @empty
-                        <p class="text-center text-gray-500 py-8">Belum ada data pengujian</p>
+                        <p class="text-center text-on-surface-variant text-sm py-8">Belum ada data pengujian</p>
                         @endforelse
                     </div>
                 </div>
@@ -136,32 +141,26 @@
     const markers = {};
 
     function switchTab(tab) {
-        // Toggle visibility
         document.getElementById('view-table').classList.toggle('hidden', tab !== 'table');
         document.getElementById('view-maps').classList.toggle('hidden', tab !== 'maps');
-        
-        // Update tab styles
+
         const updateTabStyle = (id, active) => {
             const btn = document.getElementById(id);
             if (active) {
-                btn.classList.remove('border-transparent', 'text-gray-400');
-                btn.classList.add('border-emerald-500', 'text-white');
+                btn.classList.remove('border-transparent', 'text-on-surface-variant', 'font-medium');
+                btn.classList.add('border-primary', 'text-primary', 'font-bold');
             } else {
-                btn.classList.remove('border-emerald-500', 'text-white');
-                btn.classList.add('border-transparent', 'text-gray-400');
+                btn.classList.remove('border-primary', 'text-primary', 'font-bold');
+                btn.classList.add('border-transparent', 'text-on-surface-variant', 'font-medium');
             }
         };
-        
         updateTabStyle('tab-table', tab === 'table');
-        updateTabStyle('tab-maps', tab === 'maps');
-        
+        updateTabStyle('tab-maps',  tab === 'maps');
+
         if (tab === 'maps') {
             setTimeout(() => {
-                if (!mainMap) {
-                    initializeMainMap();
-                } else {
-                    mainMap.invalidateSize(true);
-                }
+                if (!mainMap) { initializeMainMap(); }
+                else { mainMap.invalidateSize(true); }
             }, 150);
         }
     }
@@ -169,10 +168,7 @@
     function initializeMainMap() {
         try {
             const mapContainer = document.getElementById('map-container-main');
-            if (!mapContainer) {
-                console.error('Map container not found');
-                return;
-            }
+            if (!mapContainer) return;
 
             const defaultLat = {{ $tests->first()?->latitude ?? -6.2088 }};
             const defaultLng = {{ $tests->first()?->longitude ?? 106.8456 }};
@@ -186,20 +182,20 @@
 
             @foreach($tests as $test)
             addMarkerToMap(
-                {{ $test->id }}, 
-                {{ $test->latitude }}, 
+                {{ $test->id }},
+                {{ $test->latitude }},
                 {{ $test->longitude }},
                 {
                     timestamp: '{{ $test->created_at->format('d M Y, H:i') }}',
-                    officer: '{{ addslashes(optional($test->user)->name ?? 'Unknown') }}',
-                    ph: '{{ $test->ph ?? '-' }}',
-                    tds: '{{ $test->tds ?? '-' }}',
-                    ec: '{{ $test->ec ?? '-' }}',
-                    suhu_air: '{{ $test->suhu_air ?? '-' }}',
+                    officer:   '{{ addslashes(optional($test->user)->name ?? 'Unknown') }}',
+                    ph:        '{{ $test->ph ?? '-' }}',
+                    tds:       '{{ $test->tds ?? '-' }}',
+                    ec:        '{{ $test->ec ?? '-' }}',
+                    suhu_air:  '{{ $test->suhu_air ?? '-' }}',
                     suhu_lingkungan: '{{ $test->suhu_lingkungan ?? '-' }}',
                     kelembapan: '{{ $test->kelembapan ?? '-' }}',
-                    tegangan: '{{ $test->tegangan ?? '-' }}',
-                    cr: '{{ $test->cr_estimated ?? '-' }}'
+                    tegangan:  '{{ $test->tegangan ?? '-' }}',
+                    cr:        '{{ $test->cr_estimated ?? '-' }}'
                 }
             );
             @endforeach
@@ -210,156 +206,73 @@
         }
     }
 
-    // Definisi Visual Murni (Default - Hijau Zamrud)
+    // Default icon (Emerald)
     const defaultIcon = L.divIcon({
         className: 'leaflet-marker-default',
-        html: `
-            <div class="modern-marker-container">
-                <div class="modern-marker-pulse"></div>
-                <div class="modern-marker-dot"></div>
-            </div>
-        `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20],
-        popupAnchor: [0, -14]
+        html: `<div class="modern-marker-container"><div class="modern-marker-pulse"></div><div class="modern-marker-dot"></div></div>`,
+        iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -14]
     });
 
-    // Definisi Visual Aktif (Amber / Kuning Emas)
+    // Active icon (Amber)
     const activeIcon = L.divIcon({
         className: 'leaflet-marker-active',
-        html: `
-            <div class="modern-marker-container active-marker">
-                <div class="modern-marker-pulse"></div>
-                <div class="modern-marker-dot"></div>
-            </div>
-        `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20],
-        popupAnchor: [0, -14]
+        html: `<div class="modern-marker-container active-marker"><div class="modern-marker-pulse"></div><div class="modern-marker-dot"></div></div>`,
+        iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -14]
     });
 
     function addMarkerToMap(id, lat, lng, data) {
         if (!mainMap) return;
 
-        // Template Popup Compact
         const popupHtml = `
-            <div style="font-family: 'Inter', sans-serif; min-width: 180px; font-size: 11px;">
-                <div style="font-weight: 700; font-size: 13px; color: #1f2937; margin-bottom: 6px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px;">
-                    📍 Data Sensor Valid
+            <div style="font-family:'Inter',sans-serif; min-width:200px; font-size:12px; padding:4px;">
+                <div style="font-weight:800; font-size:13px; color:#191c1e; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid #e0e3e5; display:flex;align-items:center;gap:6px;">
+                    <span style="background:#006948;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;">FIELD TEST</span>
+                    Data Sensor Valid
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #4b5563;">
-                    <div style="grid-column: span 2;"><span style="color:#9ca3af">Waktu:</span> <b>${data.timestamp}</b></div>
-                    <div style="grid-column: span 2; margin-bottom: 4px;"><span style="color:#9ca3af">Petugas:</span> <b>${data.officer}</b></div>
-                    
-                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">pH:</span> <b>${data.ph}</b></div>
-                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">TDS:</span> <b>${data.tds}</b></div>
-                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">EC:</span> <b>${data.ec}</b></div>
-                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">Air:</span> <b>${data.suhu_air}°C</b></div>
-                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">Udr:</span> <b>${data.suhu_lingkungan}°C</b></div>
-                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">Rh:</span> <b>${data.kelembapan}%</b></div>
-                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px; grid-column: span 2;"><span style="color:#6b7280">Batt:</span> <b>${data.tegangan} V</b></div>
-                    
-                    <div style="grid-column: span 2; background: #f3e8ff; padding: 4px; border-radius: 4px; margin-top: 4px; color: #7e22ce; font-weight: 700; text-align: center;">
-                        🤖 CR Est: ${data.cr} mg/L
-                    </div>
+                <div style="color:#3d4a42; margin-bottom:4px;"><span style="color:#6d7a72">Waktu:</span> <b>${data.timestamp}</b></div>
+                <div style="color:#3d4a42; margin-bottom:8px;"><span style="color:#6d7a72">Petugas:</span> <b>${data.officer}</b></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">pH</span><br><b style="color:#006948">${data.ph}</b></div>
+                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">TDS</span><br><b style="color:#006948">${data.tds} ppm</b></div>
+                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">EC</span><br><b style="color:#006948">${data.ec} mS</b></div>
+                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Suhu Air</span><br><b style="color:#006948">${data.suhu_air}°C</b></div>
+                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Udara</span><br><b style="color:#006948">${data.suhu_lingkungan}°C</b></div>
+                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Kelembapan</span><br><b style="color:#006948">${data.kelembapan}%</b></div>
+                    <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;grid-column:span 2;text-align:center;"><span style="color:#6d7a72;font-size:10px;">🤖 CR Estimated</span><br><b style="color:#7e22ce;font-size:14px;">${data.cr} mg/L</b></div>
                 </div>
             </div>
         `;
 
         const marker = L.marker([lat, lng], { icon: defaultIcon }).addTo(mainMap);
-        marker.bindPopup(popupHtml, { maxWidth: 240, closeButton: false });
+        marker.bindPopup(popupHtml, { maxWidth: 260, closeButton: false });
         markers[id] = marker;
+    }
+
+    function jumpToMarker(id, lat, lng) {
+        if (!mainMap) return;
+        mainMap.flyTo([lat, lng], 18, { animate: true, duration: 1.0 });
+
+        Object.values(markers).forEach(m => { m.setIcon(defaultIcon); m.setZIndexOffset(0); });
+
+        setTimeout(() => {
+            const targetMarker = markers[id];
+            if (targetMarker) {
+                targetMarker.setIcon(activeIcon);
+                targetMarker.setZIndexOffset(1000);
+                targetMarker.openPopup();
+            }
+        }, 1100);
     }
 </script>
 
 <style>
-/* Desain UI CSS Marker Modern Clean */
-.modern-marker-container {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.modern-marker-dot {
-    width: 14px;
-    height: 14px;
-    background-color: #10b981; /* emerald-500 */
-    border: 3px solid #064e3b; /* emerald-900 border untuk efek solid */
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-    position: relative;
-    z-index: 2;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.modern-marker-pulse {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(16, 185, 129, 0.4);
-    border-radius: 50%;
-    z-index: 1;
-    animation: markerPulse 2s infinite ease-out;
-}
-
-/* Hover murni saat user men-sorot pointer manual */
-.modern-marker-container:hover .modern-marker-dot {
-    transform: scale(1.6);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.9);
-    background-color: #34d399;
-    border-color: #ffffff;
-}
-
-@keyframes markerPulse {
-    0% { transform: scale(0.5); opacity: 1; }
-    100% { transform: scale(2.2); opacity: 0; }
-}
-
-/* Transisi Visual Khusus Marker yang Sedang Dipilih / Aktif */
-.active-marker .modern-marker-dot {
-    background-color: #f59e0b !important; /* amber-500 (Emas/Kuning oranye) */
-    border-color: #78350f !important; /* amber-900 */
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.9) !important;
-    transform: scale(1.6);
-}
-
-.active-marker .modern-marker-pulse {
-    background-color: rgba(245, 158, 11, 0.5) !important;
-    animation: markerPulseActive 1.2s infinite ease-out !important;
-}
-
-@keyframes markerPulseActive {
-    0% { transform: scale(0.5); opacity: 1; }
-    100% { transform: scale(2.6); opacity: 0; }
-}
+.modern-marker-container { position:relative; width:40px; height:40px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.modern-marker-dot { width:14px; height:14px; background:#006948; border:3px solid #fff; border-radius:50%; box-shadow:0 2px 8px rgba(0,105,72,0.5); position:relative; z-index:2; transition:all .3s; }
+.modern-marker-pulse { position:absolute; width:100%; height:100%; background:rgba(0,105,72,0.25); border-radius:50%; z-index:1; animation:markerPulse 2s infinite ease-out; }
+.modern-marker-container:hover .modern-marker-dot { transform:scale(1.6); box-shadow:0 0 15px rgba(0,105,72,0.7); background:#00a36f; border-color:#fff; }
+@keyframes markerPulse { 0%{transform:scale(.5);opacity:1} 100%{transform:scale(2.2);opacity:0} }
+.active-marker .modern-marker-dot { background:#f59e0b !important; border-color:#fff !important; box-shadow:0 0 15px rgba(245,158,11,.8) !important; transform:scale(1.6); }
+.active-marker .modern-marker-pulse { background:rgba(245,158,11,.4) !important; animation:markerPulseActive 1.2s infinite ease-out !important; }
+@keyframes markerPulseActive { 0%{transform:scale(.5);opacity:1} 100%{transform:scale(2.6);opacity:0} }
 </style>
-
-<script>
-    function jumpToMarker(id, lat, lng) {
-        if (mainMap) {
-            // Animasi terbang memakan 1 detik
-            mainMap.flyTo([lat, lng], 18, { animate: true, duration: 1.0 });
-            
-            // 1. Reset Semua Marker ke Icon Default (Cara absolut yg tidak bergantung elemen DOM rendering)
-            Object.values(markers).forEach(m => {
-                m.setIcon(defaultIcon);
-                m.setZIndexOffset(0); 
-            });
-            
-            // 2. Beri jeda sampai animasi selesai mendarat, baru ganti target map dan show pop-up
-            setTimeout(() => {
-                const targetMarker = markers[id];
-                if(targetMarker) {
-                    targetMarker.setIcon(activeIcon); // Pakai Icon Aktif (Amber)
-                    targetMarker.setZIndexOffset(1000); // Paksa paling depan
-                    targetMarker.openPopup();
-                }
-            }, 1100);
-        }
-    }
-</script>
 @endpush
