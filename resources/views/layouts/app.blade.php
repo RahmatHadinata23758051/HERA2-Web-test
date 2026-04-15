@@ -1,48 +1,99 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="id" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $app_settings['app_name'] ?? 'HERA' }} - {{ $app_settings['app_description'] ?? 'Real-time Hexavalent Chromium Monitoring System' }}</title>
+    <title>{{ $app_settings['app_name'] ?? 'HERA' }} - {{ $app_settings['app_description'] ?? 'Monitoring System' }}</title>
     
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
-    <!-- Custom CSS Base -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#93000a",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#446d58",
+                      "on-error": "#ffffff",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed": "#410004",
+                      "primary-fixed": "#85f8c4",
+                      "on-surface": "#191c1e",
+                      "error": "#ba1a1a",
+                      "surface-container-high": "#e6e8ea",
+                      "surface-tint": "#006c4a",
+                      "background": "#f7f9fb",
+                      "secondary-fixed-dim": "#a4d0b8",
+                      "tertiary-container": "#ba5551",
+                      "surface": "#f7f9fb",
+                      "surface-container": "#eceef0",
+                      "on-primary-container": "#f5fff7",
+                      "on-tertiary-container": "#fffbff",
+                      "on-secondary-fixed-variant": "#264e3c",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed": "#ffdad7",
+                      "on-primary-fixed-variant": "#005137",
+                      "outline": "#6d7a72",
+                      "tertiary": "#9b3e3b",
+                      "primary": "#006948",
+                      "secondary-container": "#c0edd3",
+                      "secondary": "#3e6753",
+                      "surface-container-low": "#f2f4f6",
+                      "on-background": "#191c1e",
+                      "inverse-surface": "#2d3133",
+                      "primary-fixed-dim": "#68dba9",
+                      "surface-variant": "#e0e3e5",
+                      "surface-dim": "#d8dadc",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed": "#c0edd3",
+                      "on-surface-variant": "#3d4a42",
+                      "on-primary-fixed": "#002114",
+                      "outline-variant": "#bccac0",
+                      "surface-bright": "#f7f9fb",
+                      "inverse-primary": "#68dba9",
+                      "primary-container": "#00855d",
+                      "on-secondary-fixed": "#002114",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb3ae",
+                      "on-tertiary-fixed-variant": "#7f2928"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "1rem",
+                      "xl": "1.25rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Manrope", "sans-serif"],
+                      "body": ["Inter", "sans-serif"],
+                      "label": ["Inter", "sans-serif"]
+              }
+            },
+          },
+        };
+    </script>
+    
     <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         body { font-family: 'Inter', sans-serif; }
-        .glass-panel {
-            background: rgba(17, 24, 39, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .bottom-tier-bg {
-            background: rgba(31, 41, 55, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .glass-card {
-            background: rgba(31, 41, 55, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .text-gradient {
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #60A5FA, #3b82f6);
-        }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
         
         /* Custom Scrollbar for tables */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(17, 24, 39, 0.5); }
-        ::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.8); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 1); }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         .value-update-flash { animation: textFlash 1.5s ease-out; }
         @keyframes textFlash {
-            0% { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
+            0% { color: #006948; text-shadow: 0 0 10px rgba(0,105,72,0.5); }
             100% { color: inherit; text-shadow: none; }
         }
     </style>
@@ -50,201 +101,163 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white" x-data="{ mobileMenuOpen: false }">
 
-    <!-- 2-Tier Top Navbar (Inspired by HERA V1.0) -->
-    <header class="fixed top-0 w-full z-50">
-        <!-- Top Tier: Branding & Profile -->
-        <div class="h-14 glass-panel border-b border-gray-800">
-            <div class="px-4 mx-auto md:px-14 lg:px-24 h-full flex items-center justify-between">
-                
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    @if(!empty($app_settings['app_logo']))
-                        <img src="{{ asset($app_settings['app_logo']) }}" alt="App Logo" class="h-8 object-contain">
-                    @else
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        </div>
-                    @endif
-                    <h1 class="text-xl font-bold tracking-tight text-white whitespace-nowrap">{{ $app_settings['app_name'] ?? 'HERA' }}</h1>
-                </div>
+<body class="bg-background text-on-surface min-h-screen" x-data="{ mobileMenuOpen: false, sidebarOpen: false }">
 
-                <!-- Right Section: User Profile & Mobile Toggle -->
-                <div class="flex items-center gap-4">
-                    <div class="hidden md:block">
-                        <div x-data="{ userMenu: false }" @click.away="userMenu = false" class="relative">
-                            <button @click="userMenu = !userMenu" class="flex items-center gap-2 pl-3 pr-2 py-1 rounded-full hover:bg-gray-800/60 transition-colors border border-transparent hover:border-gray-700/50 focus:outline-none">
-                                @if(auth()->user()->picture)
-                                    <img src="{{ asset('storage/' . auth()->user()->picture) }}" alt="Avatar" class="w-7 h-7 rounded-full object-cover ring-1 ring-gray-700">
-                                @else
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&rounded=true" alt="Avatar" class="w-7 h-7 rounded-full ring-1 ring-gray-700">
-                                @endif
-                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="userMenu ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </button>
-                            
-                            <!-- User Dropdown Menu -->
-                            <div x-show="userMenu" x-transition.opacity.duration.200ms style="display: none;" class="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-1 z-50">
-                                <div class="px-4 py-2 border-b border-gray-700/50 mb-1">
-                                    <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name }}</p>
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-blue-400 truncate">{{ auth()->user()->role }}</p>
-                                </div>
-                                <a href="{{ route('profile') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                    Edit Profil
-                                </a>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-left">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                                        Keluar
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+<!-- TopNavBar -->
+<header class="bg-white border-b border-surface-container-high flex justify-between items-center w-full px-4 lg:px-8 h-16 max-w-full fixed top-0 z-50 shadow-sm">
+    <div class="flex items-center gap-4 lg:gap-8">
+        <!-- Mobile Sidebar Toggle -->
+        <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 text-on-surface-variant hover:bg-slate-50 rounded-md">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
 
-                    <!-- Mobile Menu Button -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-400 hover:text-white p-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                            <path x-show="mobileMenuOpen" style="display:none;" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Tier: Navigation Links -->
-        <div class="hidden md:block h-14 bottom-tier-bg border-b border-gray-800 shadow-sm">
-            <div class="px-4 mx-auto md:px-14 lg:px-24 h-full flex items-center justify-start gap-8">
-                
-                <!-- Dashboard -->
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('dashboard') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
-                    <svg class="w-5 h-5 {{ request()->routeIs('dashboard') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    Dashboard
-                </a>
-                
-                <!-- Monitoring -->
-                <a href="{{ route('monitoring') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('monitoring*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
-                    <svg class="w-5 h-5 {{ request()->routeIs('monitoring*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    Monitoring
-                </a>
-
-                <!-- Analisis Excel Dropdown -->
-                <div x-data="{ openAnalysis: false }" @mouseenter="openAnalysis = true" @mouseleave="openAnalysis = false" class="relative h-full flex items-center">
-                    <button @click="openAnalysis = !openAnalysis" class="flex items-center gap-2 h-full text-sm font-medium outline-none transition-colors border-b-2 {{ request()->routeIs('analisis.*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
-                        <svg class="w-5 h-5 {{ request()->routeIs('analisis.*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-                        Analisis Data Excel
-                        <svg class="w-3 h-3 transition-transform" :class="openAnalysis ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <!-- Dropdown -->
-                    <div x-show="openAnalysis" x-transition.opacity.duration.200ms style="display: none;" class="absolute top-14 left-0 w-48 bg-gray-800 border border-gray-700 rounded-b-lg shadow-xl py-1 z-50">
-                        <a href="{{ route('analisis.rq.nitrat') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.nitrat') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Nitrat</a>
-                        <a href="{{ route('analisis.rq.pb') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.pb') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Pb</a>
-                        <a href="{{ route('analisis.rq.cd') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.cd') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Cd</a>
-                        <a href="{{ route('analisis.rq.ph') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.ph') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ Ph</a>
-                        <a href="{{ route('analisis.rq.f') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.f') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">RQ F</a>
-                        <div class="border-t border-gray-700/50 my-1"></div>
-                        <a href="{{ route('analisis.input') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.input') ? 'bg-gray-700/50 text-emerald-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">Input Data Manual</a>
-                    </div>
-                </div>
-
-                @if(auth()->user()->isDireksi())
-                <!-- Manajemen Akun -->
-                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('admin.users*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
-                    <svg class="w-5 h-5 {{ request()->routeIs('admin.users*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Manajemen Akun
-                </a>
-                @endif
-                
-                <!-- Laporan Dropdown -->
-                <div x-data="{ openLaporan: false }" @mouseenter="openLaporan = true" @mouseleave="openLaporan = false" class="relative h-full flex items-center">
-                    <button @click="openLaporan = !openLaporan" class="flex items-center gap-2 h-full text-sm font-medium outline-none transition-colors border-b-2 {{ request()->routeIs('laporan.*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
-                        <svg class="w-5 h-5 {{ request()->routeIs('laporan.*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Laporan
-                        <svg class="w-3 h-3 transition-transform" :class="openLaporan ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <!-- Dropdown -->
-                    <div x-show="openLaporan" x-transition.opacity.duration.200ms style="display: none;" class="absolute top-14 left-0 w-60 bg-gray-800 border border-gray-700 rounded-b-lg shadow-xl py-1 z-50">
-                        <a href="{{ route('laporan.index') }}" class="block px-4 py-3 text-sm {{ request()->routeIs('laporan.index') ? 'bg-gray-700/50 text-blue-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">Laporan Historis</a>
-                        <div class="border-t border-gray-700/50 mx-2"></div>
-                        <a href="{{ route('laporan.pengujian.index') }}" class="block px-4 py-3 text-sm {{ request()->routeIs('laporan.pengujian.*') ? 'bg-gray-700/50 text-emerald-400 font-medium' : 'text-gray-300 hover:text-white hover:bg-gray-700/50' }}">Data Pengujian Lapangan</a>
-                    </div>
-                </div>
-
-                @if(auth()->user()->isDireksi())
-                <!-- Pengaturan -->
-                <a href="{{ route('settings.index') }}" class="flex items-center gap-2 h-full text-sm font-medium transition-colors border-b-2 {{ request()->routeIs('settings*') ? 'text-blue-400 border-blue-500' : 'text-gray-400 border-transparent hover:text-white hover:border-gray-500' }}">
-                    <svg class="w-5 h-5 {{ request()->routeIs('settings*') ? 'text-blue-400' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    Pengaturan
-                </a>
-                @endif
-            </div>
-        </div>
-
-        <!-- Mobile Navigation Menu Dropdown -->
-        <div x-show="mobileMenuOpen" x-transition.opacity.duration.300ms style="display:none;" class="md:hidden bg-gray-900 border-b border-gray-800 pb-4 px-2 space-y-1 z-50">
-            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Dashboard</a>
-            <a href="{{ route('monitoring') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Monitoring</a>
-            <div class="px-3 py-2">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Analisis Data Excel</p>
-                <div class="mt-2 pl-3 border-l border-gray-800 space-y-1">
-                    <a href="{{ route('analisis.rq.nitrat') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Nitrat</a>
-                    <a href="{{ route('analisis.rq.pb') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Pb</a>
-                    <a href="{{ route('analisis.rq.cd') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Cd</a>
-                    <a href="{{ route('analisis.rq.ph') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ Ph</a>
-                    <a href="{{ route('analisis.rq.f') }}" class="block text-sm text-gray-400 py-1 hover:text-emerald-400">RQ F</a>
-                    <a href="{{ route('analisis.input') }}" class="block text-sm text-blue-400 py-1 mt-1">Input Data Manual</a>
-                </div>
-            </div>
-            @if(auth()->user()->isDireksi())
-                <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Manajemen Akun</a>
+        <div class="flex items-center gap-2">
+            @if(!empty($app_settings['app_logo']))
+                <img src="{{ asset($app_settings['app_logo']) }}" alt="App Logo" class="h-8 object-contain">
+            @else
+                <span class="material-symbols-outlined text-primary text-3xl" data-icon="clinical_notes">clinical_notes</span>
             @endif
-            <div class="px-3 py-2">
-                <p class="text-xs font-semibold text-gray-500 uppercase">Laporan & Pengujian</p>
-                <div class="mt-2 pl-3 border-l border-gray-800 space-y-1">
-                    <a href="{{ route('laporan.index') }}" class="block text-sm text-gray-400 py-1 hover:text-blue-400">Laporan Historis</a>
-                    <a href="{{ route('laporan.pengujian.index') }}" class="block text-sm text-emerald-400 py-1 hover:text-white">Data Pengujian Lapangan</a>
+            <span class="text-xl font-black tracking-tighter text-on-surface">{{ $app_settings['app_name'] ?? 'HERA' }}</span>
+        </div>
+    </div>
+
+    <!-- Right Topbar Items -->
+    <div class="flex items-center gap-2 sm:gap-4">
+        <!-- Notification Placeholder -->
+        <button class="hidden md:flex p-2 text-on-surface-variant hover:bg-slate-50 rounded-full transition-all">
+            <span class="material-symbols-outlined">notifications</span>
+        </button>
+        
+        <script>
+            function toggleUserMenu() {
+                let el = document.getElementById('userMenuDropdown');
+                el.style.display = el.style.display === 'none' ? 'block' : 'none';
+            }
+        </script>
+        
+        <!-- Profile Dropdown Menu in Topbar -->
+        <div class="relative">
+            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-1 rounded-full hover:bg-slate-50 transition-colors border border-transparent focus:outline-none ring-2 ring-primary/20">
+                @if(auth()->user()->picture)
+                    <img src="{{ asset('storage/' . auth()->user()->picture) }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">
+                @else
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=006948&color=fff&rounded=true" alt="Avatar" class="w-8 h-8 rounded-full">
+                @endif
+            </button>
+            <div id="userMenuDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-surface-container-high rounded-lg shadow-xl py-1 z-50" style="display:none;">
+                <div class="px-4 py-2 border-b border-surface-container-high mb-1">
+                    <p class="text-sm font-bold text-on-surface truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-primary truncate">{{ auth()->user()->role }}</p>
                 </div>
-            </div>
-            @if(auth()->user()->isDireksi())
-                <a href="{{ route('settings.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Pengaturan</a>
-            @endif
-            <div class="px-3 pt-4 border-t border-gray-800 mt-2 flex flex-col gap-2">
-                <a href="{{ route('profile') }}" class="block text-gray-300 hover:text-white text-sm">Edit Profil</a>
+                <a href="{{ route('profile') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface-variant hover:text-primary hover:bg-slate-50 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">person</span> Edit Profil
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full text-left text-red-400 hover:text-red-300 text-sm py-1">Keluar</button>
+                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-error-container hover:text-on-error-container transition-colors text-left">
+                        <span class="material-symbols-outlined text-[18px]">logout</span> Keluar
+                    </button>
                 </form>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <!-- Main Content -->
-    <!-- pt-28 to clear the 7rem height of the 2-tier header (14+14 = 28 / 7rem) + 1rem padding -->
-    <main class="pt-[8rem] flex-1 flex flex-col min-h-screen relative overflow-x-hidden">
-        <!-- Ambient Background Glows -->
-        <div class="absolute top-0 right-0 w-[50%] h-[50%] rounded-full bg-blue-900/10 blur-[150px] pointer-events-none z-0"></div>
-        <div class="absolute bottom-0 left-0 w-[40%] h-[50%] rounded-full bg-purple-900/10 blur-[150px] pointer-events-none z-0"></div>
+<!-- SideNavBar -->
+<aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-lowest lg:bg-transparent lg:translate-x-0 transition-transform duration-300 ease-in-out z-40 border-r border-surface-container-high lg:flex lg:flex-col p-4 overflow-y-auto hidden-scroll bg-white">
+    <div class="mb-6 px-4 py-2">
+        <h2 class="text-sm font-bold text-on-surface font-headline uppercase tracking-wider text-primary">Modul Utama</h2>
+    </div>
+    
+    <nav class="flex flex-col gap-2 flex-grow">
+        <!-- Dashboard -->
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ease-out {{ request()->routeIs('dashboard') ? 'bg-primary/10 text-primary font-bold shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-low font-medium' }}">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-sm font-label">Overview</span>
+        </a>
+        
+        <!-- Monitoring -->
+        <a href="{{ route('monitoring') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ease-out {{ request()->routeIs('monitoring*') ? 'bg-primary/10 text-primary font-bold shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-low font-medium' }}">
+            <span class="material-symbols-outlined" data-icon="opacity">opacity</span>
+            <span class="text-sm font-label">Monitoring</span>
+        </a>
 
-        <div class="relative z-10 w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto pb-8 flex-1">
-            @yield('content')
+        <!-- Analisis Data Excel Dropdown -->
+        <div x-data="{ open: {{ request()->routeIs('analisis.*') ? 'true' : 'false' }} }" class="rounded-lg {{ request()->routeIs('analisis.*') ? 'bg-primary/5 border border-primary/10' : '' }}">
+            <button @click="open = !open" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ease-out text-on-surface-variant hover:bg-surface-container-low font-medium">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                    <span class="text-sm font-label">Analisis Data Excel</span>
+                </div>
+                <span class="material-symbols-outlined transition-transform text-sm" :class="open ? 'rotate-180' : ''">expand_more</span>
+            </button>
+            <div x-show="open" x-transition.opacity class="pl-11 pr-4 py-2 flex flex-col gap-1 border-t border-surface-container-high/50 mx-2" style="display: {{ request()->routeIs('analisis.*') ? 'flex' : 'none' }};">
+                <a href="{{ route('analisis.rq.nitrat') }}" class="text-sm py-1.5 {{ request()->routeIs('analisis.rq.nitrat') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Nitrat</a>
+                <a href="{{ route('analisis.rq.pb') }}" class="text-sm py-1.5 {{ request()->routeIs('analisis.rq.pb') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Pb</a>
+                <a href="{{ route('analisis.rq.cd') }}" class="text-sm py-1.5 {{ request()->routeIs('analisis.rq.cd') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Cd</a>
+                <a href="{{ route('analisis.rq.ph') }}" class="text-sm py-1.5 {{ request()->routeIs('analisis.rq.ph') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Ph</a>
+                <a href="{{ route('analisis.rq.f') }}" class="text-sm py-1.5 {{ request()->routeIs('analisis.rq.f') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ F</a>
+                <a href="{{ route('analisis.input') }}" class="text-sm py-1.5 mt-1 border-t border-surface-container-high pt-2 {{ request()->routeIs('analisis.input') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">Input Manual</a>
+            </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="relative z-10 w-full border-t border-gray-800/50 mt-auto hidden md:block">
-            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-gray-500">
-                &copy; {{ $app_settings['app_year'] ?? date('Y') }} <span class="text-gray-400 font-medium">{{ $app_settings['app_copyright'] ?? 'Universitas Hasanuddin' }}</span>. All rights reserved.
-                <br>
-                {{ $app_settings['app_institution'] ?? '' }}
+        @if(auth()->user()->isDireksi())
+        <!-- Manajemen Akun -->
+        <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ease-out {{ request()->routeIs('admin.users*') ? 'bg-primary/10 text-primary font-bold shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-low font-medium' }}">
+            <span class="material-symbols-outlined" data-icon="group">group</span>
+            <span class="text-sm font-label">Manajemen Akun</span>
+        </a>
+        @endif
+
+        <!-- Laporan Dropdown -->
+        <div x-data="{ open: {{ request()->routeIs('laporan.*') ? 'true' : 'false' }} }" class="rounded-lg {{ request()->routeIs('laporan.*') ? 'bg-primary/5 border border-primary/10' : '' }}">
+            <button @click="open = !open" class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ease-out text-on-surface-variant hover:bg-surface-container-low font-medium">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined" data-icon="summarize">summarize</span>
+                    <span class="text-sm font-label">Laporan Data</span>
+                </div>
+                <span class="material-symbols-outlined transition-transform text-sm" :class="open ? 'rotate-180' : ''">expand_more</span>
+            </button>
+            <div x-show="open" x-transition.opacity class="pl-11 pr-4 py-2 flex flex-col gap-1 border-t border-surface-container-high/50 mx-2" style="display: {{ request()->routeIs('laporan.*') ? 'flex' : 'none' }};">
+                <a href="{{ route('laporan.index') }}" class="text-sm py-1.5 {{ request()->routeIs('laporan.index') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">Laporan Historis</a>
+                <a href="{{ route('laporan.pengujian.index') }}" class="text-sm py-1.5 {{ request()->routeIs('laporan.pengujian.*') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">Pengujian Lapangan</a>
             </div>
-        </footer>
-    </main>
+        </div>
+
+        @if(auth()->user()->isDireksi())
+        <!-- Settings -->
+        <a href="{{ route('settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ease-out {{ request()->routeIs('settings*') ? 'bg-primary/10 text-primary font-bold shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-low font-medium' }}">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            <span class="text-sm font-label">Pengaturan Sistem</span>
+        </a>
+        @endif
+    </nav>
+    <div class="mt-auto pt-4 border-t border-surface-container-high flex flex-col gap-2">
+        <div class="px-4 py-2 text-center text-xs text-outline font-label">
+            &copy; {{ $app_settings['app_year'] ?? date('Y') }} HERA 2.0
+            <br>
+            Stable Release
+        </div>
+    </div>
+</aside>
+
+<!-- Overlay for mobile sidebar -->
+<div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity class="fixed inset-0 bg-on-surface/20 z-30 lg:hidden" style="display:none;"></div>
+
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-24 pb-12 px-4 sm:px-8 min-h-screen relative z-10 w-full overflow-x-hidden">
+    <!-- Optional: Subtle Background Patterns -->
+    <div class="fixed top-0 right-0 w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none z-[-1]"></div>
     
-    <!-- Global Flash Notification Component -->
+    <div class="max-w-[1600px] mx-auto space-y-8">
+        @yield('content')
+    </div>
+</main>
+
+<!-- Toasts -->
     <div x-data="toastNotification()" x-init="initToast()"
-         style="position: fixed !important; top: 8rem; right: 1.5rem; left: auto; z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; width: 320px;">
+         style="position: fixed !important; top: 5rem; right: 1.5rem; left: auto; z-index: 99999; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; width: 320px;">
         
         <template x-for="toast in toasts" :key="toast.id">
             <div x-show="toast.visible"
@@ -255,6 +268,7 @@
                  x-transition:leave-start="opacity-100 translate-x-0"
                  x-transition:leave-end="opacity-0 translate-x-8"
                  role="alert"
+                 class="shadow-lg border bg-surface-container-lowest"
                  :style="{
                      'pointer-events': 'auto',
                      'border-radius': '0.5rem',
@@ -264,39 +278,16 @@
                      'gap': '0.5rem',
                      'border-left': '4px solid',
                      'transition': 'all 0.3s ease',
-                     'cursor': 'default',
-                     'background': toast.type === 'success' ? '#052e16' :
-                                   toast.type === 'error'   ? '#450a0a' :
-                                   toast.type === 'warning' ? '#422006' :
-                                                              '#172554',
-                     'border-left-color': toast.type === 'success' ? '#15803d' :
-                                          toast.type === 'error'   ? '#b91c1c' :
-                                          toast.type === 'warning' ? '#a16207' :
-                                                                     '#1d4ed8',
-                     'color': toast.type === 'success' ? '#bbf7d0' :
-                              toast.type === 'error'   ? '#fecaca' :
-                              toast.type === 'warning' ? '#fef08a' :
-                                                         '#bfdbfe'
+                     'border-left-color': toast.type === 'success' ? '#006948' :
+                                          toast.type === 'error'   ? '#ba1a1a' :
+                                          toast.type === 'warning' ? '#eab308' :
+                                                                     '#3b82f6',
                  }">
-                <!-- Icon -->
-                <svg :style="{
-                         'width': '20px',
-                         'height': '20px',
-                         'flex-shrink': '0',
-                         'color': toast.type === 'success' ? '#4ade80' :
-                                  toast.type === 'error'   ? '#f87171' :
-                                  toast.type === 'warning' ? '#facc15' :
-                                                             '#60a5fa'
-                     }"
-                     stroke="currentColor" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M13 16h-1v-4h1m0-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
-                </svg>
                 <!-- Message -->
-                <p style="font-size:0.75rem; font-weight:600; flex:1; margin:0; word-break:break-word;" x-text="toast.message"></p>
+                <p style="font-size:0.875rem; font-weight:600; flex:1; margin:0;" class="text-on-surface" x-text="toast.message"></p>
                 <!-- Close Button -->
-                <button @click="remove(toast.id)" style="flex-shrink:0; background:none; border:none; cursor:pointer; padding:0; opacity:0.6; line-height:1;"
-                        :style="{ 'color': toast.type === 'success' ? '#86efac' : toast.type === 'error' ? '#fca5a5' : toast.type === 'warning' ? '#fde68a' : '#93c5fd' }">
-                    <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button @click="remove(toast.id)" class="text-on-surface-variant hover:text-on-surface">
+                    <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
         </template>
