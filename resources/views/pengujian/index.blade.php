@@ -198,20 +198,23 @@
         if (!mainMap) return;
         
         const customIcon = L.divIcon({
-            html: `<div style="position: relative; width: 50px; height: 60px; display: flex; align-items: center; justify-content: center;"><svg width="50" height="60" viewBox="0 0 50 60" style="filter: drop-shadow(0 4px 8px rgba(5, 150, 105, 0.4));"><defs><linearGradient id="pin${id}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#10b981"/><stop offset="100%" style="stop-color:#047857"/></linearGradient></defs><path d="M25 5 C35.5 5 43 12.5 43 23 C43 35 25 55 25 55 C25 55 7 35 7 23 C7 12.5 14.5 5 25 5 Z" fill="url(#pin${id})" stroke="#059669" stroke-width="1.5"/><circle cx="25" cy="23" r="10" fill="white" opacity="0.95"/><circle cx="25" cy="23" r="6" fill="#10b981"/></svg></div>`,
-            iconSize: [50, 60],
-            iconAnchor: [25, 55]
+            html: `<div style="position: relative; width: 56px; height: 68px; display: flex; align-items: center; justify-content: center;"><svg width="56" height="68" viewBox="0 0 56 68" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"><defs><linearGradient id="pinBody${id}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" /><stop offset="50%" style="stop-color:#0d9488;stop-opacity:1" /><stop offset="100%" style="stop-color:#0f766e;stop-opacity:1" /></linearGradient><filter id="shadow${id}" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3"/></filter></defs><g filter="url(#shadow${id})"><path d="M28 3 C38.5 3 47 10 47 20 C47 32 28 62 28 62 C28 62 9 32 9 20 C9 10 17.5 3 28 3 Z" fill="url(#pinBody${id})" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/></g><circle cx="28" cy="20" r="11" fill="white" opacity="1" stroke="#0d9488" stroke-width="1.5"/><circle cx="28" cy="20" r="7" fill="#14b8a6"/><circle cx="26" cy="18" r="2.5" fill="white" opacity="0.8"/></svg></div>`,
+            iconSize: [56, 68],
+            iconAnchor: [28, 62]
         });
 
         const marker = L.marker([lat, lng], { icon: customIcon }).addTo(mainMap);
         markers[id] = marker;
         
         marker.getElement().style.cursor = 'pointer';
+        marker.getElement().style.transition = 'all 0.2s ease';
         marker.getElement().addEventListener('mouseenter', function() {
-            marker.getElement().style.filter = 'drop-shadow(0 8px 16px rgba(16, 185, 129, 0.6)) brightness(1.1)';
+            marker.getElement().style.transform = 'scale(1.15)';
+            marker.getElement().style.filter = 'drop-shadow(0 8px 16px rgba(20, 184, 166, 0.5))';
         });
         marker.getElement().addEventListener('mouseleave', function() {
-            marker.getElement().style.filter = 'drop-shadow(0 4px 8px rgba(5, 150, 105, 0.4))';
+            marker.getElement().style.transform = 'scale(1)';
+            marker.getElement().style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))';
         });
     }
 
