@@ -185,7 +185,23 @@
             }).addTo(mainMap);
 
             @foreach($tests as $test)
-            addMarkerToMap({{ $test->id }}, {{ $test->latitude }}, {{ $test->longitude }});
+            addMarkerToMap(
+                {{ $test->id }}, 
+                {{ $test->latitude }}, 
+                {{ $test->longitude }},
+                {
+                    timestamp: '{{ $test->created_at->format('d M Y, H:i') }}',
+                    officer: '{{ addslashes(optional($test->user)->name ?? 'Unknown') }}',
+                    ph: '{{ $test->ph ?? '-' }}',
+                    tds: '{{ $test->tds ?? '-' }}',
+                    ec: '{{ $test->ec ?? '-' }}',
+                    suhu_air: '{{ $test->suhu_air ?? '-' }}',
+                    suhu_lingkungan: '{{ $test->suhu_lingkungan ?? '-' }}',
+                    kelembapan: '{{ $test->kelembapan ?? '-' }}',
+                    tegangan: '{{ $test->tegangan ?? '-' }}',
+                    cr: '{{ $test->cr_estimated ?? '-' }}'
+                }
+            );
             @endforeach
 
             setTimeout(() => mainMap.invalidateSize(true), 200);
@@ -194,7 +210,7 @@
         }
     }
 
-    function addMarkerToMap(id, lat, lng) {
+    function addMarkerToMap(id, lat, lng, data) {
         if (!mainMap) return;
         
         // Desain icon modern, minimalis & clean dengan animasi pulse bawaan CSS
@@ -208,15 +224,37 @@
             `,
             iconSize: [40, 40],
             iconAnchor: [20, 20],
-            popupAnchor: [0, -10]
+            popupAnchor: [0, -14]
         });
 
+        // Template Popup Compact (Tidak terlalu besar, format Grid)
+        const popupHtml = `
+            <div style="font-family: 'Inter', sans-serif; min-width: 180px; font-size: 11px;">
+                <div style="font-weight: 700; font-size: 13px; color: #1f2937; margin-bottom: 6px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px;">
+                    📍 Data Sensor Valid
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #4b5563;">
+                    <div style="grid-column: span 2;"><span style="color:#9ca3af">Waktu:</span> <b>${data.timestamp}</b></div>
+                    <div style="grid-column: span 2; margin-bottom: 4px;"><span style="color:#9ca3af">Petugas:</span> <b>${data.officer}</b></div>
+                    
+                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">pH:</span> <b>${data.ph}</b></div>
+                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">TDS:</span> <b>${data.tds}</b></div>
+                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">EC:</span> <b>${data.ec}</b></div>
+                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">Air:</span> <b>${data.suhu_air}°C</b></div>
+                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">Udr:</span> <b>${data.suhu_lingkungan}°C</b></div>
+                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px;"><span style="color:#6b7280">Rh:</span> <b>${data.kelembapan}%</b></div>
+                    <div style="background: #f3f4f6; padding: 2px 4px; border-radius: 4px; grid-column: span 2;"><span style="color:#6b7280">Batt:</span> <b>${data.tegangan} V</b></div>
+                    
+                    <div style="grid-column: span 2; background: #f3e8ff; padding: 4px; border-radius: 4px; margin-top: 4px; color: #7e22ce; font-weight: 700; text-align: center;">
+                        🤖 CR Est: ${data.cr} mg/L
+                    </div>
+                </div>
+            </div>
+        `;
+
         const marker = L.marker([lat, lng], { icon: customIcon }).addTo(mainMap);
+        marker.bindPopup(popupHtml, { maxWidth: 240, closeButton: false });
         markers[id] = marker;
-        
-        // HAPUS event listener style.transform JS karena Leaflet menggunakan transform translate3d untuk posisi absolutnya!
-        // (Menggeser style.transform via JS akan menghapus translate3d Leaflet yang membuat marker lari/kabur).
-        // Efek hover sekarang murni diserahkan pada CSS internal "modern-marker-dot" agar 100% aman dan mulus.
     }
 </script>
 
@@ -270,7 +308,12 @@
 
     function jumpToMarker(id, lat, lng) {
         if (mainMap) {
-            mainMap.setView([lat, lng], 17);
+            mainMap.setView([lat, lng], 17, { animate: true, duration: 1.5 });
+            
+            // Tunggu sedikit agar animasi zoom peta berjalan, lalu tembak buka pop-upnya
+            setTimeout(() => {
+                if(markers[id]) markers[id].openPopup();
+            }, 600);
         }
     }
 </script>
