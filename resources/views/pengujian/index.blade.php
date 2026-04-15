@@ -210,24 +210,38 @@
         }
     }
 
+    // Definisi Visual Murni (Default - Hijau Zamrud)
+    const defaultIcon = L.divIcon({
+        className: 'leaflet-marker-default',
+        html: `
+            <div class="modern-marker-container">
+                <div class="modern-marker-pulse"></div>
+                <div class="modern-marker-dot"></div>
+            </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -14]
+    });
+
+    // Definisi Visual Aktif (Amber / Kuning Emas)
+    const activeIcon = L.divIcon({
+        className: 'leaflet-marker-active',
+        html: `
+            <div class="modern-marker-container active-marker">
+                <div class="modern-marker-pulse"></div>
+                <div class="modern-marker-dot"></div>
+            </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -14]
+    });
+
     function addMarkerToMap(id, lat, lng, data) {
         if (!mainMap) return;
-        
-        // Desain icon modern, minimalis & clean dengan animasi pulse bawaan CSS
-        const customIcon = L.divIcon({
-            className: '', // Kosongkan nama class bawaan leaflet agar styling murni kita
-            html: `
-                <div class="modern-marker-container">
-                    <div class="modern-marker-pulse"></div>
-                    <div class="modern-marker-dot"></div>
-                </div>
-            `,
-            iconSize: [40, 40],
-            iconAnchor: [20, 20],
-            popupAnchor: [0, -14]
-        });
 
-        // Template Popup Compact (Tidak terlalu besar, format Grid)
+        // Template Popup Compact
         const popupHtml = `
             <div style="font-family: 'Inter', sans-serif; min-width: 180px; font-size: 11px;">
                 <div style="font-weight: 700; font-size: 13px; color: #1f2937; margin-bottom: 6px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px;">
@@ -252,7 +266,7 @@
             </div>
         `;
 
-        const marker = L.marker([lat, lng], { icon: customIcon }).addTo(mainMap);
+        const marker = L.marker([lat, lng], { icon: defaultIcon }).addTo(mainMap);
         marker.bindPopup(popupHtml, { maxWidth: 240, closeButton: false });
         markers[id] = marker;
     }
@@ -292,11 +306,11 @@
     animation: markerPulse 2s infinite ease-out;
 }
 
-/* Transisi Halus pada Hover, Membesarkan titik bagian dalam tanpa merusak parent box / translate3D */
+/* Hover murni saat user men-sorot pointer manual */
 .modern-marker-container:hover .modern-marker-dot {
     transform: scale(1.6);
     box-shadow: 0 0 15px rgba(16, 185, 129, 0.9);
-    background-color: #34d399; /* emerald lebih terang */
+    background-color: #34d399;
     border-color: #ffffff;
 }
 
@@ -304,16 +318,47 @@
     0% { transform: scale(0.5); opacity: 1; }
     100% { transform: scale(2.2); opacity: 0; }
 }
+
+/* Transisi Visual Khusus Marker yang Sedang Dipilih / Aktif */
+.active-marker .modern-marker-dot {
+    background-color: #f59e0b !important; /* amber-500 (Emas/Kuning oranye) */
+    border-color: #78350f !important; /* amber-900 */
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.9) !important;
+    transform: scale(1.6);
+}
+
+.active-marker .modern-marker-pulse {
+    background-color: rgba(245, 158, 11, 0.5) !important;
+    animation: markerPulseActive 1.2s infinite ease-out !important;
+}
+
+@keyframes markerPulseActive {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(2.6); opacity: 0; }
+}
 </style>
 
+<script>
     function jumpToMarker(id, lat, lng) {
         if (mainMap) {
-            mainMap.setView([lat, lng], 17, { animate: true, duration: 1.5 });
+            // Animasi terbang memakan 1 detik
+            mainMap.flyTo([lat, lng], 18, { animate: true, duration: 1.0 });
             
-            // Tunggu sedikit agar animasi zoom peta berjalan, lalu tembak buka pop-upnya
+            // 1. Reset Semua Marker ke Icon Default (Cara absolut yg tidak bergantung elemen DOM rendering)
+            Object.values(markers).forEach(m => {
+                m.setIcon(defaultIcon);
+                m.setZIndexOffset(0); 
+            });
+            
+            // 2. Beri jeda sampai animasi selesai mendarat, baru ganti target map dan show pop-up
             setTimeout(() => {
-                if(markers[id]) markers[id].openPopup();
-            }, 600);
+                const targetMarker = markers[id];
+                if(targetMarker) {
+                    targetMarker.setIcon(activeIcon); // Pakai Icon Aktif (Amber)
+                    targetMarker.setZIndexOffset(1000); // Paksa paling depan
+                    targetMarker.openPopup();
+                }
+            }, 1100);
         }
     }
 </script>
