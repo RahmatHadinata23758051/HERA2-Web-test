@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('field_tests', function (Blueprint $table) {
-            //
+            $table->decimal('altitude', 10, 2)->nullable()->after('longitude');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('field_tests', function (Blueprint $table) {
-            //
+            $table->dropColumn('altitude');
         });
     }
 };

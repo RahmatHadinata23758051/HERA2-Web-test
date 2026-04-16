@@ -10,6 +10,7 @@ class FieldTest extends Model
         'user_id',
         'latitude',
         'longitude',
+        'altitude',
         'suhu_air',
         'suhu_lingkungan',
         'kelembapan',
