@@ -84,16 +84,23 @@ services:
     volumes:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
-  # 8. WebSockets (Soketi)
-  websockets:
-    image: quay.io/soketi/soketi:1.6-16-alpine
+  # 8. WebSockets (Laravel Reverb)
+  reverb:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: php artisan reverb:start --host="0.0.0.0" --port=8080
     ports:
-      - "6001:6001"
+      - "8080:8080"
+    volumes:
+      - .:/var/www
+    depends_on:
+      - app
+      - redis
     environment:
-      - SOKETI_DEBUG=1
-      - SOKETI_DEFAULT_APP_ID=hera
-      - SOKETI_DEFAULT_APP_KEY=hera-key
-      - SOKETI_DEFAULT_APP_SECRET=hera-secret
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - INFLUXDB_URL=http://influxdb:8686
 
   # -------------------------------------------------------------
   # Fase 1: Aktif Saat Ini
