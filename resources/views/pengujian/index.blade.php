@@ -238,7 +238,7 @@
                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Suhu Air</span><br><b style="color:#006948">${data.suhu_air}°C</b></div>
                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Udara</span><br><b style="color:#006948">${data.suhu_lingkungan}°C</b></div>
                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Kelembapan</span><br><b style="color:#006948">${data.kelembapan}%</b></div>
-                    <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;grid-column:span 2;text-align:center;"><span style="color:#6d7a72;font-size:10px;">🤖 CR Estimated</span><br><b style="color:#7e22ce;font-size:14px;">${data.cr} mg/L</b></div>
+                    <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;grid-column:span 2;text-align:center;"><span style="color:#6d7a72;font-size:10px;">CR Estimated</span><br><b style="color:#7e22ce;font-size:14px;">${data.cr} mg/L</b></div>
                 </div>
             </div>
         `;

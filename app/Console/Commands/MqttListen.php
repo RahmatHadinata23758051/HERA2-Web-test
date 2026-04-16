@@ -44,8 +44,10 @@ class MqttListen extends Command
                         ProcessSensorIngestion::dispatch($data)->onQueue('default');
                         $this->line("   ↳ ✅ Di-dispatch ke Redis Queue (ProcessSensorIngestion)");
                     } else {
-                        $this->error("   ↳ ❌ Drop: Struktur JSON tidak valid.");
+                        $this->error("   ↳ ❌ Drop: Struktur JSON tidak valid. Data = " . json_encode($data));
                     }
+                } else {
+                    $this->error("   ↳ ❌ Drop: Gagal parse JSON. " . json_last_error_msg());
                 }
             }, 0);
 
