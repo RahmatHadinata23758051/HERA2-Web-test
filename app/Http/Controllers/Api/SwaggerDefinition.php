@@ -9,7 +9,7 @@ use OpenApi\Attributes as OA;
     description: 'API untuk integrasi aplikasi mobile HERA (Hydrology Environmental Real-time Analytics) dengan sistem monitoring Chromium berbasis IoT. Semua endpoint yang dilindungi memerlukan Bearer Token dari Sanctum.',
     title: 'HERA 2.0 Mobile API',
     contact: new OA\Contact(
-        name: 'Tim HERA 2.0 — Politeknik Negeri Lampung',
+        name: 'Tim HERA 2.0 — Makerindo Prima Solusi',
         email: 'admin@hera.ac.id'
     )
 )]
