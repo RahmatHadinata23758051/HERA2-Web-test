@@ -48,6 +48,26 @@ services:
       - AI_SERVICE_URL=http://ai_service:8001
       - MQTT_HOST=mqtt
 
+  # 3b. Worker Pendengar MQTT (IOT)
+  mqtt_listener:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: php artisan mqtt:listen
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+    depends_on:
+      - mqtt
+      - app
+      - redis
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - INFLUXDB_URL=http://influxdb:8686
+      - AI_SERVICE_URL=http://ai_service:8001
+      - MQTT_HOST=mqtt
+
   # 4. AI Service (FastAPI)
   ai_service:
     build:
