@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "HERA 2.0 Mobile API",
+    "title": "HERA 2.0 API Documentation",
     "version": "2.0.0",
-    "description": "API untuk integrasi aplikasi mobile HERA (Hydrology Environmental Real-time Analytics) dengan sistem monitoring kualitas air berbasis IoT. Semua endpoint yang dilindungi memerlukan Bearer Token dari Sanctum.\n\n## Cara Penggunaan\n1. Dapatkan token via `POST /api/mobile/login` atau `POST /api/mobile/register`\n2. Klik tombol **Authorize** di atas dan masukkan token\n3. Coba setiap endpoint langsung dari halaman ini",
+    "description": "Dokumentasi lengkap seluruh API sistem HERA (Hydrology Environmental Real-time Analytics) — sistem monitoring kualitas air Chromium berbasis IoT.\n\n## Grup API\n- **IoT Node** — Untuk perangkat sensor lapangan (ESP32/Raspberry Pi). Auth: `X-IoT-Token`\n- **Web Dashboard** — Endpoint internal dashboard web. Auth: Session Cookie\n- **Auth Mobile** — Login & register untuk aplikasi mobile. Tidak memerlukan token\n- **Sensor (Mobile)** — Data sensor real-time untuk aplikasi mobile. Auth: Sanctum Bearer Token\n- **Field Test** — Pengujian lapangan yang dipicu dari mobile. Auth: Sanctum Bearer Token\n\n## Cara Mendapatkan Token Mobile\n1. Panggil `POST /api/mobile/login` atau `POST /api/mobile/register`\n2. Klik tombol **Authorize** dan masukkan token\n3. Semua endpoint yang dilindungi siap dicoba langsung dari halaman ini",
     "contact": {
       "name": "Tim HERA 2.0 — Makerindo Prima Solusi",
       "email": "admin@hera.ac.id"
@@ -26,6 +26,18 @@
         "scheme": "bearer",
         "bearerFormat": "Token",
         "description": "Masukkan token dari endpoint /api/mobile/login atau /api/mobile/register"
+      },
+      "iot_token": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-IoT-Token",
+        "description": "Token khusus untuk perangkat IoT Node (mikrokomputer/ESP32). Nilai token dikonfigurasi via environment variable `IOT_NODE_TOKEN` di server. Alternatif: bisa dikirim sebagai Bearer Token di header Authorization."
+      },
+      "web_session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "laravel_session",
+        "description": "Session cookie Laravel (web middleware). Endpoint ini hanya bisa diakses oleh pengguna yang sudah login via web browser dashboard."
       }
     },
     "schemas": {
@@ -118,15 +130,190 @@
       "description": "Autentikasi untuk aplikasi mobile HERA. Login dan register tidak memerlukan token."
     },
     {
-      "name": "Sensor",
-      "description": "Data pembacaan sensor IoT real-time dari InfluxDB. Semua endpoint memerlukan Bearer Token."
+      "name": "Sensor (Mobile)",
+      "description": "Data pembacaan sensor IoT real-time dari InfluxDB untuk aplikasi mobile. Semua endpoint memerlukan Bearer Token Sanctum."
     },
     {
       "name": "Field Test",
       "description": "API untuk pengujian lapangan yang dipicu dari aplikasi mobile saat mengunjungi lokasi sampling langsung."
+    },
+    {
+      "name": "IoT Node",
+      "description": "Endpoint khusus untuk perangkat IoT Node (ESP32/Raspberry Pi/mikrokomputer) yang terpasang di lapangan. Menggunakan autentikasi X-IoT-Token. Data yang masuk diproses secara asinkron via Redis Queue."
+    },
+    {
+      "name": "Web Dashboard",
+      "description": "Endpoint internal yang digunakan oleh web dashboard HERA. Memerlukan session login web (cookie). Digunakan untuk real-time chart, alert panel, dan laporan."
     }
   ],
   "paths": {
+    "/api/v1/telemetry/ingest": {
+      "post": {
+        "tags": ["IoT Node"],
+        "summary": "Terima data sensor dari IoT Node",
+        "description": "Endpoint utama untuk menerima data sensor dari perangkat IoT Node (ESP32, Raspberry Pi, dll) yang terpasang di lapangan.\n\nData diterima dan langsung **di-push ke Redis Queue** agar respons HTTP kembali dalam milidetik tanpa memblokir proses AI prediction dan penyimpanan ke InfluxDB.\n\n**Alur data:**\n```\nIoT Node → POST /api/v1/telemetry/ingest → Redis Queue → Worker → AI Predict → InfluxDB → WebSocket → Dashboard\n```\n\n**Autentikasi:** Kirim header `X-IoT-Token` dengan nilai token yang dikonfigurasi di environment variable `IOT_NODE_TOKEN`.",
+        "operationId": "telemetryIngest",
+        "security": [{"iot_token": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["ec", "tds", "ph", "suhu_air", "suhu_lingkungan", "kelembapan", "tegangan"],
+                "type": "object",
+                "properties": {
+                  "ec": {"type": "number", "format": "float", "example": 450.5, "description": "Electrical Conductivity (mS/cm)"},
+                  "tds": {"type": "number", "format": "float", "example": 300.0, "description": "Total Dissolved Solids (ppm)"},
+                  "ph": {"type": "number", "format": "float", "example": 7.2, "description": "Nilai pH air"},
+                  "suhu_air": {"type": "number", "format": "float", "example": 28.5, "description": "Suhu air (°C)"},
+                  "suhu_lingkungan": {"type": "number", "format": "float", "example": 31.0, "description": "Suhu udara lingkungan (°C)"},
+                  "kelembapan": {"type": "number", "format": "float", "example": 74.2, "description": "Kelembapan udara (%)"},
+                  "tegangan": {"type": "number", "format": "float", "example": 3.78, "description": "Tegangan baterai sensor (V)"},
+                  "location": {"type": "string", "example": "citarum_node_alpha", "description": "Nama/ID lokasi perangkat (opsional)"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Data diterima dan masuk ke antrian proses (202 Accepted)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string", "example": "success"},
+                    "message": {"type": "string", "example": "Data received and queued for processing."}
+                  }
+                }
+              }
+            }
+          },
+          "401": {"description": "X-IoT-Token tidak valid atau tidak dikirim"},
+          "422": {"description": "Validasi gagal — salah satu field sensor wajib bernilai numerik"}
+        }
+      }
+    },
+    "/api/health-check": {
+      "get": {
+        "tags": ["Web Dashboard"],
+        "summary": "Status kesehatan layanan AI",
+        "description": "Mengecek apakah FastAPI AI Service (model prediksi Chromium) sedang online dan model ML sudah ter-load. Dipanggil secara periodik oleh web dashboard untuk menampilkan indikator status FastAPI Core.\n\n**Catatan:** Endpoint ini hanya dapat diakses oleh pengguna yang sudah login ke web dashboard (session/cookie).",
+        "operationId": "healthCheck",
+        "security": [{"web_session": []}],
+        "responses": {
+          "200": {
+            "description": "FastAPI AI Service online",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string", "example": "ok"},
+                    "model_loaded": {"type": "boolean", "example": true},
+                    "model_name": {"type": "string", "example": "Random Forest — HERA v2"}
+                  }
+                }
+              }
+            }
+          },
+          "500": {"description": "FastAPI Service offline atau model ML belum ter-load"}
+        }
+      }
+    },
+    "/api/sensor/latest": {
+      "get": {
+        "tags": ["Web Dashboard"],
+        "summary": "30 pembacaan sensor terbaru (untuk chart)",
+        "description": "Mengambil 30 pembacaan sensor terbaru dari InfluxDB, diurutkan secara **ascending** berdasarkan waktu agar bisa langsung digunakan sebagai data sumber real-time chart di web dashboard.\n\nEndpoint ini dipanggil oleh komponen JavaScript chart di halaman Dashboard utama via polling atau WebSocket fallback.",
+        "operationId": "webSensorLatest",
+        "security": [{"web_session": []}],
+        "responses": {
+          "200": {
+            "description": "Array 30 pembacaan sensor terbaru (ascending by time)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "created_at": {"type": "string", "format": "date-time"},
+                      "cr_estimated": {"type": "number", "example": 0.0214},
+                      "ec": {"type": "number", "example": 450.5},
+                      "tds": {"type": "number", "example": 300.0},
+                      "ph": {"type": "number", "example": 7.2},
+                      "suhu_air": {"type": "number", "example": 28.5},
+                      "suhu_lingkungan": {"type": "number", "example": 31.0},
+                      "kelembapan": {"type": "number", "example": 74.2},
+                      "tegangan": {"type": "number", "example": 3.78},
+                      "status": {"type": "string", "enum": ["normal", "warning", "danger"], "example": "normal"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sensor/alerts": {
+      "get": {
+        "tags": ["Web Dashboard"],
+        "summary": "Alert sensor terbaru (untuk panel notifikasi)",
+        "description": "Mengambil hingga 10 pembacaan sensor terbaru yang berstatus `warning` atau `danger` dari 50 pembacaan terakhir. Digunakan oleh panel notifikasi real-time di sidebar web dashboard.",
+        "operationId": "webSensorAlerts",
+        "security": [{"web_session": []}],
+        "responses": {
+          "200": {
+            "description": "Array alert sensor (maks 10 item)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "created_at": {"type": "string", "format": "date-time"},
+                      "cr_estimated": {"type": "number", "example": 0.156},
+                      "status": {"type": "string", "enum": ["warning", "danger"], "example": "danger"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sensor/history": {
+      "get": {
+        "tags": ["Web Dashboard"],
+        "summary": "Riwayat sensor untuk laporan web",
+        "description": "Mengambil riwayat pembacaan sensor dari InfluxDB dengan filter tanggal. Digunakan untuk halaman Laporan di web dashboard. Hasil dikembalikan secara **ascending** berdasarkan waktu.",
+        "operationId": "webSensorHistory",
+        "security": [{"web_session": []}],
+        "parameters": [
+          {"name": "from", "in": "query", "description": "Tanggal/waktu awal filter (format bebas, di-parse oleh Carbon)", "schema": {"type": "string", "example": "2026-04-01 00:00:00"}},
+          {"name": "to", "in": "query", "description": "Tanggal/waktu akhir filter", "schema": {"type": "string", "example": "2026-04-16 23:59:59"}},
+          {"name": "limit", "in": "query", "description": "Batas jumlah data yang dikembalikan (default: 1000)", "schema": {"type": "integer", "example": 1000}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Array riwayat pembacaan sensor (ascending by time)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/SensorReading"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/mobile/login": {
       "post": {
         "tags": ["Auth Mobile"],
