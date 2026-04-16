@@ -44,6 +44,7 @@
                         <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Waktu Validasi</th>
                         <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Nama Petugas</th>
                         <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Koordinat GPS</th>
+                        <th class="px-4 py-3 text-[10px] font-black text-sky-700 uppercase tracking-widest text-center border-r border-surface-container-high bg-sky-50">Altitude (m)</th>
                         <th colspan="7" class="px-4 py-2.5 text-[10px] font-black text-emerald-700 uppercase tracking-widest text-center border-b border-r border-surface-container-high bg-emerald-50">Data Sensor Terkalibrasi</th>
                         <th class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
                     </tr>
@@ -52,6 +53,7 @@
                         <th class="px-4 py-2 border-r border-surface-container-high"></th>
                         <th class="px-4 py-2 border-r border-surface-container-high"></th>
                         <th class="px-4 py-2 border-r border-surface-container-high"></th>
+                        <th class="px-4 py-2 text-sky-700 bg-sky-50 text-center border-r border-surface-container-high"></th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center">pH</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center">TDS (ppm)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center">EC (mS)</th>
@@ -69,6 +71,9 @@
                         <td class="px-4 py-3 text-sm text-on-surface font-bold text-center border-r border-surface-container-high whitespace-nowrap">{{ optional($test->user)->name ?? 'Unknown' }}</td>
                         <td class="px-4 py-3 text-xs text-primary font-mono text-center border-r border-surface-container-high">
                             {{ number_format($test->latitude, 4) }}, {{ number_format($test->longitude, 4) }}
+                        </td>
+                        <td class="px-4 py-3 text-sm font-mono text-sky-700 text-center bg-sky-50/40 border-r border-surface-container-high whitespace-nowrap">
+                            {{ $test->altitude !== null ? number_format($test->altitude, 1) . ' m' : '-' }}
                         </td>
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->ph ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->tds ?? '-' }}</td>
@@ -188,6 +193,7 @@
                 {
                     timestamp: '{{ $test->created_at->format('d M Y, H:i') }}',
                     officer:   '{{ addslashes(optional($test->user)->name ?? 'Unknown') }}',
+                    altitude:  '{{ $test->altitude !== null ? number_format($test->altitude, 1) . ' m' : '-' }}',
                     ph:        '{{ $test->ph ?? '-' }}',
                     tds:       '{{ $test->tds ?? '-' }}',
                     ec:        '{{ $test->ec ?? '-' }}',
@@ -230,7 +236,8 @@
                     Data Sensor Valid
                 </div>
                 <div style="color:#3d4a42; margin-bottom:4px;"><span style="color:#6d7a72">Waktu:</span> <b>${data.timestamp}</b></div>
-                <div style="color:#3d4a42; margin-bottom:8px;"><span style="color:#6d7a72">Petugas:</span> <b>${data.officer}</b></div>
+                <div style="color:#3d4a42; margin-bottom:4px;"><span style="color:#6d7a72">Petugas:</span> <b>${data.officer}</b></div>
+                <div style="color:#3d4a42; margin-bottom:8px;"><span style="color:#6d7a72">Altitude:</span> <b style="color:#0369a1">${data.altitude}</b></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">pH</span><br><b style="color:#006948">${data.ph}</b></div>
                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">TDS</span><br><b style="color:#006948">${data.tds} ppm</b></div>
