@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class MobileAuthController extends Controller
 {
@@ -55,6 +53,46 @@ class MobileAuthController extends Controller
                 ],
             ],
         ], 200);
+    }
+
+    /**
+     * POST /api/mobile/register
+     * Creates a new user account and returns a Sanctum token directly
+     * so the user is logged in immediately after registration.
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'petugas', // default role for self-registered users
+        ]);
+
+        $deviceName = $request->device_name ?? 'Mobile App';
+        $token = $user->createToken($deviceName, ['*'], now()->addDays(30))->plainTextToken;
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Registrasi berhasil. Selamat datang di HERA!',
+            'data'    => [
+                'token'      => $token,
+                'token_type' => 'Bearer',
+                'expires_in' => '30 days',
+                'user'       => [
+                    'id'    => $user->id,
+                    'name'  => $user->name,
+                    'email' => $user->email,
+                    'role'  => $user->role,
+                ],
+            ],
+        ], 201);
     }
 
     /**

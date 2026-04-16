@@ -39,7 +39,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 // Public — No auth required
 Route::prefix('mobile')->name('mobile.')->group(function () {
-    Route::post('/login', [MobileAuthController::class, 'login'])->name('login');
+    Route::post('/login',    [MobileAuthController::class, 'login'])->name('login');
+    Route::post('/register', [MobileAuthController::class, 'register'])->name('register');
 });
 
 // Protected — Requires valid Bearer token
