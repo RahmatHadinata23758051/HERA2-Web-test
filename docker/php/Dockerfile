@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 # Instal dependensi sistem yang esensial
 RUN apt-get update && apt-get install -y \
@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instal ekstensi PHP (pdo_pgsql sangat penting untuk auth)
-RUN docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd sockets
+RUN apt-get update && apt-get install -y libzip-dev
+RUN docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd sockets zip
 
 # Instal Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
