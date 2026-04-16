@@ -5,7 +5,7 @@
     "version": "2.0.0",
     "description": "API untuk integrasi aplikasi mobile HERA (Hydrology Environmental Real-time Analytics) dengan sistem monitoring kualitas air berbasis IoT. Semua endpoint yang dilindungi memerlukan Bearer Token dari Sanctum.\n\n## Cara Penggunaan\n1. Dapatkan token via `POST /api/mobile/login` atau `POST /api/mobile/register`\n2. Klik tombol **Authorize** di atas dan masukkan token\n3. Coba setiap endpoint langsung dari halaman ini",
     "contact": {
-      "name": "Tim HERA 2.0 — Politeknik Negeri Lampung",
+      "name": "Tim HERA 2.0 — Makerindo Prima Solusi",
       "email": "admin@hera.ac.id"
     }
   },
