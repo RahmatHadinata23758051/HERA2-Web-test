@@ -1,0 +1,449 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "HERA 2.0 Mobile API",
+    "version": "2.0.0",
+    "description": "API untuk integrasi aplikasi mobile HERA (Hydrology Environmental Real-time Analytics) dengan sistem monitoring kualitas air berbasis IoT. Semua endpoint yang dilindungi memerlukan Bearer Token dari Sanctum.\n\n## Cara Penggunaan\n1. Dapatkan token via `POST /api/mobile/login` atau `POST /api/mobile/register`\n2. Klik tombol **Authorize** di atas dan masukkan token\n3. Coba setiap endpoint langsung dari halaman ini",
+    "contact": {
+      "name": "Tim HERA 2.0 — Politeknik Negeri Lampung",
+      "email": "admin@hera.ac.id"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://103.217.145.187:8000",
+      "description": "HERA 2.0 VPS Production"
+    },
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "Lokal Development"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sanctum": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Token",
+        "description": "Masukkan token dari endpoint /api/mobile/login atau /api/mobile/register"
+      }
+    },
+    "schemas": {
+      "AuthUser": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Budi Santoso" },
+          "email": { "type": "string", "example": "petugas@hera.ac.id" },
+          "role": { "type": "string", "enum": ["petugas", "direksi"], "example": "petugas" }
+        }
+      },
+      "AuthToken": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string", "example": "1|abc123xyz..." },
+          "token_type": { "type": "string", "example": "Bearer" },
+          "expires_in": { "type": "string", "example": "30 days" },
+          "user": { "$ref": "#/components/schemas/AuthUser" }
+        }
+      },
+      "FieldTestItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 7 },
+          "user_id": { "type": "integer", "example": 3 },
+          "latitude": { "type": "number", "format": "float", "example": -6.967585 },
+          "longitude": { "type": "number", "format": "float", "example": 107.659063 },
+          "altitude": { "type": "number", "format": "float", "example": 768.5, "nullable": true },
+          "ph": { "type": "number", "format": "float", "example": 7.5 },
+          "tds": { "type": "number", "format": "float", "example": 300 },
+          "ec": { "type": "number", "format": "float", "example": 450 },
+          "suhu_air": { "type": "number", "format": "float", "example": 28.5 },
+          "suhu_lingkungan": { "type": "number", "format": "float", "example": 30.0 },
+          "kelembapan": { "type": "number", "format": "float", "example": 75.0 },
+          "tegangan": { "type": "number", "format": "float", "example": 3.8 },
+          "cr_estimated": { "type": "number", "format": "float", "example": 0.01545, "description": "Estimasi kadar Chromium (mg/L) dari model AI" },
+          "created_at": { "type": "string", "format": "date-time", "example": "2026-04-16T06:30:18.000000Z" },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer", "example": 3 },
+              "name": { "type": "string", "example": "Petugas Monitoring" }
+            }
+          }
+        }
+      },
+      "SensorReading": {
+        "type": "object",
+        "properties": {
+          "location": { "type": "string", "example": "citarum_node_alpha" },
+          "tds": { "type": "number", "example": 450.5 },
+          "ph": { "type": "number", "example": 7.2 },
+          "ec": { "type": "number", "example": 680.3 },
+          "suhu_air": { "type": "number", "example": 28.5 },
+          "suhu_lingkungan": { "type": "number", "example": 31.0 },
+          "kelembapan": { "type": "number", "example": 74.2 },
+          "tegangan": { "type": "number", "example": 3.78 },
+          "cr_estimated": { "type": "number", "example": 0.0214 },
+          "status": { "type": "string", "enum": ["normal", "warning", "danger"], "example": "normal" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "Pesan error" }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "The email has already been taken." },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "example": { "email": ["The email has already been taken."] }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth Mobile",
+      "description": "Autentikasi untuk aplikasi mobile HERA. Login dan register tidak memerlukan token."
+    },
+    {
+      "name": "Sensor",
+      "description": "Data pembacaan sensor IoT real-time dari InfluxDB. Semua endpoint memerlukan Bearer Token."
+    },
+    {
+      "name": "Field Test",
+      "description": "API untuk pengujian lapangan yang dipicu dari aplikasi mobile saat mengunjungi lokasi sampling langsung."
+    }
+  ],
+  "paths": {
+    "/api/mobile/login": {
+      "post": {
+        "tags": ["Auth Mobile"],
+        "summary": "Login mobile",
+        "description": "Autentikasi pengguna mobile dan mengembalikan Sanctum Bearer Token yang berlaku 30 hari. Token ini digunakan di semua endpoint yang dilindungi.",
+        "operationId": "mobileLogin",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["email", "password"],
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "petugas@hera.ac.id" },
+                  "password": { "type": "string", "format": "password", "example": "password123" },
+                  "device_name": { "type": "string", "example": "Samsung Galaxy A54", "description": "Nama perangkat (opsional, untuk identifikasi token)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Login berhasil." },
+                    "data": { "$ref": "#/components/schemas/AuthToken" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Email atau password salah", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+    "/api/mobile/register": {
+      "post": {
+        "tags": ["Auth Mobile"],
+        "summary": "Register akun baru",
+        "description": "Membuat akun pengguna baru dengan role `petugas` (default). Langsung mengembalikan Bearer Token sehingga pengguna tidak perlu login ulang setelah mendaftar.",
+        "operationId": "mobileRegister",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["name", "email", "password"],
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Andi Prasetyo" },
+                  "email": { "type": "string", "format": "email", "example": "andi@hera.ac.id" },
+                  "password": { "type": "string", "format": "password", "example": "password123", "description": "Minimal 6 karakter" },
+                  "device_name": { "type": "string", "example": "Xiaomi Redmi Note 12", "description": "Nama perangkat (opsional)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registrasi berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Registrasi berhasil. Selamat datang di HERA!" },
+                    "data": { "$ref": "#/components/schemas/AuthToken" }
+                  }
+                }
+              }
+            }
+          },
+          "422": { "description": "Validasi gagal (email sudah terdaftar, password < 6 karakter, dsb.)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ValidationError" } } } }
+        }
+      }
+    },
+    "/api/mobile/logout": {
+      "post": {
+        "tags": ["Auth Mobile"],
+        "summary": "Logout mobile",
+        "description": "Mencabut (revoke) Bearer Token yang sedang aktif. Token tidak dapat digunakan lagi setelah ini.",
+        "operationId": "mobileLogout",
+        "security": [{ "sanctum": [] }],
+        "responses": {
+          "200": { "description": "Logout berhasil", "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "boolean", "example": true }, "message": { "type": "string", "example": "Logout berhasil. Token telah dicabut." } } } } } },
+          "401": { "description": "Token tidak valid atau sudah kedaluwarsa" }
+        }
+      }
+    },
+    "/api/mobile/profile": {
+      "get": {
+        "tags": ["Auth Mobile"],
+        "summary": "Profil pengguna",
+        "description": "Mengembalikan data profil pengguna yang sedang login berdasarkan Bearer Token.",
+        "operationId": "mobileProfile",
+        "security": [{ "sanctum": [] }],
+        "responses": {
+          "200": {
+            "description": "Data profil berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "OK" },
+                    "data": { "$ref": "#/components/schemas/AuthUser" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token tidak valid" }
+        }
+      }
+    },
+    "/api/mobile/sensor/latest": {
+      "get": {
+        "tags": ["Sensor"],
+        "summary": "Data sensor terbaru",
+        "description": "Mengembalikan satu pembacaan sensor IoT paling terakhir dari InfluxDB. Data mencakup TDS, pH, EC, suhu, kelembapan, tegangan, estimasi Chromium, dan status kualitas air.",
+        "operationId": "sensorLatest",
+        "security": [{ "sanctum": [] }],
+        "responses": {
+          "200": { "description": "Data sensor terbaru", "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "boolean", "example": true }, "message": { "type": "string", "example": "OK" }, "data": { "$ref": "#/components/schemas/SensorReading" } } } } } },
+          "404": { "description": "Belum ada data sensor" },
+          "401": { "description": "Token tidak valid" }
+        }
+      }
+    },
+    "/api/mobile/sensor/history": {
+      "get": {
+        "tags": ["Sensor"],
+        "summary": "Riwayat pembacaan sensor",
+        "description": "Mengambil riwayat pembacaan sensor dari InfluxDB. Mendukung filter tanggal dan status kualitas air dengan offset pagination.",
+        "operationId": "sensorHistory",
+        "security": [{ "sanctum": [] }],
+        "parameters": [
+          { "name": "from_date", "in": "query", "description": "Tanggal awal (YYYY-MM-DD)", "schema": { "type": "string", "format": "date", "example": "2026-04-01" } },
+          { "name": "to_date", "in": "query", "description": "Tanggal akhir (YYYY-MM-DD)", "schema": { "type": "string", "format": "date", "example": "2026-04-16" } },
+          { "name": "status", "in": "query", "description": "Filter status kualitas air", "schema": { "type": "string", "enum": ["normal", "warning", "danger"] } },
+          { "name": "limit", "in": "query", "description": "Jumlah item per halaman (default: 50, maks: 500)", "schema": { "type": "integer", "example": 50 } },
+          { "name": "page", "in": "query", "description": "Nomor halaman", "schema": { "type": "integer", "example": 1 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Riwayat sensor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "OK" },
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/SensorReading" } },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": { "type": "integer", "example": 1 },
+                        "last_page": { "type": "integer", "example": 5 },
+                        "per_page": { "type": "integer", "example": 50 },
+                        "total": { "type": "integer", "example": 243 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token tidak valid" }
+        }
+      }
+    },
+    "/api/mobile/sensor/alerts": {
+      "get": {
+        "tags": ["Sensor"],
+        "summary": "Daftar alert sensor",
+        "description": "Mengembalikan maksimal 20 pembacaan sensor terkini yang berstatus `warning` atau `danger`. Berguna untuk notifikasi kondisi air berbahaya.",
+        "operationId": "sensorAlerts",
+        "security": [{ "sanctum": [] }],
+        "responses": {
+          "200": { "description": "Daftar alert sensor", "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "boolean", "example": true }, "data": { "type": "array", "items": { "$ref": "#/components/schemas/SensorReading" } } } } } } },
+          "401": { "description": "Token tidak valid" }
+        }
+      }
+    },
+    "/api/mobile/sensor/daily-stats": {
+      "get": {
+        "tags": ["Sensor"],
+        "summary": "Statistik sensor harian",
+        "description": "Mengembalikan ringkasan statistik sensor hari ini: total pembacaan, jumlah warning, jumlah danger, dan rata-rata estimasi kadar Chromium.",
+        "operationId": "sensorDailyStats",
+        "security": [{ "sanctum": [] }],
+        "responses": {
+          "200": {
+            "description": "Statistik harian",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "date": { "type": "string", "example": "2026-04-16" },
+                        "total": { "type": "integer", "example": 48 },
+                        "warning": { "type": "integer", "example": 5 },
+                        "danger": { "type": "integer", "example": 2 },
+                        "avg_cr": { "type": "number", "example": 0.0213, "description": "Rata-rata estimasi Chromium hari ini (mg/L)" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token tidak valid" }
+        }
+      }
+    },
+    "/api/mobile/testing/location": {
+      "post": {
+        "tags": ["Field Test"],
+        "summary": "Kirim data pengujian lapangan",
+        "description": "Menyimpan data hasil pengujian lapangan dari mobile. GPS + data sensor disimpan ke database. Sistem secara otomatis menghitung estimasi kadar Chromium menggunakan model AI FastAPI.\n\n**Altitude** (ketinggian) bersifat opsional — jika perangkat mendukung GPS altimeter, nilai ini akan tersimpan dan ditampilkan di peta web dashboard.",
+        "operationId": "fieldTestStore",
+        "security": [{ "sanctum": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["latitude", "longitude"],
+                "type": "object",
+                "properties": {
+                  "latitude": { "type": "number", "format": "float", "example": -6.967585 },
+                  "longitude": { "type": "number", "format": "float", "example": 107.659063 },
+                  "altitude": { "type": "number", "format": "float", "example": 768.5, "description": "Ketinggian lokasi (meter dpl, opsional)" },
+                  "suhu_air": { "type": "number", "format": "float", "example": 28.5 },
+                  "suhu_lingkungan": { "type": "number", "format": "float", "example": 30.0 },
+                  "kelembapan": { "type": "number", "format": "float", "example": 75.0 },
+                  "ec": { "type": "number", "format": "float", "example": 450.0, "description": "Electrical Conductivity (mS/cm)" },
+                  "tds": { "type": "number", "format": "float", "example": 300.0, "description": "Total Dissolved Solids (ppm)" },
+                  "ph": { "type": "number", "format": "float", "example": 7.5 },
+                  "tegangan": { "type": "number", "format": "float", "example": 3.8, "description": "Tegangan baterai sensor (V)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Data pengujian berhasil disimpan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Data pengujian terkalibrasi berhasil terekam!" },
+                    "data": { "$ref": "#/components/schemas/FieldTestItem" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token tidak valid" },
+          "422": { "description": "Validasi gagal — latitude/longitude wajib diisi" }
+        }
+      }
+    },
+    "/api/mobile/testing/history": {
+      "get": {
+        "tags": ["Field Test"],
+        "summary": "Riwayat pengujian lapangan",
+        "description": "Mengambil riwayat data pengujian lapangan semua petugas dengan cursor-based pagination.\n\n**Cara paginasi:**\n1. Panggil tanpa parameter `cursor` untuk halaman pertama\n2. Gunakan nilai `next_cursor` dari response sebagai parameter `cursor` untuk halaman berikutnya\n3. Jika `next_cursor` bernilai `null`, artinya sudah halaman terakhir",
+        "operationId": "fieldTestHistory",
+        "security": [{ "sanctum": [] }],
+        "parameters": [
+          { "name": "limit", "in": "query", "description": "Jumlah item per halaman (default: 20)", "schema": { "type": "integer", "example": 20 } },
+          { "name": "cursor", "in": "query", "description": "ISO datetime dari `next_cursor` response sebelumnya. Kosongkan untuk halaman pertama.", "schema": { "type": "string", "example": "2026-04-15T13:16:28+07:00" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Riwayat pengujian lapangan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Success retrieve history" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": { "type": "array", "items": { "$ref": "#/components/schemas/FieldTestItem" } },
+                        "next_cursor": { "type": "string", "nullable": true, "example": "2026-04-15T13:16:28+07:00", "description": "Kirim nilai ini sebagai `cursor` untuk halaman berikutnya. Null jika sudah halaman terakhir." }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token tidak valid" }
+        }
+      }
+    }
+  }
+}

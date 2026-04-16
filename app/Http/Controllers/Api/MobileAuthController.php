@@ -10,8 +10,41 @@ use Illuminate\Support\Facades\Hash;
 class MobileAuthController extends Controller
 {
     /**
-     * POST /api/mobile/login
-     * Returns a Sanctum token for use in subsequent API calls.
+     * @OA\Post(
+     *     path="/api/mobile/login",
+     *     summary="Login mobile",
+     *     description="Autentikasi pengguna mobile dan mengembalikan Sanctum Bearer Token yang berlaku 30 hari.",
+     *     tags={"Auth Mobile"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="petugas@hera.ac.id"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123"),
+     *             @OA\Property(property="device_name", type="string", example="Samsung Galaxy A54", description="Nama perangkat (opsional)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login berhasil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Login berhasil."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="token", type="string", example="1|abc123..."),
+     *                 @OA\Property(property="token_type", type="string", example="Bearer"),
+     *                 @OA\Property(property="expires_in", type="string", example="30 days"),
+     *                 @OA\Property(property="user", type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="Budi Santoso"),
+     *                     @OA\Property(property="email", type="string", example="petugas@hera.ac.id"),
+     *                     @OA\Property(property="role", type="string", example="petugas")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Email atau password salah")
+     * )
      */
     public function login(Request $request)
     {
@@ -32,10 +65,7 @@ class MobileAuthController extends Controller
         }
 
         $deviceName = $request->device_name ?? 'Mobile App';
-
-        // Revoke old tokens from this device name to prevent accumulation
         $user->tokens()->where('name', $deviceName)->delete();
-
         $token = $user->createToken($deviceName, ['*'], now()->addDays(30))->plainTextToken;
 
         return response()->json([
@@ -56,9 +86,45 @@ class MobileAuthController extends Controller
     }
 
     /**
-     * POST /api/mobile/register
-     * Creates a new user account and returns a Sanctum token directly
-     * so the user is logged in immediately after registration.
+     * @OA\Post(
+     *     path="/api/mobile/register",
+     *     summary="Register akun baru",
+     *     description="Membuat akun pengguna baru dengan role 'petugas' dan langsung mengembalikan Sanctum Bearer Token sehingga pengguna tidak perlu login ulang setelah mendaftar.",
+     *     tags={"Auth Mobile"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password"},
+     *             @OA\Property(property="name", type="string", example="Andi Prasetyo"),
+     *             @OA\Property(property="email", type="string", format="email", example="andi@hera.ac.id"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123", description="Minimal 6 karakter"),
+     *             @OA\Property(property="device_name", type="string", example="Xiaomi Redmi Note 12", description="Nama perangkat (opsional)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Registrasi berhasil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Registrasi berhasil. Selamat datang di HERA!"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="token", type="string", example="2|xyz789..."),
+     *                 @OA\Property(property="token_type", type="string", example="Bearer"),
+     *                 @OA\Property(property="expires_in", type="string", example="30 days"),
+     *                 @OA\Property(property="user", type="object",
+     *                     @OA\Property(property="id", type="integer", example=5),
+     *                     @OA\Property(property="name", type="string", example="Andi Prasetyo"),
+     *                     @OA\Property(property="email", type="string", example="andi@hera.ac.id"),
+     *                     @OA\Property(property="role", type="string", example="petugas")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validasi gagal (email sudah terdaftar, password kurang dari 6 karakter, dsb.)"
+     *     )
+     * )
      */
     public function register(Request $request)
     {
@@ -72,7 +138,7 @@ class MobileAuthController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => 'petugas', // default role for self-registered users
+            'role'     => 'petugas',
         ]);
 
         $deviceName = $request->device_name ?? 'Mobile App';
@@ -96,8 +162,22 @@ class MobileAuthController extends Controller
     }
 
     /**
-     * POST /api/mobile/logout
-     * Revokes the current token.
+     * @OA\Post(
+     *     path="/api/mobile/logout",
+     *     summary="Logout mobile",
+     *     description="Mencabut (revoke) token Sanctum yang sedang aktif. Token tidak dapat digunakan lagi setelah ini.",
+     *     tags={"Auth Mobile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout berhasil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Logout berhasil. Token telah dicabut.")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Token tidak valid atau sudah kedaluwarsa")
+     * )
      */
     public function logout(Request $request)
     {
@@ -111,8 +191,28 @@ class MobileAuthController extends Controller
     }
 
     /**
-     * GET /api/mobile/profile
-     * Returns the authenticated user's profile.
+     * @OA\Get(
+     *     path="/api/mobile/profile",
+     *     summary="Profil pengguna",
+     *     description="Mengembalikan data profil pengguna yang sedang login berdasarkan Bearer Token.",
+     *     tags={"Auth Mobile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Data profil berhasil diambil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="OK"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Budi Santoso"),
+     *                 @OA\Property(property="email", type="string", example="petugas@hera.ac.id"),
+     *                 @OA\Property(property="role", type="string", example="petugas", description="Nilai: petugas atau direksi")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Token tidak valid")
+     * )
      */
     public function profile(Request $request)
     {
