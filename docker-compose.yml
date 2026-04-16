@@ -76,6 +76,8 @@ services:
     ports:
       - "8001:8001"
     restart: unless-stopped
+    volumes:
+      - ./fastapi-model:/app
 
   # 5. PostgreSQL (Relational DB)
   postgres:
