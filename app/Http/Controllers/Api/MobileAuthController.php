@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class MobileAuthController extends Controller
 {
@@ -214,6 +216,16 @@ class MobileAuthController extends Controller
      *     @OA\Response(response=401, description="Token tidak valid")
      * )
      */
+    /**
+     * @OA\Get(
+     *     path="/api/mobile/profile",
+     *     summary="Profil pengguna",
+     *     description="Mengembalikan data profil pengguna yang sedang login berdasarkan Bearer Token.",
+     *     tags={"Auth Mobile"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(response=200, description="Data profil berhasil diambil")
+     * )
+     */
     public function profile(Request $request)
     {
         return response()->json([
@@ -224,6 +236,92 @@ class MobileAuthController extends Controller
                 'name'  => $request->user()->name,
                 'email' => $request->user()->email,
                 'role'  => $request->user()->role,
+            ],
+        ], 200);
+    }
+
+    /**
+     * PUT /api/mobile/me — Update nama & email
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'name'  => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        $user->update([
+            'name'  => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Profil berhasil diperbarui.',
+            'data'    => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'role'  => $user->role,
+            ],
+        ], 200);
+    }
+
+    /**
+     * PUT /api/mobile/password — Ganti password
+     */
+    public function changePassword(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'old_password'              => 'required|string',
+            'new_password'              => 'required|string|min:6|confirmed',
+            'new_password_confirmation' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Validasi gagal.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Password lama tidak sesuai.',
+                'errors'  => ['old_password' => ['Password lama yang Anda masukkan salah.']],
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        // Cabut semua token lama kecuali token aktif saat ini
+        $user->tokens()->where('id', '!=', $request->user()->currentAccessToken()->id)->delete();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Kata sandi berhasil diubah.',
+            'data'    => [
+                'force_logout' => false,
             ],
         ], 200);
     }

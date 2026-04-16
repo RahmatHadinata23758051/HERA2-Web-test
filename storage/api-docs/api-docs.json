@@ -439,6 +439,93 @@
         }
       }
     },
+    "/api/mobile/me": {
+      "put": {
+        "tags": ["Auth Mobile"],
+        "summary": "Update profil pengguna",
+        "description": "Memperbarui nama dan email pengguna yang sedang login. Email baru harus unik (belum dipakai akun lain).",
+        "operationId": "mobileUpdateProfile",
+        "security": [{ "sanctum": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["name", "email"],
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Budi Santoso Baru" },
+                  "email": { "type": "string", "format": "email", "example": "budi.baru@hera.ac.id" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profil berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Profil berhasil diperbarui." },
+                    "data": { "$ref": "#/components/schemas/AuthUser" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token tidak valid" },
+          "422": { "description": "Validasi gagal — nama kosong atau email sudah dipakai akun lain" }
+        }
+      }
+    },
+    "/api/mobile/password": {
+      "put": {
+        "tags": ["Auth Mobile"],
+        "summary": "Ganti password",
+        "description": "Mengganti password pengguna yang sedang login. Setelah berhasil, semua token lain (selain token aktif saat ini) dicabut otomatis.",
+        "operationId": "mobileChangePassword",
+        "security": [{ "sanctum": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["old_password", "new_password", "new_password_confirmation"],
+                "type": "object",
+                "properties": {
+                  "old_password": { "type": "string", "format": "password", "example": "passwordLama123" },
+                  "new_password": { "type": "string", "format": "password", "example": "passwordBaru456", "description": "Minimal 6 karakter" },
+                  "new_password_confirmation": { "type": "string", "format": "password", "example": "passwordBaru456" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password berhasil diganti",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Kata sandi berhasil diubah." },
+                    "data": { "type": "object", "properties": { "force_logout": { "type": "boolean", "example": false } } }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token tidak valid" },
+          "422": { "description": "Validasi gagal — password lama salah, password baru pendek, atau konfirmasi tidak cocok" }
+        }
+      }
+    },
     "/api/mobile/sensor/latest": {
       "get": {
         "tags": ["Sensor"],

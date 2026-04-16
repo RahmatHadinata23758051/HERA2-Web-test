@@ -46,8 +46,10 @@ Route::prefix('mobile')->name('mobile.')->group(function () {
 // Protected — Requires valid Bearer token
 Route::prefix('mobile')->name('mobile.')->middleware('auth:sanctum')->group(function () {
     // Auth management
-    Route::post('/logout',  [MobileAuthController::class, 'logout'])->name('logout');
-    Route::get('/profile',  [MobileAuthController::class, 'profile'])->name('profile');
+    Route::post('/logout',   [MobileAuthController::class, 'logout'])->name('logout');
+    Route::get('/profile',   [MobileAuthController::class, 'profile'])->name('profile');
+    Route::put('/me',        [MobileAuthController::class, 'updateProfile'])->name('me.update');
+    Route::put('/password',  [MobileAuthController::class, 'changePassword'])->name('password.change');
 
     // Sensor data
     Route::get('/sensor/latest',      [MobileSensorController::class, 'latest'])->name('sensor.latest');
