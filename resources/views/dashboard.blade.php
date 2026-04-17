@@ -371,12 +371,14 @@
             ...getLightModeOptions(),
             series: [{ name: 'EC (µS/cm)', data: [] }, { name: 'TDS (mg/L)', data: [] }],
             chart: { ...getLightModeOptions().chart, type: 'line', height: 250 },
-            colors: ['#006948', '#3e6753'],
+            colors: ['#3B82F6', '#F97316'],
+            stroke: { curve: 'smooth', width: [2.5, 2.5] },
             xaxis: { type: 'datetime', labels: { style: { colors: '#64748b' } } },
             yaxis: [
-                { title: { text: 'EC', style: { color: '#006948'} }, labels: { style: { colors: '#006948' } } },
-                { opposite: true, title: { text: 'TDS', style: { color: '#3e6753'} }, labels: { style: { colors: '#3e6753' } } }
-            ]
+                { title: { text: 'EC (µS/cm)', style: { color: '#3B82F6', fontWeight: 700 } }, labels: { style: { colors: '#3B82F6' } } },
+                { opposite: true, title: { text: 'TDS (mg/L)', style: { color: '#F97316', fontWeight: 700 } }, labels: { style: { colors: '#F97316' } } }
+            ],
+            legend: { show: true, position: 'top', horizontalAlign: 'right' }
         };
         chartEcTds = new ApexCharts(document.querySelector("#chartEcTds"), optionsEcTds);
         chartEcTds.render();
