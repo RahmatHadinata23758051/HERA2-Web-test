@@ -66,7 +66,7 @@ class MobileSensorController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'OK',
-            'data'    => $reading,
+            'data'    => [$reading],
         ]);
     }
 
