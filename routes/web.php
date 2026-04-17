@@ -44,6 +44,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/pengaturan/threshold', [\App\Http\Controllers\ThresholdController::class, 'index'])->name('settings.threshold');
         Route::put('/pengaturan/threshold', [\App\Http\Controllers\ThresholdController::class, 'update'])->name('settings.threshold.update');
 
+        // Manajemen Perangkat IoT
+        Route::resource('iot-devices', \App\Http\Controllers\IotDeviceController::class)->except(['show']);
+
         // Log Aktivitas (halaman terpisah)
         Route::get('/log-aktivitas', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('activity-log.index');
     });

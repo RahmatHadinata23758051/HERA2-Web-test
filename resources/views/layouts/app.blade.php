@@ -234,6 +234,13 @@
                 </div>
 
                 @if(auth()->user()->isDireksi())
+                {{-- Manajemen Perangkat IoT --}}
+                <a href="{{ route('iot-devices.index') }}"
+                   class="flex items-center gap-1.5 h-full px-3 text-sm font-medium transition-all duration-200 border-b-2 rounded-t-sm {{ request()->routeIs('iot-devices*') ? 'text-primary border-primary font-bold bg-primary/[.06]' : 'text-on-surface-variant border-transparent hover:text-primary hover:border-primary/50 hover:bg-primary/[.04]' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Manajemen IoT
+                </a>
+
                 {{-- Log Aktivitas --}}
                 <a href="{{ route('activity-log.index') }}"
                    class="flex items-center gap-1.5 h-full px-3 text-sm font-medium transition-all duration-200 border-b-2 rounded-t-sm {{ request()->routeIs('activity-log*') ? 'text-primary border-primary font-bold bg-primary/[.06]' : 'text-on-surface-variant border-transparent hover:text-primary hover:border-primary/50 hover:bg-primary/[.04]' }}">
@@ -278,6 +285,7 @@
                 </div>
             </div>
             @if(auth()->user()->isDireksi())
+            <a href="{{ route('iot-devices.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('iot-devices*') ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }}">Manajemen IoT</a>
             <a href="{{ route('activity-log.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('activity-log*') ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }}">Log Aktivitas</a>
             <a href="{{ route('settings.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('settings*') ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }}">Pengaturan</a>
             @endif
