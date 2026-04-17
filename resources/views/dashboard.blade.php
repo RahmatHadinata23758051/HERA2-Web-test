@@ -9,6 +9,9 @@
         0% { color: #006948; text-shadow: 0 0 10px rgba(0,105,72,0.3); }
         100% { color: inherit; text-shadow: none; }
     }
+    .apexcharts-tooltip {
+        z-index: 9999 !important;
+    }
 </style>
 @endpush
 
@@ -342,7 +345,12 @@
             theme: { mode: 'light' },
             grid: { borderColor: '#e2e8f0', strokeDashArray: 4 },
             dataLabels: { enabled: false },
-            tooltip: { theme: 'light' },
+            tooltip: { 
+                enabled: true,
+                theme: 'dark', 
+                x: { format: 'yyyy-MM-dd HH:mm:ss' },
+                style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' }
+            },
             stroke: { curve: 'smooth', width: 2 }
         };
     }
