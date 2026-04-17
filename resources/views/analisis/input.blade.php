@@ -32,17 +32,43 @@
         <form action="{{ route('analisis.store') }}" method="POST" class="p-6 space-y-6">
             @csrf
 
-            {{-- Polutan Selector --}}
-            <div>
-                <label class="block text-sm font-bold text-on-surface mb-1.5">Target Polutan</label>
-                <select name="pollutant_type" required
-                        class="w-full bg-white border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all text-sm">
-                    <option value="" disabled selected>Pilih Polutan...</option>
-                    @foreach(\App\Models\RqAnalysis::$pollutantLabels as $key => $label)
-                        <option value="{{ $key }}">{{ $label }} (Default RfD: {{ \App\Models\RqAnalysis::$rfdDefaults[$key] }})</option>
-                    @endforeach
-                </select>
-            </div>
+            {{-- Polutan — Auto-filled dari sub menu, atau pilih manual jika akses langsung --}}
+            @if($type)
+                {{-- Auto-filled: tersembunyi, tidak perlu diisi user --}}
+                <input type="hidden" name="pollutant_type" value="{{ $type }}">
+
+                <div class="flex items-center gap-3 p-3.5 bg-primary/5 border border-primary/20 rounded-lg">
+                    <div class="p-1.5 bg-primary/10 rounded-lg flex-shrink-0">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-primary font-bold uppercase tracking-wide">Target Polutan (otomatis)</p>
+                        <p class="text-sm font-bold text-on-surface mt-0.5">
+                            {{ $pollutantLabels[$type] ?? strtoupper($type) }}
+                            <span class="text-xs text-on-surface-variant font-normal ml-1">
+                                — Default RfD: {{ $rfdDefaults[$type] ?? '-' }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            @else
+                {{-- Fallback jika user buka /analisis/input langsung tanpa sub menu --}}
+                <div>
+                    <label class="block text-sm font-bold text-on-surface mb-1.5">Target Polutan</label>
+                    <select name="pollutant_type" required
+                            class="w-full bg-white border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all text-sm">
+                        <option value="" disabled selected>Pilih Polutan...</option>
+                        @foreach($pollutantLabels as $key => $label)
+                            <option value="{{ $key }}">{{ $label }} (Default RfD: {{ $rfdDefaults[$key] }})</option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-on-surface-variant mt-1.5">
+                        💡 Klik "Input Manual" dari sub menu RQ untuk mengisi ini secara otomatis.
+                    </p>
+                </div>
+            @endif
 
             <hr class="border-surface-container-high">
 

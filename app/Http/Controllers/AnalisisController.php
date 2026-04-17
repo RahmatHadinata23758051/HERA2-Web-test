@@ -66,8 +66,13 @@ class AnalisisController extends Controller
     // =========================================================
     public function inputData(Request $request)
     {
-        // Tampilkan form input data manual
-        return view('analisis.input');
+        $validTypes = array_keys(RqAnalysis::$pollutantLabels);
+        $type = in_array($request->query('type'), $validTypes) ? $request->query('type') : null;
+
+        $pollutantLabels = RqAnalysis::$pollutantLabels;
+        $rfdDefaults     = RqAnalysis::$rfdDefaults;
+
+        return view('analisis.input', compact('type', 'pollutantLabels', 'rfdDefaults'));
     }
 
     public function store(Request $request)
