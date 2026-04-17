@@ -14,10 +14,8 @@ class SettingsController extends Controller
      */
     public function index(Request $request)
     {
-        // Get all settings as key-value pairs
         $settings = AppSetting::pluck('value', 'key')->toArray();
 
-        // Default settings mapping in case they don't exist yet
         $defaultSettings = [
             'app_name'        => 'HERA',
             'app_version'     => '2.0',
@@ -30,23 +28,7 @@ class SettingsController extends Controller
 
         $settings = array_merge($defaultSettings, $settings);
 
-        // Build activity log query with optional filters
-        $logQuery = ActivityLog::with('user')->orderBy('created_at', 'desc');
-
-        if ($request->filled('log_action')) {
-            $logQuery->where('action', $request->log_action);
-        }
-        if ($request->filled('log_from')) {
-            $logQuery->whereDate('created_at', '>=', $request->log_from);
-        }
-        if ($request->filled('log_to')) {
-            $logQuery->whereDate('created_at', '<=', $request->log_to);
-        }
-
-        $logs       = $logQuery->paginate(25)->withQueryString();
-        $logActions = ActivityLog::select('action')->distinct()->orderBy('action')->pluck('action');
-
-        return view('settings.index', compact('settings', 'logs', 'logActions'));
+        return view('settings.index', compact('settings'));
     }
 
     /**
