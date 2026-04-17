@@ -78,7 +78,28 @@ class MobileTestController extends Controller
 
         $sensorData = $request->only([
             'suhu_air', 'suhu_lingkungan', 'kelembapan', 'ec', 'tds', 'ph', 'tegangan'
-        ]);
+        ]) + [
+            'suhu_air' => null, 'suhu_lingkungan' => null, 'kelembapan' => null,
+            'ec' => null, 'tds' => null, 'ph' => null, 'tegangan' => null
+        ];
+
+        // Jika data sensor kosong (karena mobile pakai emulator dan hanya kirim GPS),
+        // otomatis pakai data terakhir dari Node Sensor MQTT yang standby di database.
+        if (is_null($sensorData['ec']) || is_null($sensorData['tds'])) {
+            $latestSensor = \App\Models\SensorData::latest('created_at')->first();
+            if ($latestSensor) {
+                $sensorData['suhu_air']        = $latestSensor->suhu_air;
+                $sensorData['suhu_lingkungan'] = $latestSensor->suhu_lingkungan;
+                $sensorData['kelembapan']      = $latestSensor->kelembapan;
+                $sensorData['ec']              = $latestSensor->ec;
+                $sensorData['tds']             = $latestSensor->tds;
+                $sensorData['ph']              = $latestSensor->ph;
+                $sensorData['tegangan']        = $latestSensor->tegangan ?? 4.0;
+                
+                // Set juga request fields biar nanti saat create FieldTest datanya tersimpan
+                $request->merge($sensorData);
+            }
+        }
 
         $crEstimated = null;
 
