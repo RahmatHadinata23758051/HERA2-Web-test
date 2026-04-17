@@ -8,16 +8,6 @@ use Illuminate\Http\Request;
 
 class ThresholdController extends Controller
 {
-    public function __construct()
-    {
-        // Hanya direksi yang boleh akses
-        $this->middleware(function ($request, $next) {
-            if (auth()->user()?->role !== 'direksi') {
-                abort(403, 'Halaman ini hanya dapat diakses oleh Direksi.');
-            }
-            return $next($request);
-        });
-    }
 
     public function index()
     {
