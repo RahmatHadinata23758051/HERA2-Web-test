@@ -179,24 +179,24 @@
                 ...(id === 'cr_estimated' ? {
                     annotations: {
                         y: [
-                            {
-                                y: 0.05,
+                        {
+                                y: {{ $thresholds['cr_normal_max'] }},
                                 borderColor: '#eab308',
                                 strokeDashArray: 3,
                                 label: {
                                     borderColor: '#eab308',
                                     style: { color: '#fff', background: '#eab308', fontWeight: 700, fontSize: '10px' },
-                                    text: 'Warning (0.05 mg/L)'
+                                    text: 'Warning ({{ $thresholds["cr_normal_max"] }} mg/L)'
                                 }
                             },
                             {
-                                y: 0.10,
+                                y: {{ $thresholds['cr_warning_max'] }},
                                 borderColor: '#ba1a1a',
                                 strokeDashArray: 2,
                                 label: {
                                     borderColor: '#ba1a1a',
                                     style: { color: '#fff', background: '#ba1a1a', fontWeight: 700, fontSize: '10px' },
-                                    text: 'Danger (0.10 mg/L)'
+                                    text: 'Danger ({{ $thresholds["cr_warning_max"] }} mg/L)'
                                 }
                             }
                         ]

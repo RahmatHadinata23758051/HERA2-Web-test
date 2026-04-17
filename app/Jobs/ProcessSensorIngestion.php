@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\InfluxSensorRepository;
 use App\Events\SensorDataUpdated;
+use App\Models\Threshold;
 
 class ProcessSensorIngestion implements ShouldQueue
 {
@@ -33,9 +34,14 @@ class ProcessSensorIngestion implements ShouldQueue
             if ($response->successful()) {
                 $json = $response->json();
                 
-                // 2. Gabungkan hasil prediksi AI dengan struktur data awal
-                $this->sensorData['cr_estimated'] = $json['cr_estimated'] ?? 0;
-                $this->sensorData['status'] = $json['status'] ?? 'normal';
+                // 2. Ambil nilai prediksi Chromium dari AI
+                $cr = (float) ($json['cr_estimated'] ?? 0);
+
+                // 3. Klasifikasi status berdasarkan threshold kustom (dari DB, di-cache)
+                $status = Threshold::classifyCr($cr);
+
+                $this->sensorData['cr_estimated'] = $cr;
+                $this->sensorData['status']        = $status;
 
                 // 3. Simpan Riwayat Tetap ke InfluxDB Container
                 $influxRepo->writeSensorData($this->sensorData);

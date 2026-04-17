@@ -39,6 +39,10 @@ Route::middleware('auth')->group(function () {
         // App Settings
         Route::get('/pengaturan', [\App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
         Route::put('/pengaturan', [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
+
+        // Threshold Chromium
+        Route::get('/pengaturan/threshold', [\App\Http\Controllers\ThresholdController::class, 'index'])->name('settings.threshold');
+        Route::put('/pengaturan/threshold', [\App\Http\Controllers\ThresholdController::class, 'update'])->name('settings.threshold.update');
     });
 
     // =========================================================

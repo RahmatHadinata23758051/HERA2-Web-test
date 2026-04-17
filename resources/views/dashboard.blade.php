@@ -198,8 +198,8 @@
                     <p class="text-sm text-on-surface-variant">Real-time mapping of hexavalent chromium timeline</p>
                 </div>
                 <div class="hidden sm:flex gap-2">
-                    <span class="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg"><div class="w-2.5 h-2.5 bg-yellow-400 rounded-full"></div> Warning (>0.05)</span>
-                    <span class="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg"><div class="w-2.5 h-2.5 bg-error rounded-full"></div> Danger (>0.10)</span>
+                    <span class="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg"><div class="w-2.5 h-2.5 bg-yellow-400 rounded-full"></div> Warning (&gt;{{ $thresholds['cr_normal_max'] }} mg/L)</span>
+                    <span class="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg"><div class="w-2.5 h-2.5 bg-error rounded-full"></div> Danger (&gt;{{ $thresholds['cr_warning_max'] }} mg/L)</span>
                 </div>
             </div>
             <div id="chartCr" class="w-full h-[300px]"></div>
@@ -359,8 +359,10 @@
             yaxis: { title: { text: 'mg/L' }, labels: { style: { colors: '#64748b' } }, min: 0 },
             annotations: {
                 y: [
-                    { y: 0.05, borderColor: '#eab308', strokeDashArray: 3 },
-                    { y: 0.10, borderColor: '#ba1a1a', strokeDashArray: 2 }
+                    { y: {{ $thresholds['cr_normal_max'] }},  borderColor: '#eab308', strokeDashArray: 3,
+                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["cr_normal_max"] }} mg/L)' } },
+                    { y: {{ $thresholds['cr_warning_max'] }}, borderColor: '#ba1a1a', strokeDashArray: 2,
+                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["cr_warning_max"] }} mg/L)'  } }
                 ]
             }
         };
@@ -526,7 +528,7 @@
             
             if(barEl) {
                 barEl.style.backgroundColor = col.bar;
-                let pct = Math.min((val / 0.15) * 100, 100);
+                let pct = Math.min((val / ({{ $thresholds['cr_warning_max'] }} * 1.5)) * 100, 100);
                 barEl.style.width = pct + '%';
             }
         } else {
@@ -631,7 +633,7 @@
         
         if ('Notification' in window && Notification.permission === 'granted') {
             const notif = new Notification('⚠️ HERA — Critical Event!', {
-                body: `Chromium Level Detected at ${crVal} mg/L — Danger Threshold Broken (>0.10 mg/L)!`,
+                body: `Chromium Level Detected at ${crVal} mg/L — Danger Threshold Broken (>{{ $thresholds['cr_warning_max'] }} mg/L)!`,
                 icon: '/favicon.ico',
                 tag: 'hera-danger',
                 requireInteraction: true
