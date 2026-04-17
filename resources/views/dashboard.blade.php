@@ -309,8 +309,18 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        if(sensorCache.length > 0) {
+            sensorCache.forEach(row => appendChartData(row));
+        }
+
         initCharts();
-        populateInitialData();
+        
+        if(!isPaused && sensorCache.length > 0) {
+            processIncomingData(sensorCache[sensorCache.length - 1], true);
+            renderTable();
+            buildInitialAlerts();
+        }
+
         setupWebSocket();
         pollHealth();
         setInterval(pollHealth, 10000); 
@@ -361,7 +371,7 @@
         // Cr Chart
         let optionsCr = {
             ...getLightModeOptions(),
-            series: [{ name: 'Cr Estimated', data: [] }],
+            series: [{ name: 'Cr Estimated', data: dataCr }],
             chart: { ...getLightModeOptions().chart, type: 'area', height: 280 },
             colors: ['#006948'],
             fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.2, opacityTo: 0.01, stops: [0, 100] } },
@@ -381,7 +391,7 @@
 
         let optionsEcTds = {
             ...getLightModeOptions(),
-            series: [{ name: 'EC (µS/cm)', data: [] }, { name: 'TDS (mg/L)', data: [] }],
+            series: [{ name: 'EC (µS/cm)', data: dataEc }, { name: 'TDS (mg/L)', data: dataTds }],
             chart: { ...getLightModeOptions().chart, type: 'line', height: 250 },
             colors: ['#3B82F6', '#F97316'],
             stroke: { curve: 'smooth', width: [2.5, 2.5] },
@@ -397,7 +407,7 @@
 
         let optionsPhSuhu = {
             ...getLightModeOptions(),
-            series: [{ name: 'pH', data: [] }, { name: 'Temp (°C)', data: [] }],
+            series: [{ name: 'pH', data: dataPh }, { name: 'Temp (°C)', data: dataSuhu }],
             chart: { ...getLightModeOptions().chart, type: 'line', height: 250 },
             colors: ['#ba1a1a', '#006948'],
             xaxis: { type: 'datetime', labels: { style: { colors: '#64748b' } } },
@@ -410,16 +420,7 @@
         chartPhSuhu.render();
     }
 
-    function populateInitialData() {
-        if(sensorCache.length === 0) return;
-        sensorCache.forEach(row => appendChartData(row));
-        renderAllCharts();
-        if(!isPaused) {
-            processIncomingData(sensorCache[sensorCache.length - 1], true);
-            renderTable();
-            buildInitialAlerts();
-        }
-    }
+
 
     function appendChartData(d) {
         let ts = new Date(d.created_at).getTime();
