@@ -347,8 +347,10 @@
             dataLabels: { enabled: false },
             tooltip: { 
                 enabled: true,
+                shared: true,
+                intersect: false,
                 theme: 'dark', 
-                x: { format: 'yyyy-MM-dd HH:mm:ss' },
+                x: { format: 'dd MMM yyyy HH:mm:ss' },
                 style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' }
             },
             stroke: { curve: 'smooth', width: 2 }
