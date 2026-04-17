@@ -375,7 +375,7 @@
             chart: { ...getLightModeOptions().chart, type: 'area', height: 280 },
             colors: ['#006948'],
             fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.2, opacityTo: 0.01, stops: [0, 100] } },
-            xaxis: { type: 'datetime', labels: { style: { colors: '#64748b' } } },
+            xaxis: { type: 'datetime', labels: { datetimeUTC: false, style: { colors: '#64748b' } } },
             yaxis: { title: { text: 'mg/L' }, labels: { style: { colors: '#64748b' } }, min: 0 },
             annotations: {
                 y: [
@@ -395,7 +395,7 @@
             chart: { ...getLightModeOptions().chart, type: 'line', height: 250 },
             colors: ['#3B82F6', '#F97316'],
             stroke: { curve: 'smooth', width: [2.5, 2.5] },
-            xaxis: { type: 'datetime', labels: { style: { colors: '#64748b' } } },
+            xaxis: { type: 'datetime', labels: { datetimeUTC: false, style: { colors: '#64748b' } } },
             yaxis: [
                 { title: { text: 'EC (µS/cm)', style: { color: '#3B82F6', fontWeight: 700 } }, labels: { style: { colors: '#3B82F6' } } },
                 { opposite: true, title: { text: 'TDS (mg/L)', style: { color: '#F97316', fontWeight: 700 } }, labels: { style: { colors: '#F97316' } } }
@@ -410,7 +410,7 @@
             series: [{ name: 'pH', data: dataPh }, { name: 'Temp (°C)', data: dataSuhu }],
             chart: { ...getLightModeOptions().chart, type: 'line', height: 250 },
             colors: ['#ba1a1a', '#006948'],
-            xaxis: { type: 'datetime', labels: { style: { colors: '#64748b' } } },
+            xaxis: { type: 'datetime', labels: { datetimeUTC: false, style: { colors: '#64748b' } } },
             yaxis: [
                 { title: { text: 'pH', style: { color: '#ba1a1a'} }, labels: { style: { colors: '#ba1a1a' } } },
                 { opposite: true, title: { text: 'Temp', style: { color: '#006948'} }, labels: { style: { colors: '#006948' } } }
