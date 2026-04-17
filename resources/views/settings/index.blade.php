@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="space-y-8">
@@ -147,37 +147,6 @@
         </div>
     </div>
     @endif
-
-
-    {{-- Activity Log Shortcut (Direksi only) --}}
-    @if(auth()->user()->role === 'direksi')
-    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
-        <div class="flex items-center justify-between px-6 py-5">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-primary/10 rounded-xl flex-shrink-0">
-                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-bold text-on-surface text-sm">Log Aktivitas Sistem</h3>
-                    <p class="text-xs text-on-surface-variant mt-0.5">
-                        Lihat riwayat seluruh aktivitas pengguna â€” login, perubahan data, pengaturan, dan lainnya.
-                        Tersedia filter dan pagination di halaman terpisah.
-                    </p>
-                </div>
-            </div>
-            <a href="{{ route('activity-log.index') }}"
-               class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-primary text-on-primary rounded-lg hover:brightness-110 transition-all text-sm font-bold shadow-sm ml-4">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                </svg>
-                Lihat Log
-            </a>
-        </div>
-    </div>
-    @endif
-
 </div>
 </div>
 @endsection
