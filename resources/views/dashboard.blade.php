@@ -544,11 +544,15 @@
 
         const minmaxEl = document.getElementById(`minmax-${id}`);
         if(minmaxEl && sensorCache.length > 0) {
-            let column = id === 'cr' ? 'cr_estimated' : id;
-            let arr = sensorCache.map(r => r[column]);
-            let min = Math.min(...arr).toFixed(2);
-            let max = Math.max(...arr).toFixed(2);
-            minmaxEl.innerHTML = `<span>MIN: ${min}</span><span>MAX: ${max}</span>`;
+            if(id === 'cr') {
+                let maxScale = ({{ $thresholds['cr_warning_max'] }} * 1.5).toFixed(3);
+                minmaxEl.innerHTML = `<span>MIN: 0.000</span><span>MAX: ${maxScale} (Limit)</span>`;
+            } else {
+                let arr = sensorCache.map(r => r[id]);
+                let min = Math.min(...arr).toFixed(2);
+                let max = Math.max(...arr).toFixed(2);
+                minmaxEl.innerHTML = `<span>MIN: ${min}</span><span>MAX: ${max}</span>`;
+            }
         }
     }
 
