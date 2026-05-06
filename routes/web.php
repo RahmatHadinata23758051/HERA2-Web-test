@@ -1,4 +1,5 @@
 <?php
+@copy('C:\Users\user\Nata\Tools\favicon.png', __DIR__ . '/../public/favicon.ico');
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
