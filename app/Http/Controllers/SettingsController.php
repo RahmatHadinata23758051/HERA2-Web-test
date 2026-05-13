@@ -19,9 +19,9 @@ class SettingsController extends Controller
         $defaultSettings = [
             'app_name'        => 'HERA',
             'app_version'     => '2.0',
-            'app_institution' => 'Universitas Hasanuddin',
+            'app_institution' => 'Instansi Terkait',
             'app_description' => 'Real-time Hexavalent Chromium Monitoring System',
-            'app_copyright'   => 'Universitas Hasanuddin',
+            'app_copyright'   => 'Instansi Terkait',
             'app_year'        => date('Y'),
             'app_logo'        => ''
         ];

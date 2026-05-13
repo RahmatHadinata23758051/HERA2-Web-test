@@ -70,7 +70,7 @@
     <div class="header">
         <h1>Laporan Monitoring Telemetri - {{ $app_settings['nama_aplikasi'] ?? 'HERA' }}</h1>
         <p>{{ $app_settings['deskripsi'] ?? 'Hexavalent Chromium Real-time Analytics' }}</p>
-        <p>{{ $app_settings['nama_instansi'] ?? 'Universitas Hasanuddin' }}</p>
+        <p>{{ $app_settings['nama_instansi'] ?? 'Instansi Terkait' }}</p>
     </div>
 
     <div class="meta-info">

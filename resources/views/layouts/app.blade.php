@@ -312,7 +312,7 @@
         <footer class="relative z-10 w-full border-t border-surface-container-high mt-auto hidden md:block bg-white">
             <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-5 text-center text-sm text-outline">
                 &copy; {{ $app_settings['app_year'] ?? date('Y') }} 
-                <span class="text-on-surface-variant font-medium">{{ $app_settings['app_copyright'] ?? 'Universitas Hasanuddin' }}</span>. All rights reserved.
+                <span class="text-on-surface-variant font-medium">{{ $app_settings['app_copyright'] ?? 'Instansi Terkait' }}</span>. All rights reserved.
                 <br>
                 <span class="text-xs">{{ $app_settings['app_institution'] ?? '' }}</span>
             </div>

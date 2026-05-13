@@ -14,10 +14,10 @@ class AppSettingSeeder extends Seeder
     {
         $settings = [
             ['key' => 'nama_aplikasi', 'value' => 'HERA 2.0'],
-            ['key' => 'nama_instansi', 'value' => 'Universitas Hasanuddin'],
+            ['key' => 'nama_instansi', 'value' => 'Instansi Terkait'],
             ['key' => 'deskripsi', 'value' => 'Hexavalent Chromium Real-time Analytics'],
             ['key' => 'versi', 'value' => '2.0.0'],
-            ['key' => 'copyright', 'value' => 'Universitas Hasanuddin'],
+            ['key' => 'copyright', 'value' => 'Instansi Terkait'],
             ['key' => 'tahun', 'value' => date('Y')],
             ['key' => 'logo_path', 'value' => ''], 
         ];
