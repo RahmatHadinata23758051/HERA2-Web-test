@@ -66,10 +66,12 @@ class SensorBroadcast extends Command
                     $json = $response->json();
                     
                     $cr_estimated = $json['cr_estimated'] ?? 0;
+                    $ni_estimated = $json['ni_estimated'] ?? 0;
                     $status = $json['status'] ?? 'normal';
 
                     $dbData = array_merge($current, [
                         'cr_estimated' => $cr_estimated,
+                        'ni_estimated' => $ni_estimated,
                         'status' => $status
                     ]);
                     
@@ -77,7 +79,7 @@ class SensorBroadcast extends Command
                     
                     broadcast(new SensorDataUpdated($reading));
                     
-                    $this->info("Broadcasted CR: {$cr_estimated} ng/L ({$status})");
+                    $this->info("Broadcasted CR: {$cr_estimated} | NI: {$ni_estimated} mg/L ({$status})");
                 } else {
                     Log::error("FastAPI Error: " . $response->body());
                     $this->error("Fast API responded with an error.");

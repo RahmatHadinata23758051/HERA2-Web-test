@@ -34,13 +34,24 @@ class ProcessSensorIngestion implements ShouldQueue
             if ($response->successful()) {
                 $json = $response->json();
                 
-                // 2. Ambil nilai prediksi Chromium dari AI
+                // 2. Ambil nilai prediksi Chromium & Nickel dari AI
                 $cr = (float) ($json['cr_estimated'] ?? 0);
+                $ni = (float) ($json['ni_estimated'] ?? 0);
 
                 // 3. Klasifikasi status berdasarkan threshold kustom (dari DB, di-cache)
-                $status = Threshold::classifyCr($cr);
+                $crStatus = Threshold::classifyCr($cr);
+                $niStatus = Threshold::classifyNi($ni);
+
+                if ($crStatus === 'danger' || $niStatus === 'danger') {
+                    $status = 'danger';
+                } elseif ($crStatus === 'warning' || $niStatus === 'warning') {
+                    $status = 'warning';
+                } else {
+                    $status = 'normal';
+                }
 
                 $this->sensorData['cr_estimated'] = $cr;
+                $this->sensorData['ni_estimated'] = $ni;
                 $this->sensorData['status']        = $status;
 
                 // 3. Simpan Riwayat Tetap ke InfluxDB Container
