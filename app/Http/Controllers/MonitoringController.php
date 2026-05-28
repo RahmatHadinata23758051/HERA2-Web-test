@@ -9,7 +9,10 @@ class MonitoringController extends Controller
 {
     public function index()
     {
-        $thresholds = Threshold::getCrThresholds();
+        $thresholds = array_merge(
+            Threshold::getCrThresholds(),
+            Threshold::getNiThresholds()
+        );
         return view('monitoring.index', compact('thresholds'));
     }
 }

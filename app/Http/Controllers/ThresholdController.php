@@ -37,16 +37,25 @@ class ThresholdController extends Controller
         $validated = $request->validate([
             'cr_normal_max'  => 'required|numeric|min:0.000001|max:999',
             'cr_warning_max' => 'required|numeric|min:0.000001|max:999',
+            'ni_normal_max'  => 'required|numeric|min:0.000001|max:999',
+            'ni_warning_max' => 'required|numeric|min:0.000001|max:999',
         ]);
 
-        // Pastikan warning_max > normal_max
+        // Pastikan warning_max > normal_max untuk Chromium
         if ($validated['cr_warning_max'] <= $validated['cr_normal_max']) {
             return back()
-                ->withErrors(['cr_warning_max' => 'Batas Warning harus lebih besar dari batas Normal.'])
+                ->withErrors(['cr_warning_max' => 'Batas Warning Cr harus lebih besar dari batas Normal.'])
                 ->withInput();
         }
 
-        foreach (['cr_normal_max', 'cr_warning_max'] as $key) {
+        // Pastikan warning_max > normal_max untuk Nickel
+        if ($validated['ni_warning_max'] <= $validated['ni_normal_max']) {
+            return back()
+                ->withErrors(['ni_warning_max' => 'Batas Warning Ni harus lebih besar dari batas Normal.'])
+                ->withInput();
+        }
+
+        foreach (['cr_normal_max', 'cr_warning_max', 'ni_normal_max', 'ni_warning_max'] as $key) {
             Threshold::updateOrCreate(
                 ['key' => $key],
                 [
@@ -64,11 +73,12 @@ class ThresholdController extends Controller
         ActivityLog::create([
             'user_id' => auth()->id(),
             'action'  => 'Update Threshold',
-            'details' => "Threshold Cr diperbarui: Normal ≤ {$validated['cr_normal_max']} mg/L, Warning ≤ {$validated['cr_warning_max']} mg/L",
+            'details' => "Threshold diperbarui: Cr Normal ≤ {$validated['cr_normal_max']}, Cr Warning ≤ {$validated['cr_warning_max']}, Ni Normal ≤ {$validated['ni_normal_max']}, Ni Warning ≤ {$validated['ni_warning_max']} mg/L",
         ]);
 
         return redirect()
             ->route('settings.threshold')
-            ->with('success', 'Threshold Chromium berhasil diperbarui! Klasifikasi status sensor baru langsung aktif.');
+            ->with('success', 'Threshold Chromium & Nickel berhasil diperbarui! Klasifikasi status sensor baru langsung aktif.');
     }
 }
+

@@ -102,6 +102,7 @@ class MobileTestController extends Controller
         }
 
         $crEstimated = null;
+        $niEstimated = null;
 
         try {
             $aiUrl = env('AI_SERVICE_URL', 'http://localhost:8001') . '/predict';
@@ -110,6 +111,7 @@ class MobileTestController extends Controller
             if ($response->successful()) {
                 $json = $response->json();
                 $crEstimated = $json['cr_estimated'] ?? null;
+                $niEstimated = $json['ni_estimated'] ?? null;
             } else {
                 Log::warning("MobileTestController: AI Predict API failed with status " . $response->status());
             }
@@ -131,6 +133,7 @@ class MobileTestController extends Controller
                 'ph'               => $request->ph,
                 'tegangan'         => $request->tegangan,
                 'cr_estimated'     => $crEstimated,
+                'ni_estimated'     => $niEstimated,
             ]);
 
             return response()->json([

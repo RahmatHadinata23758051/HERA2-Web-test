@@ -17,8 +17,11 @@ class DashboardController extends Controller
         // Daily summary stats
         $dailyStats = $repo->getDailyStats();
 
-        // Threshold Chromium (dari DB atau default)
-        $thresholds = Threshold::getCrThresholds();
+        // Threshold Chromium & Nickel (dari DB atau default)
+        $thresholds = array_merge(
+            Threshold::getCrThresholds(),
+            Threshold::getNiThresholds()
+        );
 
         return view('dashboard', compact('initialData', 'dailyStats', 'thresholds'));
     }
