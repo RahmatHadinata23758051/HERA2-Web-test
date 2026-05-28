@@ -104,10 +104,11 @@
                 <thead class="text-[10px] text-on-surface-variant uppercase tracking-widest font-black bg-surface-container-low border-b border-surface-container-high">
                     <tr>
                         <th class="px-5 py-4 whitespace-nowrap">Tanggal & Waktu</th>
-                        <th class="px-5 py-4 text-center">Cr (mg/L)</th>
+                        <th class="px-5 py-4 text-center">Cr (mg·L⁻¹)</th>
+                        <th class="px-5 py-4 text-center">Ni (mg·L⁻¹)</th>
                         <th class="px-5 py-4 text-center">pH</th>
                         <th class="px-5 py-4 text-center">EC (µS/cm)</th>
-                        <th class="px-5 py-4 text-center">TDS (mg/L)</th>
+                        <th class="px-5 py-4 text-center">TDS (mg·L⁻¹)</th>
                         <th class="px-5 py-4 text-center">Suhu (Air/Ling.)</th>
                         <th class="px-5 py-4 text-center">Kelembapan</th>
                         <th class="px-5 py-4 text-center">Tegangan</th>
@@ -123,7 +124,10 @@
                         </td>
                         <td class="px-5 py-3 text-center font-mono font-bold
                             {{ $row->status === 'danger' ? 'text-error' : ($row->status === 'warning' ? 'text-yellow-600' : 'text-primary') }}">
-                            {{ number_format($row->cr_estimated, 4) }}
+                            {{ number_format($row->cr_estimated, 5) }}
+                        </td>
+                        <td class="px-5 py-3 text-center font-mono font-bold text-indigo-600">
+                            {{ number_format($row->ni_estimated ?? 0, 5) }}
                         </td>
                         <td class="px-5 py-3 text-center text-on-surface font-medium">{{ number_format($row->ph, 2) }}</td>
                         <td class="px-5 py-3 text-center text-on-surface font-medium">{{ number_format($row->ec, 1) }}</td>
@@ -147,7 +151,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="px-5 py-16 text-center">
+                        <td colspan="10" class="px-5 py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="p-4 bg-surface-container rounded-full">
                                     <svg class="w-10 h-10 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>

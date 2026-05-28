@@ -46,9 +46,10 @@
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         @php
             $params = [
-                ['id' => 'cr_estimated', 'title' => 'Hexavalent Chromium (Cr)', 'unit' => 'mg/L',   'color' => '#006948', 'badge' => 'AI Estimated', 'badgeColor' => 'bg-primary/10 text-primary'],
+                ['id' => 'cr_estimated', 'title' => 'Hexavalent Chromium (Cr⁶⁺)', 'unit' => 'mg·L⁻¹',  'color' => '#006948', 'badge' => 'AI Estimated', 'badgeColor' => 'bg-primary/10 text-primary'],
+                ['id' => 'ni_estimated', 'title' => 'Dissolved Nickel (Ni²⁺)',    'unit' => 'mg·L⁻¹',  'color' => '#4338ca', 'badge' => 'AI Estimated', 'badgeColor' => 'bg-indigo-50 text-indigo-600'],
                 ['id' => 'ec',           'title' => 'Electrical Conductivity',   'unit' => 'µS/cm',  'color' => '#0ea5e9', 'badge' => 'Fisik',        'badgeColor' => 'bg-sky-100 text-sky-700'],
-                ['id' => 'tds',          'title' => 'Total Dissolved Solids',    'unit' => 'mg/L',   'color' => '#10b981', 'badge' => 'Fisik',        'badgeColor' => 'bg-emerald-100 text-emerald-700'],
+                ['id' => 'tds',          'title' => 'Total Dissolved Solids',    'unit' => 'mg·L⁻¹',  'color' => '#10b981', 'badge' => 'Fisik',        'badgeColor' => 'bg-emerald-100 text-emerald-700'],
                 ['id' => 'ph',           'title' => 'Acidity (pH Level)',         'unit' => 'pH',     'color' => '#a855f7', 'badge' => 'Fisik',        'badgeColor' => 'bg-purple-100 text-purple-700'],
                 ['id' => 'suhu_air',     'title' => 'Water Temperature',          'unit' => '°C',     'color' => '#f59e0b', 'badge' => 'Fisik',        'badgeColor' => 'bg-amber-100 text-amber-700'],
                 ['id' => 'suhu_lingkungan', 'title' => 'Ambient Temperature',    'unit' => '°C',     'color' => '#ec4899', 'badge' => 'Fisik',        'badgeColor' => 'bg-pink-100 text-pink-700'],
@@ -57,11 +58,11 @@
         @endphp
 
         @foreach($params as $index => $param)
-        <div class="bg-white rounded-xl border border-surface-container-high shadow-sm {{ $index === 0 ? 'xl:col-span-2' : '' }}">
+        <div class="bg-white rounded-xl border border-surface-container-high shadow-sm {{ ($param['id'] === 'cr_estimated' || $param['id'] === 'ni_estimated') ? 'xl:col-span-2' : '' }}">
             {{-- Card Header --}}
             <div class="px-6 py-4 flex justify-between items-center border-b border-surface-container-highest">
                 <div class="flex items-center gap-3">
-                    <h3 class="font-bold text-on-surface text-sm font-headline">{{ $param['title'] }}</h3>
+                    <h3 class="font-bold text-on-surface text-sm font-headline">{!! $param['title'] !!}</h3>
                     <span class="px-2 py-0.5 text-[10px] font-bold rounded-full {{ $param['badgeColor'] }}">{{ $param['badge'] }}</span>
                 </div>
                 <span class="text-xs font-bold text-outline bg-surface-container-low px-2 py-1 rounded-lg">
@@ -71,7 +72,7 @@
             {{-- Chart --}}
             <div class="p-4">
                 <div id="chart-{{ $param['id'] }}"
-                     class="w-full {{ $index === 0 ? 'h-80' : 'h-60' }}"
+                     class="w-full {{ ($param['id'] === 'cr_estimated' || $param['id'] === 'ni_estimated') ? 'h-80' : 'h-60' }}"
                      data-color="{{ $param['color'] }}"
                      x-ignore>
                 </div>
@@ -117,7 +118,7 @@
     }
 
     function initCharts() {
-        const params = ['cr_estimated', 'ec', 'tds', 'ph', 'suhu_air', 'suhu_lingkungan', 'kelembapan'];
+        const params = ['cr_estimated', 'ni_estimated', 'ec', 'tds', 'ph', 'suhu_air', 'suhu_lingkungan', 'kelembapan'];
         
         params.forEach(id => {
             const ctx = document.getElementById(`chart-${id}`);
@@ -172,21 +173,27 @@
                 yaxis: {
                     labels: {
                         style: { colors: '#6d7a72', fontSize: '11px' },
-                        formatter: (value) => value !== undefined ? value.toFixed(2) : ''
+                        formatter: (value) => {
+                            if (value === undefined || value === null) return '';
+                            if (id === 'cr_estimated' || id === 'ni_estimated') {
+                                return value.toFixed(5);
+                            }
+                            return value.toFixed(1);
+                        }
                     }
                 },
-                // Cr-specific annotations
+                // Metal-specific annotations
                 ...(id === 'cr_estimated' ? {
                     annotations: {
                         y: [
-                        {
+                            {
                                 y: {{ $thresholds['cr_normal_max'] }},
                                 borderColor: '#eab308',
                                 strokeDashArray: 3,
                                 label: {
                                     borderColor: '#eab308',
                                     style: { color: '#fff', background: '#eab308', fontWeight: 700, fontSize: '10px' },
-                                    text: 'Warning ({{ $thresholds["cr_normal_max"] }} mg/L)'
+                                    text: 'Warning ({{ $thresholds["cr_normal_max"] }} mg·L⁻¹)'
                                 }
                             },
                             {
@@ -196,12 +203,37 @@
                                 label: {
                                     borderColor: '#ba1a1a',
                                     style: { color: '#fff', background: '#ba1a1a', fontWeight: 700, fontSize: '10px' },
-                                    text: 'Danger ({{ $thresholds["cr_warning_max"] }} mg/L)'
+                                    text: 'Danger ({{ $thresholds["cr_warning_max"] }} mg·L⁻¹)'
                                 }
                             }
                         ]
                     }
-                } : {})
+                } : (id === 'ni_estimated' ? {
+                    annotations: {
+                        y: [
+                            {
+                                y: {{ $thresholds['ni_normal_max'] }},
+                                borderColor: '#eab308',
+                                strokeDashArray: 3,
+                                label: {
+                                    borderColor: '#eab308',
+                                    style: { color: '#fff', background: '#eab308', fontWeight: 700, fontSize: '10px' },
+                                    text: 'Warning ({{ $thresholds["ni_normal_max"] }} mg·L⁻¹)'
+                                }
+                            },
+                            {
+                                y: {{ $thresholds['ni_warning_max'] }},
+                                borderColor: '#ba1a1a',
+                                strokeDashArray: 2,
+                                label: {
+                                    borderColor: '#ba1a1a',
+                                    style: { color: '#fff', background: '#ba1a1a', fontWeight: 700, fontSize: '10px' },
+                                    text: 'Danger ({{ $thresholds["ni_warning_max"] }} mg·L⁻¹)'
+                                }
+                            }
+                        ]
+                    }
+                } : {}))
             };
 
             globalCharts[id] = new window.ApexCharts(ctx, options);
@@ -253,7 +285,7 @@
 
     function updateAllChartsArray(dataArray) {
         let seriesData = {
-            cr_estimated: [], ec: [], tds: [], ph: [],
+            cr_estimated: [], ni_estimated: [], ec: [], tds: [], ph: [],
             suhu_air: [], suhu_lingkungan: [], kelembapan: []
         };
         

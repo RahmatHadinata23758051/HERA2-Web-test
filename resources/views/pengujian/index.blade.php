@@ -46,7 +46,7 @@
                         <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Koordinat GPS</th>
                         <th class="px-4 py-3 text-[10px] font-black text-sky-700 uppercase tracking-widest text-center border-r border-surface-container-high bg-sky-50">Altitude (m)</th>
                         <th colspan="7" class="px-4 py-2.5 text-[10px] font-black text-emerald-700 uppercase tracking-widest text-center border-b border-r border-surface-container-high bg-emerald-50">Data Sensor Terkalibrasi</th>
-                        <th class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
+                        <th colspan="2" class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
                     </tr>
                     {{-- Sub-column row --}}
                     <tr class="border-b-2 border-surface-container-high bg-surface-container-low text-[10px] font-bold uppercase tracking-wider">
@@ -61,7 +61,8 @@
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Suhu Udr (°C)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Kelembapan (%)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center border-r border-surface-container-high whitespace-nowrap">Tegangan (V)</th>
-                        <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap">CR Est. (mg/L)</th>
+                        <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap">CR Est. (mg·L⁻¹)</th>
+                        <th class="px-4 py-2 text-indigo-700 bg-indigo-50 text-center whitespace-nowrap">NI Est. (mg·L⁻¹)</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-container-high">
@@ -82,11 +83,12 @@
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->suhu_lingkungan ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->kelembapan ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center border-r border-surface-container-high bg-emerald-50/40">{{ $test->tegangan ?? '-' }}</td>
-                        <td class="px-4 py-3 text-sm font-mono font-bold text-purple-700 text-center bg-purple-50/40">{{ $test->cr_estimated ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono font-bold text-purple-700 text-center bg-purple-50/40">{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono font-bold text-indigo-700 text-center bg-indigo-50/40">{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="11" class="px-4 py-16 text-center">
+                        <td colspan="13" class="px-4 py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="p-4 bg-surface-container rounded-full">
                                     <svg class="h-10 w-10 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -201,7 +203,8 @@
                     suhu_lingkungan: '{{ $test->suhu_lingkungan ?? '-' }}',
                     kelembapan: '{{ $test->kelembapan ?? '-' }}',
                     tegangan:  '{{ $test->tegangan ?? '-' }}',
-                    cr:        '{{ $test->cr_estimated ?? '-' }}'
+                    cr:        '{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}',
+                    ni:        '{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}'
                 }
             );
             @endforeach
@@ -210,45 +213,46 @@
         } catch(e) {
             console.error('Map initialization error:', e);
         }
-    }
+     }
 
-    // Default icon (Emerald)
-    const defaultIcon = L.divIcon({
-        className: 'leaflet-marker-default',
-        html: `<div class="modern-marker-container"><div class="modern-marker-pulse"></div><div class="modern-marker-dot"></div></div>`,
-        iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -14]
-    });
+     // Default icon (Emerald)
+     const defaultIcon = L.divIcon({
+         className: 'leaflet-marker-default',
+         html: `<div class="modern-marker-container"><div class="modern-marker-pulse"></div><div class="modern-marker-dot"></div></div>`,
+         iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -14]
+     });
 
-    // Active icon (Amber)
-    const activeIcon = L.divIcon({
-        className: 'leaflet-marker-active',
-        html: `<div class="modern-marker-container active-marker"><div class="modern-marker-pulse"></div><div class="modern-marker-dot"></div></div>`,
-        iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -14]
-    });
+     // Active icon (Amber)
+     const activeIcon = L.divIcon({
+         className: 'leaflet-marker-active',
+         html: `<div class="modern-marker-container active-marker"><div class="modern-marker-pulse"></div><div class="modern-marker-dot"></div></div>`,
+         iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -14]
+     });
 
-    function addMarkerToMap(id, lat, lng, data) {
-        if (!mainMap) return;
+     function addMarkerToMap(id, lat, lng, data) {
+         if (!mainMap) return;
 
-        const popupHtml = `
-            <div style="font-family:'Inter',sans-serif; min-width:200px; font-size:12px; padding:4px;">
-                <div style="font-weight:800; font-size:13px; color:#191c1e; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid #e0e3e5; display:flex;align-items:center;gap:6px;">
-                    <span style="background:#006948;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;">FIELD TEST</span>
-                    Data Sensor Valid
-                </div>
-                <div style="color:#3d4a42; margin-bottom:4px;"><span style="color:#6d7a72">Waktu:</span> <b>${data.timestamp}</b></div>
-                <div style="color:#3d4a42; margin-bottom:4px;"><span style="color:#6d7a72">Petugas:</span> <b>${data.officer}</b></div>
-                <div style="color:#3d4a42; margin-bottom:8px;"><span style="color:#6d7a72">Altitude:</span> <b style="color:#0369a1">${data.altitude}</b></div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
-                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">pH</span><br><b style="color:#006948">${data.ph}</b></div>
-                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">TDS</span><br><b style="color:#006948">${data.tds} ppm</b></div>
-                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">EC</span><br><b style="color:#006948">${data.ec} mS</b></div>
-                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Suhu Air</span><br><b style="color:#006948">${data.suhu_air}°C</b></div>
-                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Udara</span><br><b style="color:#006948">${data.suhu_lingkungan}°C</b></div>
-                    <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Kelembapan</span><br><b style="color:#006948">${data.kelembapan}%</b></div>
-                    <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;grid-column:span 2;text-align:center;"><span style="color:#6d7a72;font-size:10px;">CR Estimated</span><br><b style="color:#7e22ce;font-size:14px;">${data.cr} mg/L</b></div>
-                </div>
-            </div>
-        `;
+         const popupHtml = `
+             <div style="font-family:'Inter',sans-serif; min-width:220px; font-size:12px; padding:4px;">
+                 <div style="font-weight:800; font-size:13px; color:#191c1e; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid #e0e3e5; display:flex;align-items:center;gap:6px;">
+                     <span style="background:#006948;color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;">FIELD TEST</span>
+                     Data Sensor Valid
+                 </div>
+                 <div style="color:#3d4a42; margin-bottom:4px;"><span style="color:#6d7a72">Waktu:</span> <b>${data.timestamp}</b></div>
+                 <div style="color:#3d4a42; margin-bottom:4px;"><span style="color:#6d7a72">Petugas:</span> <b>${data.officer}</b></div>
+                 <div style="color:#3d4a42; margin-bottom:8px;"><span style="color:#6d7a72">Altitude:</span> <b style="color:#0369a1">${data.altitude}</b></div>
+                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">pH</span><br><b style="color:#006948">${data.ph}</b></div>
+                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">TDS</span><br><b style="color:#006948">${data.tds} ppm</b></div>
+                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">EC</span><br><b style="color:#006948">${data.ec} mS</b></div>
+                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Suhu Air</span><br><b style="color:#006948">${data.suhu_air}°C</b></div>
+                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Udara</span><br><b style="color:#006948">${data.suhu_lingkungan}°C</b></div>
+                     <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Kelembapan</span><br><b style="color:#006948">${data.kelembapan}%</b></div>
+                     <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Cr⁶⁺ Estimated</span><br><b style="color:#7e22ce;font-size:12px;">${data.cr} mg·L⁻¹</b></div>
+                     <div style="background:#e0e7ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Ni²⁺ Estimated</span><br><b style="color:#4f46e5;font-size:12px;">${data.ni} mg·L⁻¹</b></div>
+                 </div>
+             </div>
+         `;
 
         const marker = L.marker([lat, lng], { icon: defaultIcon }).addTo(mainMap);
         marker.bindPopup(popupHtml, { maxWidth: 260, closeButton: false });
