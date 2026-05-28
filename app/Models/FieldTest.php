@@ -19,6 +19,7 @@ class FieldTest extends Model
         'ph',
         'tegangan',
         'cr_estimated',
+        'ni_estimated',
     ];
 
     /**

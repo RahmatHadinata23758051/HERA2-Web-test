@@ -8,6 +8,6 @@ class SensorReading extends Model
 {
     protected $fillable = [
         'ec', 'tds', 'ph', 'suhu_air', 'suhu_lingkungan',
-        'kelembapan', 'tegangan', 'cr_estimated', 'status'
+        'kelembapan', 'tegangan', 'cr_estimated', 'ni_estimated', 'status'
     ];
 }
