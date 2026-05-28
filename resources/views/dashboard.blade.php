@@ -12,6 +12,38 @@
     .apexcharts-tooltip {
         z-index: 9999 !important;
     }
+    
+    /* 3D Flip Card System */
+    .flip-container {
+        perspective: 1000px;
+        position: relative;
+        width: 100%;
+    }
+    .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-style: preserve-3d;
+    }
+    .flip-container.flipped .flip-card-inner {
+        transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden; /* Safari */
+        backface-visibility: hidden;
+    }
+    .flip-card-back {
+        transform: rotateY(180deg);
+        z-index: 2;
+    }
+    .flip-card-front {
+        z-index: 1;
+    }
 </style>
 @endpush
 
@@ -20,8 +52,8 @@
     <!-- Header Title -->
     <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-surface-container-high rounded-xl">
         <div>
-            <h2 class="text-3xl font-extrabold tracking-tight text-on-surface font-headline">Chromium Monitoring System</h2>
-            <p class="text-on-surface-variant mt-1 text-sm">Real-time IoT-based analysis for chromium prediction and physical water sensing</p>
+            <h2 class="text-3xl font-extrabold tracking-tight text-on-surface font-headline">Heavy Metal Monitoring System</h2>
+            <p class="text-on-surface-variant mt-1 text-sm">Real-time IoT-based analysis for Chromium & Nickel prediction and physical water sensing</p>
         </div>
         <div class="flex items-center gap-4">
             <button id="toggleFeedBtn" class="px-5 py-2.5 bg-primary hover:bg-primary-container transition shadow-sm text-white text-sm font-semibold rounded-lg flex items-center gap-2">
@@ -65,7 +97,7 @@
     </div>
 
     <!-- Section 1.5: 4 Metrik Kartu Atas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
         <!-- Total Pembacaan -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-surface-container-highest hover:border-primary/30 transition-all group">
             <div class="flex justify-between items-start mb-4">
@@ -111,41 +143,143 @@
                 <span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded-full">Stable</span>
             </div>
             <p class="text-on-surface-variant text-xs font-label uppercase tracking-wider mb-1">Rata-rata Cr</p>
-            <p class="text-3xl font-bold font-headline text-on-surface">{{ $dailyStats['avg_cr'] }} <span class="text-sm font-medium text-on-surface-variant">mg/L</span></p>
+            <p class="text-3xl font-bold font-headline text-on-surface">{{ $dailyStats['avg_cr'] }} <span class="text-sm font-medium text-on-surface-variant">mg·L⁻¹</span></p>
+        </div>
+
+        <!-- Avg Ni -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-surface-container-highest hover:border-indigo-400/30 transition-all group">
+            <div class="flex justify-between items-start mb-4">
+                <div class="p-3 bg-indigo-50 rounded-lg text-indigo-600 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                </div>
+                <span class="text-xs font-bold text-indigo-600 px-2 py-1 bg-indigo-50 rounded-full">Stable</span>
+            </div>
+            <p class="text-on-surface-variant text-xs font-label uppercase tracking-wider mb-1">Rata-rata Ni</p>
+            <p class="text-3xl font-bold font-headline text-on-surface">{{ number_format($dailyStats['avg_ni'], 5) }} <span class="text-sm font-medium text-on-surface-variant">mg·L⁻¹</span></p>
         </div>
     </div>
 
     <!-- Section 2: Sensor Hub (Real-time Gauges) -->
+    @php
+        $glossary = [
+            'cr' => 'Kromium Heksavalen (Cr⁶⁺): Logam berat beracun hasil limbah industri. AI memprediksi kadar Cr⁶⁺ secara real-time dari data sensor fisik untuk mencegah risiko kanker dan kerusakan lingkungan.',
+            'ni' => 'Nikel Terlarut (Ni²⁺): Unsur logam berat dari limbah industri baterai/plating. AI memprediksi estimasi Ni²⁺ secara dini untuk mencegah pencemaran kronis pada biota air dan manusia.',
+            'ec' => 'Daya Hantar Listrik (EC): Mengukur kemampuan air mengalirkan arus listrik berdasarkan konsentrasi ion terlarut. Kenaikan drastis mendeteksi masuknya zat polutan secara instan.',
+            'tds' => 'Total Padatan Terlarut (TDS): Konsentrasi total padatan senyawa terlarut dalam air. TDS tinggi menurunkan transparansi air dan mengindikasikan tingginya kejenuhan zat pencemar.',
+            'ph' => 'Derajat Keasaman (pH): Mengukur kadar asam/basa air (skala 0-14). pH ekstrem sangat berbahaya bagi kehidupan perairan serta memicu korosi logam dan kelarutan racun berat.',
+            'suhu_air' => 'Suhu Air: Mengukur temperatur air sungai. Suhu memengaruhi kelarutan oksigen (DO), fotosintesis mikroba, dan aktivitas reaksi kimia penyerapan ion berat.',
+            'suhu_lingkungan' => 'Suhu Lingkungan: Suhu udara di sekitar stasiun pemantau IoT. Berfungsi sebagai parameter referensi iklim luar untuk kalibrasi sensor dan analisis korelasi termal.',
+            'kelembapan' => 'Kelembapan Udara: Kandungan uap air di sekitar stasiun pemantau IoT. Membantu pemantauan cuaca mikro stasiun dan mendeteksi risiko embun/kondensasi sirkuit sensor.',
+            'tegangan' => 'Tegangan Baterai: Menunjukkan sisa daya baterai operasional stasiun pemantau IoT. Memastikan kestabilan transmisi telemetri dan memberikan alarm sebelum daya habis.'
+        ];
+    @endphp
+
     <div>
         <h3 class="text-xl font-bold font-headline text-on-surface mb-4">Real-time Sensor Hub</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             
             <!-- Main AI Card (Chromium) Insight Card -->
-            <div class="bg-white rounded-xl p-5 border shadow-sm border-l-4 border-l-primary relative overflow-hidden group col-span-1 md:col-span-2 lg:col-span-1 flex flex-col justify-between" id="cardContainer-cr">
-                <!-- Water ripple subtle background -->
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_#006948_0%,_transparent_60%)] opacity-[0.03] z-0 pointer-events-none"></div>
-                
-                <div class="relative z-10">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="inline-block px-2 py-1 bg-primary/10 rounded text-primary text-[10px] font-bold uppercase tracking-wider mb-2">HERA AI Insight</div>
-                            <h3 class="text-on-surface-variant font-bold text-sm">Hexavalent Chromium (Cr)</h3>
+            <div class="flip-container h-[185px] cursor-pointer group col-span-1 md:col-span-2 lg:col-span-1" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front bg-white rounded-xl p-5 border shadow-sm border-l-4 border-l-primary overflow-hidden flex flex-col justify-between" id="cardContainer-cr">
+                        <!-- Water ripple subtle background -->
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_#006948_0%,_transparent_60%)] opacity-[0.03] z-0 pointer-events-none"></div>
+                        
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-lg" data-icon="psychology">psychology</span>
+                                <h3 class="text-on-surface-variant font-bold text-xs">Chromium (Cr⁶⁺)</h3>
+                            </div>
+                            <div id="badge-cr" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary">NORMAL</div>
                         </div>
-                        <div id="badge-cr" class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary">NORMAL</div>
+                        
+                        <div class="relative z-10 mt-4 flex items-baseline gap-1.5">
+                            <span class="text-2xl font-bold text-on-surface transition-colors duration-300" id="val-cr">--</span>
+                            <span class="text-xs text-on-surface-variant font-medium w-8">mg·L⁻¹</span>
+                        </div>
+                        
+                        <div class="relative z-10 mt-4">
+                            <div class="flex justify-between text-[9px] text-outline font-bold mb-1" id="minmax-cr">
+                                <span>MIN: --</span><span>MAX: --</span>
+                            </div>
+                            <!-- Thick Progress Bar for AI -->
+                            <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                                <div id="bar-cr" class="h-full bg-primary rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mt-4 flex items-baseline gap-2">
-                        <span class="text-4xl font-extrabold tracking-tight text-on-surface transition-colors duration-300" id="val-cr">--</span>
-                        <span class="text-sm text-on-surface-variant font-medium">mg/L</span>
+                    <!-- Back -->
+                    <div class="flip-card-back bg-white rounded-xl p-5 border border-surface-container-high shadow-sm flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 text-emerald-100 opacity-20 pointer-events-none">
+                            <span class="material-symbols-outlined text-8xl">analytics</span>
+                        </div>
+                        <div class="relative z-10 flex flex-col justify-between h-full">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-1.5">
+                                    <span class="material-symbols-outlined text-primary text-base">analytics</span>
+                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Chromium (Cr⁶⁺)</h4>
+                                </div>
+                                <p class="text-[11px] leading-relaxed text-on-surface-variant font-medium font-sans">
+                                    {{ $glossary['cr'] }}
+                                </p>
+                            </div>
+                            <div class="text-[9px] text-primary/70 font-bold uppercase tracking-widest flex items-center gap-1 border-t border-surface-container-high pt-1.5">
+                                <span class="material-symbols-outlined text-xs">touch_app</span> Klik untuk kembali
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="relative z-10 mt-6">
-                    <div class="flex justify-between text-[10px] text-on-surface-variant font-bold mb-1" id="minmax-cr">
-                        <span>MIN: --</span><span>MAX: --</span>
+            </div>
+
+            <!-- Main AI Card (Nickel) Insight Card -->
+            <div class="flip-container h-[185px] cursor-pointer group col-span-1 md:col-span-2 lg:col-span-1" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front bg-white rounded-xl p-5 border shadow-sm border-l-4 border-l-indigo-600 overflow-hidden flex flex-col justify-between" id="cardContainer-ni">
+                        <!-- Subtle background -->
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_#4338ca_0%,_transparent_60%)] opacity-[0.03] z-0 pointer-events-none"></div>
+                        
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-indigo-600 text-lg" data-icon="psychology">psychology</span>
+                                <h3 class="text-on-surface-variant font-bold text-xs">Nickel (Ni²⁺)</h3>
+                            </div>
+                            <div id="badge-ni" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600">NORMAL</div>
+                        </div>
+                        
+                        <div class="relative z-10 mt-4 flex items-baseline gap-1.5">
+                            <span class="text-2xl font-bold text-on-surface transition-colors duration-300" id="val-ni">--</span>
+                            <span class="text-xs text-on-surface-variant font-medium w-8">mg·L⁻¹</span>
+                        </div>
+                        
+                        <div class="relative z-10 mt-4">
+                            <div class="flex justify-between text-[9px] text-outline font-bold mb-1" id="minmax-ni">
+                                <span>MIN: --</span><span>MAX: --</span>
+                            </div>
+                            <!-- Progress Bar for AI Nickel -->
+                            <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                                <div id="bar-ni" class="h-full bg-indigo-600 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Thick Progress Bar for AI -->
-                    <div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
-                        <div id="bar-cr" class="h-full bg-primary rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                    <!-- Back -->
+                    <div class="flip-card-back bg-white rounded-xl p-5 border border-surface-container-high shadow-sm flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 text-indigo-100 opacity-20 pointer-events-none">
+                            <span class="material-symbols-outlined text-8xl">analytics</span>
+                        </div>
+                        <div class="relative z-10 flex flex-col justify-between h-full">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-1.5">
+                                    <span class="material-symbols-outlined text-indigo-600 text-base">analytics</span>
+                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Nickel (Ni²⁺)</h4>
+                                </div>
+                                <p class="text-[11px] leading-relaxed text-on-surface-variant font-medium font-sans">
+                                    {{ $glossary['ni'] }}
+                                </p>
+                            </div>
+                            <div class="text-[9px] text-indigo-600/70 font-bold uppercase tracking-widest flex items-center gap-1 border-t border-surface-container-high pt-1.5">
+                                <span class="material-symbols-outlined text-xs">touch_app</span> Klik untuk kembali
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -154,7 +288,7 @@
             @php
                 $sensors = [
                     ['id' => 'ec', 'name' => 'Electrical Conductivity', 'unit' => 'µS/cm', 'icon' => 'bolt'],
-                    ['id' => 'tds', 'name' => 'Total Dissolved Solids', 'unit' => 'mg/L', 'icon' => 'water_drop'],
+                    ['id' => 'tds', 'name' => 'Total Dissolved Solids', 'unit' => 'mg·L⁻¹', 'icon' => 'water_drop'],
                     ['id' => 'ph', 'name' => 'Acidity (pH Level)', 'unit' => '', 'icon' => 'science'],
                     ['id' => 'suhu_air', 'name' => 'Water Temp', 'unit' => '°C', 'icon' => 'device_thermostat'],
                     ['id' => 'suhu_lingkungan', 'name' => 'Ambient Temp', 'unit' => '°C', 'icon' => 'thermostat'],
@@ -164,26 +298,51 @@
             @endphp
 
             @foreach($sensors as $s)
-            <div class="bg-white rounded-xl p-5 border border-surface-container-high shadow-sm flex flex-col justify-between" id="cardContainer-{{$s['id']}}">
-                <div class="flex justify-between items-start">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-outline text-lg" data-icon="{{$s['icon']}}">{{$s['icon']}}</span>
-                        <h3 class="text-on-surface-variant font-bold text-xs">{{ $s['name'] }}</h3>
+            <div class="flip-container h-[185px] cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                <div class="flip-card-inner">
+                    <!-- Front -->
+                    <div class="flip-card-front bg-white rounded-xl p-5 border border-surface-container-high shadow-sm flex flex-col justify-between" id="cardContainer-{{$s['id']}}">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-outline text-lg" data-icon="{{$s['icon']}}">{{$s['icon']}}</span>
+                                <h3 class="text-on-surface-variant font-bold text-xs">{{ $s['name'] }}</h3>
+                            </div>
+                            <div id="badge-{{$s['id']}}" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-surface-container text-on-surface-variant">WAIT</div>
+                        </div>
+                        <div class="mt-4 flex items-baseline gap-1.5">
+                            <span class="text-2xl font-bold text-on-surface transition-colors duration-300" id="val-{{$s['id']}}">--</span>
+                            <span class="text-xs text-on-surface-variant font-medium w-8">{{ $s['unit'] }}</span>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="flex justify-between text-[9px] text-outline font-bold mb-1" id="minmax-{{$s['id']}}">
+                                <span>MIN: --</span><span>MAX: --</span>
+                            </div>
+                            <!-- Thin Progress bar -->
+                            <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                                <div id="bar-{{$s['id']}}" class="h-full bg-surface-variant rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="badge-{{$s['id']}}" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-surface-container text-on-surface-variant">WAIT</div>
-                </div>
-                <div class="mt-4 flex items-baseline gap-1.5">
-                    <span class="text-2xl font-bold text-on-surface transition-colors duration-300" id="val-{{$s['id']}}">--</span>
-                    <span class="text-xs text-on-surface-variant font-medium w-8">{{ $s['unit'] }}</span>
-                </div>
-                
-                <div class="mt-4">
-                    <div class="flex justify-between text-[9px] text-outline font-bold mb-1" id="minmax-{{$s['id']}}">
-                        <span>MIN: --</span><span>MAX: --</span>
-                    </div>
-                    <!-- Thin Progress bar -->
-                    <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                        <div id="bar-{{$s['id']}}" class="h-full bg-surface-variant rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                    <!-- Back -->
+                    <div class="flip-card-back bg-white rounded-xl p-5 border border-surface-container-high shadow-sm flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 text-slate-100 opacity-20 pointer-events-none">
+                            <span class="material-symbols-outlined text-8xl" data-icon="{{$s['icon']}}">{{$s['icon']}}</span>
+                        </div>
+                        <div class="relative z-10 flex flex-col justify-between h-full">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-1.5">
+                                    <span class="material-symbols-outlined text-primary text-base" data-icon="{{$s['icon']}}">{{$s['icon']}}</span>
+                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">{{ $s['name'] }}</h4>
+                                </div>
+                                <p class="text-[11px] leading-relaxed text-on-surface-variant font-medium font-sans">
+                                    {{ $glossary[$s['id']] }}
+                                </p>
+                            </div>
+                            <div class="text-[9px] text-primary/70 font-bold uppercase tracking-widest flex items-center gap-1 border-t border-surface-container-high pt-1.5">
+                                <span class="material-symbols-outlined text-xs">touch_app</span> Klik untuk kembali
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -193,19 +352,37 @@
 
     <!-- Section 3: Charts Row -->
     <div class="space-y-6">
-        <!-- Cr Chart Full Width -->
-        <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h3 class="text-xl font-bold font-headline text-on-surface mb-1">Chromium Prediction Trend</h3>
-                    <p class="text-sm text-on-surface-variant">Real-time mapping of hexavalent chromium timeline</p>
+        <!-- Dual Metal Trend Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Cr Chart -->
+            <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold font-headline text-on-surface mb-1">Chromium (Cr) Trend</h3>
+                        <p class="text-xs text-on-surface-variant">Hexavalent chromium timeline</p>
+                    </div>
+                    <div class="hidden sm:flex gap-2">
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> &gt;{{ $thresholds['cr_normal_max'] }}</span>
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-error rounded-full"></div> &gt;{{ $thresholds['cr_warning_max'] }}</span>
+                    </div>
                 </div>
-                <div class="hidden sm:flex gap-2">
-                    <span class="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg"><div class="w-2.5 h-2.5 bg-yellow-400 rounded-full"></div> Warning (&gt;{{ $thresholds['cr_normal_max'] }} mg/L)</span>
-                    <span class="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant bg-surface-container-low px-3 py-1.5 rounded-lg"><div class="w-2.5 h-2.5 bg-error rounded-full"></div> Danger (&gt;{{ $thresholds['cr_warning_max'] }} mg/L)</span>
-                </div>
+                <div id="chartCr" class="w-full h-[280px]"></div>
             </div>
-            <div id="chartCr" class="w-full h-[300px]"></div>
+
+            <!-- Ni Chart -->
+            <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold font-headline text-on-surface mb-1">Nickel (Ni) Trend</h3>
+                        <p class="text-xs text-on-surface-variant">Dissolved nickel timeline</p>
+                    </div>
+                    <div class="hidden sm:flex gap-2">
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> &gt;{{ $thresholds['ni_normal_max'] }}</span>
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-error rounded-full"></div> &gt;{{ $thresholds['ni_warning_max'] }}</span>
+                    </div>
+                </div>
+                <div id="chartNi" class="w-full h-[280px]"></div>
+            </div>
         </div>
         
         <!-- Dual Charts -->
@@ -235,7 +412,8 @@
                     <thead class="text-[10px] uppercase font-black tracking-widest text-on-surface-variant bg-surface-container-low border-b border-surface-container-high">
                         <tr>
                             <th class="px-6 py-4">Time</th>
-                            <th class="px-6 py-4 text-right">Cr (mg/L)</th>
+                            <th class="px-6 py-4 text-right">Cr (mg·L⁻¹)</th>
+                            <th class="px-6 py-4 text-right">Ni (mg·L⁻¹)</th>
                             <th class="px-6 py-4 text-right">EC</th>
                             <th class="px-6 py-4 text-right">TDS</th>
                             <th class="px-6 py-4 text-right">pH</th>
@@ -285,13 +463,22 @@
     // Init state vars from backend
     let sensorCache = @json($initialData); // chronologically sorted (last item is newest)
     let isPaused = false;
-    let chartCr, chartEcTds, chartPhSuhu;
+    let chartCr, chartNi, chartEcTds, chartPhSuhu;
+    let lastUiUpdateTime = 0;
+    const UI_THROTTLE_MS = 300000; // 5 minutes in milliseconds
 
     const limitChartPoints = 30;
     const limitTableRows = 10;
     const limitAlerts = 15;
     
-    let dataCr = [], dataEc = [], dataTds = [], dataPh = [], dataSuhu = [];
+    let dataCr = [], dataNi = [], dataEc = [], dataTds = [], dataPh = [], dataSuhu = [];
+
+    // Nickel theme colors
+    const niColors = {
+        normal:  { bg: 'rgba(67,56,202,0.05)', border: 'rgba(67,56,202,0.2)', text: 'text-indigo-600', tailwindBg: 'bg-indigo-50', bar: '#4338ca', label: 'NORMAL' },
+        warning: { bg: '#fef9c3', border: '#fef08a', text: 'text-yellow-700', tailwindBg: 'bg-yellow-100', bar: '#eab308', label: 'WARNING' },
+        danger:  { bg: '#fee2e2', border: '#fecaca', text: 'text-error', tailwindBg: 'bg-error-container', bar: '#ba1a1a', label: 'DANGER' }
+    };
     
     // Clinical Theme Colors Matching Stitch Specification
     const colors = {
@@ -376,18 +563,39 @@
             colors: ['#006948'],
             fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.2, opacityTo: 0.01, stops: [0, 100] } },
             xaxis: { type: 'datetime', labels: { datetimeUTC: false, style: { colors: '#64748b' } } },
-            yaxis: { title: { text: 'mg/L' }, labels: { style: { colors: '#64748b' } }, min: 0 },
+            yaxis: { title: { text: 'mg·L⁻¹' }, labels: { style: { colors: '#64748b' } }, min: 0 },
             annotations: {
                 y: [
                     { y: {{ $thresholds['cr_normal_max'] }},  borderColor: '#eab308', strokeDashArray: 3,
-                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["cr_normal_max"] }} mg/L)' } },
+                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["cr_normal_max"] }} mg·L⁻¹)' } },
                     { y: {{ $thresholds['cr_warning_max'] }}, borderColor: '#ba1a1a', strokeDashArray: 2,
-                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["cr_warning_max"] }} mg/L)'  } }
+                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["cr_warning_max"] }} mg·L⁻¹)'  } }
                 ]
             }
         };
         chartCr = new ApexCharts(document.querySelector("#chartCr"), optionsCr);
         chartCr.render();
+
+        // Ni Chart
+        let optionsNi = {
+            ...getLightModeOptions(),
+            series: [{ name: 'Ni Estimated', data: dataNi }],
+            chart: { ...getLightModeOptions().chart, type: 'area', height: 280 },
+            colors: ['#4338ca'],
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.2, opacityTo: 0.01, stops: [0, 100] } },
+            xaxis: { type: 'datetime', labels: { datetimeUTC: false, style: { colors: '#64748b' } } },
+            yaxis: { title: { text: 'mg·L⁻¹' }, labels: { style: { colors: '#64748b' } }, min: 0 },
+            annotations: {
+                y: [
+                    { y: {{ $thresholds['ni_normal_max'] }},  borderColor: '#eab308', strokeDashArray: 3,
+                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["ni_normal_max"] }} mg·L⁻¹)' } },
+                    { y: {{ $thresholds['ni_warning_max'] }}, borderColor: '#ba1a1a', strokeDashArray: 2,
+                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["ni_warning_max"] }} mg·L⁻¹)'  } }
+                ]
+            }
+        };
+        chartNi = new ApexCharts(document.querySelector("#chartNi"), optionsNi);
+        chartNi.render();
 
         let optionsEcTds = {
             ...getLightModeOptions(),
@@ -425,18 +633,20 @@
     function appendChartData(d) {
         let ts = new Date(d.created_at).getTime();
         dataCr.push([ts, d.cr_estimated]);
+        dataNi.push([ts, d.ni_estimated || 0]);
         dataEc.push([ts, d.ec]);
         dataTds.push([ts, d.tds]);
         dataPh.push([ts, d.ph]);
         dataSuhu.push([ts, d.suhu_air]);
         
         if(dataCr.length > limitChartPoints) {
-            dataCr.shift(); dataEc.shift(); dataTds.shift(); dataPh.shift(); dataSuhu.shift();
+            dataCr.shift(); dataNi.shift(); dataEc.shift(); dataTds.shift(); dataPh.shift(); dataSuhu.shift();
         }
     }
 
     function renderAllCharts() {
         chartCr.updateSeries([{ data: dataCr }]);
+        chartNi.updateSeries([{ data: dataNi }]);
         chartEcTds.updateSeries([{ data: dataEc }, { data: dataTds }]);
         chartPhSuhu.updateSeries([{ data: dataPh }, { data: dataSuhu }]);
     }
@@ -477,12 +687,20 @@
                 appendChartData(record);
                 
                 if (!isPaused) {
-                    processIncomingData(record, false);
-                    renderAllCharts();
-                    renderTable();
-                    if(record.status === 'warning' || record.status === 'danger') {
-                        prependAlertLog(record, true);
+                    const now = Date.now();
+                    const shouldUpdateUi = (now - lastUiUpdateTime >= UI_THROTTLE_MS);
+                    
+                    if (shouldUpdateUi) {
+                        lastUiUpdateTime = now;
+                        processIncomingData(record, false);
+                        renderAllCharts();
+                        renderTable();
+                        if(record.status === 'warning' || record.status === 'danger') {
+                            prependAlertLog(record, true);
+                        }
                     }
+                    
+                    // Critical danger notifications should always bypass throttle for safety
                     if (record.status === 'danger') {
                         triggerDangerNotification(record);
                     }
@@ -495,6 +713,13 @@
         document.getElementById('lastUpdateText').innerText = hmString;
 
         updateCard('cr', data.cr_estimated, data.status, isInitial);
+        
+        // Nickel card — classify status independently using WHO Ni limits
+        const niVal = data.ni_estimated || 0;
+        let niStatus = 'normal';
+        if (niVal >= {{ $thresholds['ni_warning_max'] }}) niStatus = 'danger';
+        else if (niVal >= {{ $thresholds['ni_normal_max'] }}) niStatus = 'warning';
+        updateCard('ni', niVal, niStatus, isInitial);
         
         const keys = ['ec', 'tds', 'ph', 'suhu_air', 'suhu_lingkungan', 'kelembapan', 'tegangan'];
         keys.forEach(k => {
@@ -513,9 +738,10 @@
     }
 
     function updateCard(id, val, status, isInitial) {
+        const isAiCard = (id === 'cr' || id === 'ni');
         const valEl = document.getElementById(`val-${id}`);
         if(valEl) {
-            valEl.innerText = id==='cr' ? val.toFixed(3) : val.toFixed(1);
+            valEl.innerText = isAiCard ? val.toFixed(5) : val.toFixed(1);
             if(!isInitial) {
                 valEl.classList.remove('value-update-flash');
                 void valEl.offsetWidth; 
@@ -525,7 +751,10 @@
 
         const badgeEl = document.getElementById(`badge-${id}`);
         const barEl = document.getElementById(`bar-${id}`);
-        const col = colors[status] || colors.normal;
+        
+        // Pick the correct color palette
+        const palette = (id === 'ni') ? niColors : colors;
+        const col = palette[status] || palette.normal;
         
         if(badgeEl) {
             badgeEl.className = `px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${col.tailwindBg} ${col.text}`;
@@ -534,7 +763,7 @@
 
         if(id === 'cr') {
             const container = document.getElementById(`cardContainer-cr`);
-            container.className = `bg-white rounded-xl p-5 border shadow-sm border-l-4 relative overflow-hidden group col-span-1 md:col-span-2 lg:col-span-1 flex flex-col justify-between`;
+            container.className = `flip-card-front bg-white rounded-xl p-5 border shadow-sm border-l-4 overflow-hidden flex flex-col justify-between`;
             container.style.borderLeftColor = col.bar;
             
             if(barEl) {
@@ -542,11 +771,20 @@
                 let pct = Math.min((val / ({{ $thresholds['cr_warning_max'] }} * 1.5)) * 100, 100);
                 barEl.style.width = pct + '%';
             }
+        } else if(id === 'ni') {
+            const container = document.getElementById(`cardContainer-ni`);
+            container.className = `flip-card-front bg-white rounded-xl p-5 border shadow-sm border-l-4 overflow-hidden flex flex-col justify-between`;
+            container.style.borderLeftColor = col.bar;
+            
+            if(barEl) {
+                barEl.style.backgroundColor = col.bar;
+                let pct = Math.min((val / ({{ $thresholds['ni_warning_max'] }} * 1.5)) * 100, 100);
+                barEl.style.width = pct + '%';
+            }
         } else {
             // physical sensor bars
             if(barEl) {
                 barEl.style.backgroundColor = col.bar;
-                // Dummy scaling for gauge visual effect
                 let limit = (id==='ec')?1000:(id==='tds')?1000:(id==='ph')?14:(id.includes('suhu'))?50:100;
                 let pct = Math.min((val / limit) * 100, 100);
                 barEl.style.width = pct + '%';
@@ -558,11 +796,16 @@
             if(id === 'cr') {
                 let maxScale = ({{ $thresholds['cr_warning_max'] }} * 1.5).toFixed(3);
                 minmaxEl.innerHTML = `<span>MIN: 0.000</span><span>MAX: ${maxScale} (Limit)</span>`;
+            } else if(id === 'ni') {
+                let maxScale = ({{ $thresholds['ni_warning_max'] }} * 1.5).toFixed(5);
+                minmaxEl.innerHTML = `<span>MIN: 0.00000</span><span>MAX: ${maxScale} (Limit)</span>`;
             } else {
-                let arr = sensorCache.map(r => r[id]);
-                let min = Math.min(...arr).toFixed(2);
-                let max = Math.max(...arr).toFixed(2);
-                minmaxEl.innerHTML = `<span>MIN: ${min}</span><span>MAX: ${max}</span>`;
+                let arr = sensorCache.map(r => r[id]).filter(v => v !== undefined && v !== null);
+                if(arr.length > 0) {
+                    let min = Math.min(...arr).toFixed(2);
+                    let max = Math.max(...arr).toFixed(2);
+                    minmaxEl.innerHTML = `<span>MIN: ${min}</span><span>MAX: ${max}</span>`;
+                }
             }
         }
     }
@@ -570,15 +813,38 @@
     function prependAlertLog(data, animate) {
         const timeStr = new Date(data.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         const container = document.getElementById('alertContainer');
-        const col = colors[data.status];
+        const col = colors[data.status] || colors.normal;
         
+        // Determine which metal is exceeding
+        let metalDetails = '';
+        const crVal = parseFloat(data.cr_estimated || 0);
+        const niVal = parseFloat(data.ni_estimated || 0);
+        
+        if (crVal >= {{ $thresholds['cr_warning_max'] }}) {
+            metalDetails += `<div>Cr⁶⁺ Danger Level: <span class="font-bold text-error">${crVal.toFixed(5)} mg·L⁻¹</span></div>`;
+        } else if (crVal >= {{ $thresholds['cr_normal_max'] }}) {
+            metalDetails += `<div>Cr⁶⁺ Warning Level: <span class="font-bold text-yellow-600">${crVal.toFixed(5)} mg·L⁻¹</span></div>`;
+        }
+        
+        if (niVal >= {{ $thresholds['ni_warning_max'] }}) {
+            metalDetails += `<div>Ni²⁺ Danger Level: <span class="font-bold text-error">${niVal.toFixed(5)} mg·L⁻¹</span></div>`;
+        } else if (niVal >= {{ $thresholds['ni_normal_max'] }}) {
+            metalDetails += `<div>Ni²⁺ Warning Level: <span class="font-bold text-yellow-600">${niVal.toFixed(5)} mg·L⁻¹</span></div>`;
+        }
+        
+        if (!metalDetails) {
+            metalDetails = `<div>Cr⁶⁺: ${crVal.toFixed(5)} | Ni²⁺: ${niVal.toFixed(5)} mg·L⁻¹</div>`;
+        }
+
         const markup = `
-            <div class="px-4 py-3 rounded-lg border bg-surface-container-lowest flex flex-col gap-1 border-l-4" style="border-left-color: ${col.bar};">
+            <div class="px-4 py-3 rounded-lg border bg-surface-container-lowest flex flex-col gap-1 border-l-4 animate-fade-in" style="border-left-color: ${col.bar};">
                 <div class="flex justify-between items-start">
-                    <span class="text-[10px] font-bold uppercase ${col.text}">${data.status} Chromium Log</span>
+                    <span class="text-[10px] font-bold uppercase ${col.text}">${data.status} Heavy Metal Log</span>
                     <span class="text-[10px] text-on-surface-variant font-mono">${timeStr}</span>
                 </div>
-                <p class="text-sm font-medium text-on-surface mt-1">Cr Limit Reached: <span class="font-bold ${col.text}">${data.cr_estimated.toFixed(4)} mg/L</span></p>
+                <div class="text-xs font-medium text-on-surface mt-1 space-y-0.5">
+                    ${metalDetails}
+                </div>
             </div>
         `;
         container.insertAdjacentHTML('afterbegin', markup);
@@ -596,11 +862,13 @@
             const timeStr = new Date(row.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             let colText = colors[row.status].text;
             let colBadge = colors[row.status].tailwindBg + " " + colors[row.status].text;
+            const niVal = row.ni_estimated || 0;
             
             tb.innerHTML += `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4 font-mono text-xs text-on-surface-variant">${timeStr}</td>
-                    <td class="px-6 py-4 text-right font-bold ${colText}">${row.cr_estimated.toFixed(3)}</td>
+                    <td class="px-6 py-4 text-right font-bold ${colText}">${row.cr_estimated.toFixed(5)}</td>
+                    <td class="px-6 py-4 text-right font-bold text-indigo-600">${niVal.toFixed(5)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.ec.toFixed(1)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.tds.toFixed(1)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.ph.toFixed(1)}</td>
@@ -644,11 +912,23 @@
         const now = Date.now();
         if (now - lastDangerNotifTime < 30000) return;
         lastDangerNotifTime = now;
-        const crVal = parseFloat(record.cr_estimated).toFixed(5);
         
+        const crVal = parseFloat(record.cr_estimated || 0);
+        const niVal = parseFloat(record.ni_estimated || 0);
+        
+        let warningMessage = '';
+        if (crVal >= {{ $thresholds['cr_warning_max'] }}) {
+            warningMessage += `Chromium (Cr⁶⁺): ${crVal.toFixed(5)} mg·L⁻¹ (Limit: {{ $thresholds['cr_warning_max'] }} mg·L⁻¹) `;
+        }
+        if (niVal >= {{ $thresholds['ni_warning_max'] }}) {
+            warningMessage += `Nickel (Ni²⁺): ${niVal.toFixed(5)} mg·L⁻¹ (Limit: {{ $thresholds['ni_warning_max'] }} mg·L⁻¹)`;
+        }
+        
+        if (!warningMessage) return;
+
         if ('Notification' in window && Notification.permission === 'granted') {
-            const notif = new Notification('⚠️ HERA — Critical Event!', {
-                body: `Chromium Level Detected at ${crVal} mg/L — Danger Threshold Broken (>{{ $thresholds['cr_warning_max'] }} mg/L)!`,
+            const notif = new Notification('⚠️ HERA — Critical Heavy Metal Event!', {
+                body: `Batas Bahaya Terlampaui: ${warningMessage}`,
                 icon: '/favicon.ico',
                 tag: 'hera-danger',
                 requireInteraction: true
