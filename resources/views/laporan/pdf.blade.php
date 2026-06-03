@@ -94,9 +94,9 @@
         <thead>
             <tr>
                 <th width="5%">No</th>
-                <th width="15%">Tanggal & Waktu</th>
-                <th width="10%">Cr (mg·L⁻¹)</th>
-                <th width="10%">Ni (mg·L⁻¹)</th>
+                <th width="20%">Tanggal & Waktu</th>
+                <th width="15%">Cr (mg·L⁻¹)</th>
+                {{-- <th width="10%">Ni (mg·L⁻¹)</th> --}}
                 <th width="8%">pH</th>
                 <th width="10%">EC (µS/cm)</th>
                 <th width="10%">TDS (mg·L⁻¹)</th>
@@ -112,7 +112,7 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $row->created_at->format('d/m/Y H:i:s') }}</td>
                     <td>{{ number_format($row->cr_estimated, 5) }}</td>
-                    <td>{{ number_format($row->ni_estimated ?? 0, 5) }}</td>
+                    {{-- <td>{{ number_format($row->ni_estimated ?? 0, 5) }}</td> --}}
                     <td>{{ number_format($row->ph, 2) }}</td>
                     <td>{{ number_format($row->ec, 1) }}</td>
                     <td>{{ number_format($row->tds, 1) }}</td>

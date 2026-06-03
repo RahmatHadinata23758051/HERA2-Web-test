@@ -105,7 +105,7 @@
                     <tr>
                         <th class="px-5 py-4 whitespace-nowrap">Tanggal & Waktu</th>
                         <th class="px-5 py-4 text-center">Cr (mg·L⁻¹)</th>
-                        <th class="px-5 py-4 text-center">Ni (mg·L⁻¹)</th>
+                        {{-- <th class="px-5 py-4 text-center">Ni (mg·L⁻¹)</th> --}}
                         <th class="px-5 py-4 text-center">pH</th>
                         <th class="px-5 py-4 text-center">EC (µS/cm)</th>
                         <th class="px-5 py-4 text-center">TDS (mg·L⁻¹)</th>
@@ -126,9 +126,9 @@
                             {{ $row->status === 'danger' ? 'text-error' : ($row->status === 'warning' ? 'text-yellow-600' : 'text-primary') }}">
                             {{ number_format($row->cr_estimated, 5) }}
                         </td>
-                        <td class="px-5 py-3 text-center font-mono font-bold text-indigo-600">
+                        {{-- <td class="px-5 py-3 text-center font-mono font-bold text-indigo-600">
                             {{ number_format($row->ni_estimated ?? 0, 5) }}
-                        </td>
+                        </td> --}}
                         <td class="px-5 py-3 text-center text-on-surface font-medium">{{ number_format($row->ph, 2) }}</td>
                         <td class="px-5 py-3 text-center text-on-surface font-medium">{{ number_format($row->ec, 1) }}</td>
                         <td class="px-5 py-3 text-center text-on-surface font-medium">{{ number_format($row->tds, 1) }}</td>

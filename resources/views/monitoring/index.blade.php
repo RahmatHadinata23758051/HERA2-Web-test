@@ -47,7 +47,7 @@
         @php
             $params = [
                 ['id' => 'cr_estimated', 'title' => 'Hexavalent Chromium (Cr⁶⁺)', 'unit' => 'mg·L⁻¹',  'color' => '#006948', 'badge' => 'AI Estimated', 'badgeColor' => 'bg-primary/10 text-primary'],
-                ['id' => 'ni_estimated', 'title' => 'Dissolved Nickel (Ni²⁺)',    'unit' => 'mg·L⁻¹',  'color' => '#4338ca', 'badge' => 'AI Estimated', 'badgeColor' => 'bg-indigo-50 text-indigo-600'],
+                // ['id' => 'ni_estimated', 'title' => 'Dissolved Nickel (Ni²⁺)',    'unit' => 'mg·L⁻¹',  'color' => '#4338ca', 'badge' => 'AI Estimated', 'badgeColor' => 'bg-indigo-50 text-indigo-600'],
                 ['id' => 'ec',           'title' => 'Electrical Conductivity',   'unit' => 'µS/cm',  'color' => '#0ea5e9', 'badge' => 'Fisik',        'badgeColor' => 'bg-sky-100 text-sky-700'],
                 ['id' => 'tds',          'title' => 'Total Dissolved Solids',    'unit' => 'mg·L⁻¹',  'color' => '#10b981', 'badge' => 'Fisik',        'badgeColor' => 'bg-emerald-100 text-emerald-700'],
                 ['id' => 'ph',           'title' => 'Acidity (pH Level)',         'unit' => 'pH',     'color' => '#a855f7', 'badge' => 'Fisik',        'badgeColor' => 'bg-purple-100 text-purple-700'],
@@ -118,7 +118,7 @@
     }
 
     function initCharts() {
-        const params = ['cr_estimated', 'ni_estimated', 'ec', 'tds', 'ph', 'suhu_air', 'suhu_lingkungan', 'kelembapan'];
+        const params = ['cr_estimated', /* 'ni_estimated', */ 'ec', 'tds', 'ph', 'suhu_air', 'suhu_lingkungan', 'kelembapan'];
         
         params.forEach(id => {
             const ctx = document.getElementById(`chart-${id}`);

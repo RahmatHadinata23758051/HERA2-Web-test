@@ -46,7 +46,7 @@
                         <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Koordinat GPS</th>
                         <th class="px-4 py-3 text-[10px] font-black text-sky-700 uppercase tracking-widest text-center border-r border-surface-container-high bg-sky-50">Altitude (m)</th>
                         <th colspan="7" class="px-4 py-2.5 text-[10px] font-black text-emerald-700 uppercase tracking-widest text-center border-b border-r border-surface-container-high bg-emerald-50">Data Sensor Terkalibrasi</th>
-                        <th colspan="2" class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
+                        <th colspan="1" class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
                     </tr>
                     {{-- Sub-column row --}}
                     <tr class="border-b-2 border-surface-container-high bg-surface-container-low text-[10px] font-bold uppercase tracking-wider">
@@ -62,7 +62,7 @@
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Kelembapan (%)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center border-r border-surface-container-high whitespace-nowrap">Tegangan (V)</th>
                         <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap">CR Est. (mg·L⁻¹)</th>
-                        <th class="px-4 py-2 text-indigo-700 bg-indigo-50 text-center whitespace-nowrap">NI Est. (mg·L⁻¹)</th>
+                        {{-- <th class="px-4 py-2 text-indigo-700 bg-indigo-50 text-center whitespace-nowrap">NI Est. (mg·L⁻¹)</th> --}}
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-container-high">
@@ -84,7 +84,7 @@
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->kelembapan ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center border-r border-surface-container-high bg-emerald-50/40">{{ $test->tegangan ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm font-mono font-bold text-purple-700 text-center bg-purple-50/40">{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}</td>
-                        <td class="px-4 py-3 text-sm font-mono font-bold text-indigo-700 text-center bg-indigo-50/40">{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}</td>
+                        {{-- <td class="px-4 py-3 text-sm font-mono font-bold text-indigo-700 text-center bg-indigo-50/40">{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}</td> --}}
                     </tr>
                     @empty
                     <tr>
@@ -203,8 +203,8 @@
                     suhu_lingkungan: '{{ $test->suhu_lingkungan ?? '-' }}',
                     kelembapan: '{{ $test->kelembapan ?? '-' }}',
                     tegangan:  '{{ $test->tegangan ?? '-' }}',
-                    cr:        '{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}',
-                    ni:        '{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}'
+                    cr:        '{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}'
+                    // ni:        '{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}'
                 }
             );
             @endforeach
@@ -248,8 +248,8 @@
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Suhu Air</span><br><b style="color:#006948">${data.suhu_air}°C</b></div>
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Udara</span><br><b style="color:#006948">${data.suhu_lingkungan}°C</b></div>
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Kelembapan</span><br><b style="color:#006948">${data.kelembapan}%</b></div>
-                     <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Cr⁶⁺ Estimated</span><br><b style="color:#7e22ce;font-size:12px;">${data.cr} mg·L⁻¹</b></div>
-                     <div style="background:#e0e7ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Ni²⁺ Estimated</span><br><b style="color:#4f46e5;font-size:12px;">${data.ni} mg·L⁻¹</b></div>
+                     <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;text-align:center;grid-column: span 2;"><span style="color:#6d7a72;font-size:10px;">Cr⁶⁺ Estimated</span><br><b style="color:#7e22ce;font-size:12px;">${data.cr} mg·L⁻¹</b></div>
+                     <!-- <div style="background:#e0e7ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Ni²⁺ Estimated</span><br><b style="color:#4f46e5;font-size:12px;">${data.ni} mg·L⁻¹</b></div> -->
                  </div>
              </div>
          `;

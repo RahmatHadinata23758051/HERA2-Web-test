@@ -14,7 +14,7 @@
             </a>
             <div>
                 <h2 class="text-2xl font-extrabold tracking-tight text-on-surface font-headline">Pengaturan Threshold Logam Berat</h2>
-                <p class="text-on-surface-variant text-sm mt-0.5">Atur batas nilai normal dan warning untuk kadar Chromium (Cr) dan Nickel (Ni) yang dipantau oleh sistem.</p>
+                <p class="text-on-surface-variant text-sm mt-0.5">Atur batas nilai normal dan warning untuk kadar Chromium (Cr) yang dipantau oleh sistem.</p>
             </div>
         </div>
     </div>
@@ -151,6 +151,7 @@
                 </div>
             </div>
 
+            {{-- Comment out Nickel threshold settings preview and inputs for now
             {{-- Visual Preview Ni --}}
             <div class="rounded-xl overflow-hidden border border-indigo-200" x-data="{
                 niNormalMax:  {{ old('ni_normal_max',  $current['ni_normal_max']['value'])  }},
@@ -236,6 +237,7 @@
                     </div>
                 </div>
             </div>
+            --}}
 
             {{-- Action Buttons --}}
             <div class="pt-2 flex justify-end gap-3">
@@ -278,6 +280,7 @@
                         <td class="py-3 text-center font-mono">&lt; 0.100 mg/L</td>
                         <td class="py-3 text-xs">Guidelines for Drinking-water Quality</td>
                     </tr>
+                    {{-- Comment Ni standard row out for now
                     <tr class="text-on-surface-variant">
                         <td class="py-3 font-bold text-on-surface">WHO</td>
                         <td class="py-3 text-center font-bold text-indigo-600">Ni</td>
@@ -285,6 +288,7 @@
                         <td class="py-3 text-center font-mono">&lt; 0.070 mg/L</td>
                         <td class="py-3 text-xs">Guidelines for Drinking-water Quality (2022)</td>
                     </tr>
+                    --}}
                     <tr class="text-on-surface-variant">
                         <td class="py-3 font-bold text-on-surface">PP RI No.22/2021</td>
                         <td class="py-3 text-center font-bold">Cr</td>
