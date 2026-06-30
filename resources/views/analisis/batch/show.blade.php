@@ -747,16 +747,16 @@
 
                     {{-- Download Template Link --}}
                     <div class="pt-2 flex flex-col gap-2.5 text-xs border-t border-surface-container-high/60 mt-3 pt-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-on-surface-variant">Template Per Logam (CSV):</span>
-                            <a href="/templates/template_import.csv" download class="text-primary font-bold hover:underline inline-flex items-center gap-1">
+                        <div class="flex justify-between items-center gap-4">
+                            <span class="text-on-surface-variant font-medium">Template Per Logam (CSV):</span>
+                            <a href="/templates/template_import.csv" download class="text-primary font-bold hover:underline inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                 Unduh Template CSV
                             </a>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-on-surface-variant">Template Master (Semua Logam - Excel):</span>
-                            <a href="/templates/template_master_all_metals.xlsx" download class="text-primary font-bold hover:underline inline-flex items-center gap-1">
+                        <div class="flex justify-between items-center gap-4">
+                            <span class="text-on-surface-variant font-medium">Template Master (Semua Logam - Excel):</span>
+                            <a href="/templates/template_master_all_metals.xlsx" download class="text-primary font-bold hover:underline inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                 Unduh Template Excel Master
                             </a>
