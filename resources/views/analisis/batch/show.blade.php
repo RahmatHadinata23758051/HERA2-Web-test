@@ -99,12 +99,12 @@
             </div>
             
             <div class="flex items-center gap-2">
+                @if($pollutant !== 'dashboard')
                 <button @click="openImportModal = true"
                         class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg hover:brightness-110 transition-all shadow-sm font-bold text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     Import File
                 </button>
-                @if($pollutant !== 'dashboard')
                 <button @click="openManualModal = true"
                         class="flex items-center gap-2 px-4 py-2 bg-secondary-container text-secondary border border-secondary/20 hover:brightness-95 rounded-lg font-bold text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -746,12 +746,21 @@
                     </div>
 
                     {{-- Download Template Link --}}
-                    <div class="pt-2 flex justify-between items-center text-xs">
-                        <span class="text-on-surface-variant">Membutuhkan contoh format?</span>
-                        <a href="/templates/template_import.csv" download class="text-primary font-bold hover:underline inline-flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            Unduh Template CSV
-                        </a>
+                    <div class="pt-2 flex flex-col gap-2.5 text-xs border-t border-surface-container-high/60 mt-3 pt-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant">Template Per Logam (CSV):</span>
+                            <a href="/templates/template_import.csv" download class="text-primary font-bold hover:underline inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                Unduh Template CSV
+                            </a>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-on-surface-variant">Template Master (Semua Logam - Excel):</span>
+                            <a href="/templates/template_master_all_metals.xlsx" download class="text-primary font-bold hover:underline inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                Unduh Template Excel Master
+                            </a>
+                        </div>
                     </div>
                 </div>
 
