@@ -36,9 +36,9 @@ class AnalisisController extends Controller
     // =========================================================
     // METODE PER POLUTAN
     // =========================================================
-    public function rqNitrat(Request $request)
+    public function rqChromium(Request $request)
     {
-        return $this->showAnalisis($request, 'nitrat');
+        return $this->showAnalisis($request, 'chromium');
     }
 
     public function rqPb(Request $request)
@@ -51,14 +51,14 @@ class AnalisisController extends Controller
         return $this->showAnalisis($request, 'cd');
     }
 
-    public function rqPh(Request $request)
+    public function rqNickel(Request $request)
     {
-        return $this->showAnalisis($request, 'ph');
+        return $this->showAnalisis($request, 'nickel');
     }
 
-    public function rqF(Request $request)
+    public function rqArsenic(Request $request)
     {
-        return $this->showAnalisis($request, 'f');
+        return $this->showAnalisis($request, 'arsenic');
     }
 
     // =========================================================
@@ -78,7 +78,7 @@ class AnalisisController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'pollutant_type' => 'required|in:nitrat,pb,cd,ph,f',
+            'pollutant_type' => 'required|in:chromium,pb,nickel,arsenic,cd',
             'nama'           => 'required|string|max:255',
             'umur'           => 'required|numeric|min:0',
             'wb'             => 'required|numeric|min:0.1',
@@ -110,7 +110,7 @@ class AnalisisController extends Controller
     {
         $request->validate([
             'file'           => 'required|file|mimes:xlsx,xls,csv|max:5120',
-            'pollutant_type' => 'required|in:nitrat,pb,cd,ph,f',
+            'pollutant_type' => 'required|in:chromium,pb,nickel,arsenic,cd',
         ]);
 
         Excel::import(
@@ -148,7 +148,7 @@ class AnalisisController extends Controller
         $record = RqAnalysis::findOrFail($id);
 
         $validated = $request->validate([
-            'pollutant_type' => 'required|in:nitrat,pb,cd,ph,f',
+            'pollutant_type' => 'required|in:chromium,pb,nickel,arsenic,cd',
             'nama'           => 'required|string|max:255',
             'umur'           => 'required|numeric|min:0',
             'wb'             => 'required|numeric|min:0.1',

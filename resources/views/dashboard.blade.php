@@ -450,6 +450,42 @@
 
     <!-- Section 3: Charts Row -->
     <div class="space-y-6">
+        {{-- Filter Bar Historis --}}
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-surface-container-high">
+            <div>
+                <h3 class="text-base font-bold text-on-surface">Analisis Grafik Tren Sensor</h3>
+                <p class="text-xs text-on-surface-variant mt-0.5">Filter data live stream atau tampilkan riwayat historis.</p>
+            </div>
+            <div class="flex bg-surface-container-low p-1 rounded-xl border border-surface-container-high gap-1 flex-shrink-0">
+                <button data-filter="live"
+                        class="filter-btn px-4 py-1.5 text-xs font-bold rounded-lg transition-all bg-primary text-white shadow-sm">
+                    Live Stream
+                </button>
+                <button data-filter="1h"
+                        class="filter-btn px-4 py-1.5 text-xs font-medium rounded-lg transition-all text-on-surface-variant hover:text-primary hover:bg-white">
+                    1 Jam
+                </button>
+                <button data-filter="today"
+                        class="filter-btn px-4 py-1.5 text-xs font-medium rounded-lg transition-all text-on-surface-variant hover:text-primary hover:bg-white">
+                    Hari Ini
+                </button>
+                <button data-filter="7d"
+                        class="filter-btn px-4 py-1.5 text-xs font-medium rounded-lg transition-all text-on-surface-variant hover:text-primary hover:bg-white">
+                    7 Hari
+                </button>
+            </div>
+        </div>
+
+        {{-- Loading Indicator Overlay --}}
+        <div id="loadingOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/10 backdrop-blur-sm" style="display: none !important;">
+            <div class="bg-white rounded-2xl shadow-xl px-8 py-6 flex flex-col items-center gap-3">
+                <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-on-surface font-bold text-sm">Memuat Data Historis...</span>
+            </div>
+        </div>
         <!-- Dual Metal Trend Charts (Nickel commented out, Chromium full-width) -->
         <div>
             <!-- Cr Chart -->
@@ -563,6 +599,7 @@
     // Init state vars from backend
     let sensorCache = @json($initialData); // chronologically sorted (last item is newest)
     let isPaused = false;
+    let currentFilter = 'live';
     let chartCr, chartNi = null, chartEcTds, chartPhSuhu;
     let lastUiUpdateTime = 0;
     const UI_THROTTLE_MS = 300000; // 5 minutes in milliseconds
@@ -601,6 +638,7 @@
         }
 
         initCharts();
+        setupFilterListeners();
         
         if(!isPaused && sensorCache.length > 0) {
             processIncomingData(sensorCache[sensorCache.length - 1], true);
@@ -785,6 +823,10 @@
                 const record = e.sensorData || e;
                 sensorCache.push(record);
                 if(sensorCache.length > 50) sensorCache.shift();
+
+                if (currentFilter !== 'live') {
+                    return; // Lewati jika sedang memfilter data historis
+                }
 
                 appendChartData(record);
                 
@@ -1126,5 +1168,87 @@
         document.head.appendChild(style);
     }
 })();
+
+    // Penanganan Filter Historis Sensor
+    function setupFilterListeners() {
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const type = this.getAttribute('data-filter');
+                if (currentFilter === type) return;
+                
+                // Update UI
+                buttons.forEach(b => {
+                    b.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+                    b.classList.add('text-on-surface-variant', 'hover:text-primary', 'hover:bg-white');
+                });
+                this.classList.remove('text-on-surface-variant', 'hover:text-primary', 'hover:bg-white');
+                this.classList.add('bg-primary', 'text-white', 'shadow-sm');
+                
+                currentFilter = type;
+                loadData();
+            });
+        });
+    }
+
+    async function loadData() {
+        const loader = document.getElementById('loadingOverlay');
+        if (loader) loader.style.display = 'flex';
+
+        let url = '';
+        if (currentFilter === 'live') {
+            url = '/api/sensor/latest';
+        } else {
+            const now = new Date();
+            let from = new Date();
+            
+            if (currentFilter === '1h') {
+                from.setHours(now.getHours() - 1);
+            } else if (currentFilter === 'today') {
+                from.setHours(0, 0, 0, 0);
+            } else if (currentFilter === '7d') {
+                from.setDate(now.getDate() - 7);
+            }
+
+            const fp = encodeURIComponent(from.toISOString());
+            const tp = encodeURIComponent(now.toISOString());
+            let limit = currentFilter === '7d' ? 5000 : 1000;
+            url = `/api/sensor/history?from=${fp}&to=${tp}&limit=${limit}`;
+        }
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            updateAllChartsArray(data);
+        } catch (e) {
+            console.error('Error fetching dashboard historical data', e);
+        } finally {
+            if (loader) loader.style.display = 'none';
+        }
+    }
+
+    function updateAllChartsArray(dataArray) {
+        dataCr = [];
+        dataEc = [];
+        dataTds = [];
+        dataPh = [];
+        dataSuhu = [];
+        
+        dataArray.forEach(row => {
+            let ts = new Date(row.created_at).getTime();
+            dataCr.push([ts, row.cr_estimated]);
+            dataEc.push([ts, row.ec]);
+            dataTds.push([ts, row.tds]);
+            dataPh.push([ts, row.ph]);
+            dataSuhu.push([ts, row.suhu_air]);
+        });
+
+        renderAllCharts();
+        
+        // Update gauges and status card to show the newest item in the dataset
+        if(dataArray.length > 0) {
+            processIncomingData(dataArray[dataArray.length - 1], true);
+        }
+    }
 </script>
 @endpush

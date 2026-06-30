@@ -11,6 +11,7 @@ class RqAnalysis extends Model
 
     protected $fillable = [
         // Meta
+        'rq_batch_id',
         'pollutant_type',
         'source',
         'user_id',
@@ -26,6 +27,8 @@ class RqAnalysis extends Model
         'rfd',
         'tavg',
         'dt_input',
+        'latitude',
+        'longitude',
         // Kalkulasi Intake
         'intake_realtime',
         'intake_5th',
@@ -53,6 +56,8 @@ class RqAnalysis extends Model
         'rfd'            => 'float',
         'tavg'           => 'float',
         'dt_input'       => 'float',
+        'latitude'       => 'float',
+        'longitude'      => 'float',
         'intake_realtime' => 'float',
         'intake_5th'     => 'float',
         'intake_10th'    => 'float',
@@ -71,25 +76,30 @@ class RqAnalysis extends Model
 
     // Label nama polutan untuk UI
     public static array $pollutantLabels = [
-        'nitrat' => 'Nitrat (NO₃)',
-        'pb'     => 'Timbal (Pb)',
-        'cd'     => 'Kadmium (Cd)',
-        'ph'     => 'Fosfor (Ph)',
-        'f'      => 'Fluorida (F)',
+        'chromium' => 'Kromium (Cr)',
+        'pb'       => 'Timbal (Pb)',
+        'nickel'   => 'Nikel (Ni)',
+        'arsenic'  => 'Arsen (As)',
+        'cd'       => 'Kadmium (Cd)',
     ];
 
     // RfD default per polutan (mg/kg/hari)
     public static array $rfdDefaults = [
-        'nitrat' => 1.6,
-        'pb'     => 0.0035,
-        'cd'     => 0.0005,
-        'ph'     => 20.0,
-        'f'      => 0.06,
+        'chromium' => 0.003,
+        'pb'       => 0.0014,
+        'nickel'   => 0.02,
+        'arsenic'  => 0.0003,
+        'cd'       => 0.001,
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function batch(): BelongsTo
+    {
+        return $this->belongsTo(RqBatch::class, 'rq_batch_id');
     }
 
     /**

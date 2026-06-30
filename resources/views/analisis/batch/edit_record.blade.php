@@ -6,7 +6,7 @@
     {{-- Page Header --}}
     <div class="bg-white p-5 rounded-xl shadow-sm border border-surface-container-high">
         <div class="flex items-center gap-3">
-            <a href="{{ route('analisis.rq.' . $record->pollutant_type) }}"
+            <a href="{{ route('analisis.batch.show', [$record->rq_batch_id, $record->pollutant_type]) }}"
                class="p-1.5 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -46,25 +46,9 @@
             </span>
         </div>
         
-        <form action="{{ route('analisis.update', $record->id) }}" method="POST" class="p-6 space-y-6">
+        <form action="{{ route('analisis.record.update', $record->id) }}" method="POST" class="p-6 space-y-6">
             @csrf
             @method('PUT')
-
-            {{-- Polutan Selector --}}
-            <div>
-                <label class="block text-sm font-bold text-on-surface mb-1.5">Target Polutan</label>
-                <select name="pollutant_type" required
-                        class="w-full bg-white border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all text-sm">
-                    <option value="" disabled>Pilih Polutan...</option>
-                    @foreach(\App\Models\RqAnalysis::$pollutantLabels as $key => $label)
-                        <option value="{{ $key }}" {{ $record->pollutant_type === $key ? 'selected' : '' }}>
-                            {{ $label }} (Default RfD: {{ \App\Models\RqAnalysis::$rfdDefaults[$key] }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <hr class="border-surface-container-high">
 
             {{-- Two Column Grid --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -95,18 +79,18 @@
                 {{-- Variabel Rumus --}}
                 <div class="space-y-4">
                     <h4 class="text-xs font-black text-secondary uppercase tracking-widest border-b border-secondary/20 pb-2">
-                        Variabel Rumus
+                        Variabel Rumus ({{ \App\Models\RqAnalysis::$pollutantLabels[$record->pollutant_type] }})
                     </h4>
 
                     <div class="grid grid-cols-2 gap-3">
                         @php
                             $varFields = [
-                                ['name'=>'c',        'label'=>'Konsentrasi (C)',     'step'=>'0.0001',   'value'=> $record->c],
+                                ['name'=>'c',        'label'=>'Konsentrasi (C)',     'step'=>'0.00001',  'value'=> $record->c],
                                 ['name'=>'r',        'label'=>'Laju Asupan (R)',     'step'=>'0.01',     'value'=> $record->r],
                                 ['name'=>'f',        'label'=>'Frekuensi (f) /th',   'step'=>'1',        'value'=> $record->f],
                                 ['name'=>'rfd',      'label'=>'RfD (Dosis Acuan)',    'step'=>'0.000001', 'value'=> $record->rfd],
                                 ['name'=>'tavg',     'label'=>'Waktu Avg (tavg)',     'step'=>'1',        'value'=> $record->tavg],
-                                ['name'=>'dt_input', 'label'=>'Durasi Pajanan (Dt)', 'step'=>'1',        'value'=> $record->dt_input],
+                                ['name'=>'dt_input', 'label'=>'Durasi Pajanan (Dt)', 'step'=>'0.1',      'value'=> $record->dt_input],
                             ];
                         @endphp
                         @foreach($varFields as $field)
@@ -123,7 +107,7 @@
 
             {{-- Form Actions --}}
             <div class="pt-4 flex justify-end gap-3 border-t border-surface-container-high">
-                <a href="{{ route('analisis.rq.' . $record->pollutant_type) }}"
+                <a href="{{ route('analisis.batch.show', [$record->rq_batch_id, $record->pollutant_type]) }}"
                    class="px-5 py-2.5 rounded-lg border border-surface-container-high text-on-surface-variant hover:bg-surface-container-low transition-colors text-sm font-medium">
                     Batal
                 </a>

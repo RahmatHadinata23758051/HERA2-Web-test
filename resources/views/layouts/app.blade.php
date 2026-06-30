@@ -181,32 +181,14 @@
                     Dashboard
                 </a>
 
-                <!-- Monitoring -->
-                <a href="{{ route('monitoring') }}" 
-                   class="flex items-center gap-1.5 h-full px-3 text-sm font-medium transition-all duration-200 border-b-2 rounded-t-sm {{ request()->routeIs('monitoring*') ? 'text-primary border-primary font-bold bg-primary/[.06]' : 'text-on-surface-variant border-transparent hover:text-primary hover:border-primary/50 hover:bg-primary/[.04]' }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Monitoring
-                </a>
 
-                <!-- Analisis Data Excel Dropdown -->
-                <div x-data="{ openAnalysis: false }" @mouseenter="openAnalysis = true" @mouseleave="openAnalysis = false" class="relative h-full flex items-center">
-                    <button @click="openAnalysis = !openAnalysis" 
-                            class="flex items-center gap-1.5 h-full px-3 text-sm font-medium outline-none transition-all duration-200 border-b-2 rounded-t-sm {{ request()->routeIs('analisis.*') ? 'text-primary border-primary font-bold bg-primary/[.06]' : 'text-on-surface-variant border-transparent hover:text-primary hover:border-primary/50 hover:bg-primary/[.04]' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
-                        Analisis Data Excel
-                        <svg class="w-3 h-3 transition-transform" :class="openAnalysis ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div x-show="openAnalysis" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" style="display:none;"
-                         class="absolute top-12 left-0 w-52 bg-white border border-surface-container-high rounded-xl shadow-xl py-1.5 z-50">
-                        <a href="{{ route('analisis.rq.nitrat') }}" class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.nitrat') ? 'text-primary font-bold bg-surface-container-low' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">RQ Nitrat</a>
-                        <a href="{{ route('analisis.rq.pb') }}"    class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.pb') ? 'text-primary font-bold bg-surface-container-low' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">RQ Pb</a>
-                        <a href="{{ route('analisis.rq.cd') }}"    class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.cd') ? 'text-primary font-bold bg-surface-container-low' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">RQ Cd</a>
-                        <a href="{{ route('analisis.rq.ph') }}"    class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.ph') ? 'text-primary font-bold bg-surface-container-low' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">RQ Ph</a>
-                        <a href="{{ route('analisis.rq.f') }}"     class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.rq.f') ? 'text-primary font-bold bg-surface-container-low' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">RQ F</a>
-                        <div class="border-t border-surface-container-high my-1 mx-2"></div>
-                        <a href="{{ route('analisis.input') }}"    class="block px-4 py-2 text-sm {{ request()->routeIs('analisis.input') ? 'text-primary font-bold bg-surface-container-low' : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low' }}">Input Data Manual</a>
-                    </div>
-                </div>
+
+                <!-- Analisis Data Excel -->
+                <a href="{{ route('analisis.index') }}" 
+                   class="flex items-center gap-1.5 h-full px-3 text-sm font-medium transition-all duration-200 border-b-2 rounded-t-sm {{ request()->routeIs('analisis.*') ? 'text-primary border-primary font-bold bg-primary/[.06]' : 'text-on-surface-variant border-transparent hover:text-primary hover:border-primary/50 hover:bg-primary/[.04]' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+                    Analisis Data Excel
+                </a>
 
                 @if(auth()->user()->isDireksi())
                 <!-- Manajemen Akun -->
@@ -262,18 +244,8 @@
         <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display:none;" 
              class="md:hidden bg-white border-b border-surface-container-high shadow-md pb-4 px-4 space-y-1">
             <a href="{{ route('dashboard') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }}">Dashboard</a>
-            <a href="{{ route('monitoring') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('monitoring*') ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }}">Monitoring</a>
-            <div class="px-3 pt-1 pb-2">
-                <p class="text-[10px] font-bold text-outline uppercase tracking-widest mb-1">Analisis Data Excel</p>
-                <div class="pl-2 border-l-2 border-surface-container-high space-y-1">
-                    <a href="{{ route('analisis.rq.nitrat') }}" class="block text-sm py-1 {{ request()->routeIs('analisis.rq.nitrat') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Nitrat</a>
-                    <a href="{{ route('analisis.rq.pb') }}"    class="block text-sm py-1 {{ request()->routeIs('analisis.rq.pb') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Pb</a>
-                    <a href="{{ route('analisis.rq.cd') }}"    class="block text-sm py-1 {{ request()->routeIs('analisis.rq.cd') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Cd</a>
-                    <a href="{{ route('analisis.rq.ph') }}"    class="block text-sm py-1 {{ request()->routeIs('analisis.rq.ph') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ Ph</a>
-                    <a href="{{ route('analisis.rq.f') }}"     class="block text-sm py-1 {{ request()->routeIs('analisis.rq.f') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">RQ F</a>
-                    <a href="{{ route('analisis.input') }}"    class="block text-sm py-1 mt-1 pt-2 border-t border-surface-container-high {{ request()->routeIs('analisis.input') ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary' }}">Input Manual</a>
-                </div>
-            </div>
+
+            <a href="{{ route('analisis.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('analisis.*') ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }}">Analisis Data Excel</a>
             @if(auth()->user()->isDireksi())
             <a href="{{ route('admin.users.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('admin.users*') ? 'bg-primary/10 text-primary font-bold' : 'text-on-surface-variant hover:bg-surface-container-low' }}">Manajemen Akun</a>
             @endif

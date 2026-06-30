@@ -19,11 +19,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', fn() => redirect('/dashboard'));
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/monitoring', [App\Http\Controllers\MonitoringController::class, 'index'])->name('monitoring');
+
     
     // Laporan & Export
     Route::get('/laporan', [App\Http\Controllers\ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/pengujian', [App\Http\Controllers\WebFieldTestController::class, 'index'])->name('laporan.pengujian.index');
+    Route::get('/laporan/pengujian/export/excel', [App\Http\Controllers\WebFieldTestController::class, 'exportExcel'])->name('laporan.pengujian.export.excel');
+    Route::get('/laporan/pengujian/export/pdf', [App\Http\Controllers\WebFieldTestController::class, 'exportPdf'])->name('laporan.pengujian.export.pdf');
     Route::get('/laporan/export/excel', [App\Http\Controllers\ReportController::class, 'exportExcel'])->name('laporan.export.excel');
     Route::get('/laporan/export/pdf', [App\Http\Controllers\ReportController::class, 'exportPdf'])->name('laporan.export.pdf');
 
@@ -56,24 +58,17 @@ Route::middleware('auth')->group(function () {
     // Analisis Data Excel (RQ Risk Quotient) — semua auth user
     // =========================================================
     Route::prefix('analisis')->name('analisis.')->group(function () {
-        // Sub-modul per polutan
-        Route::get('/rqnitrat', [\App\Http\Controllers\AnalisisController::class, 'rqNitrat'])->name('rq.nitrat');
-        Route::get('/rqpb',     [\App\Http\Controllers\AnalisisController::class, 'rqPb'])->name('rq.pb');
-        Route::get('/rqcd',     [\App\Http\Controllers\AnalisisController::class, 'rqCd'])->name('rq.cd');
-        Route::get('/rqph',     [\App\Http\Controllers\AnalisisController::class, 'rqPh'])->name('rq.ph');
-        Route::get('/rqf',      [\App\Http\Controllers\AnalisisController::class, 'rqF'])->name('rq.f');
+        // Rute Batch Analisis
+        Route::get('/batch', [\App\Http\Controllers\RqBatchController::class, 'index'])->name('index');
+        Route::post('/batch', [\App\Http\Controllers\RqBatchController::class, 'store'])->name('batch.store');
+        Route::delete('/batch/{id}', [\App\Http\Controllers\RqBatchController::class, 'destroy'])->name('batch.destroy');
+        Route::get('/batch/{id}/{pollutant?}', [\App\Http\Controllers\RqBatchController::class, 'show'])->name('batch.show');
+        Route::post('/batch/{id}/import', [\App\Http\Controllers\RqBatchController::class, 'import'])->name('batch.import');
+        Route::post('/batch/{id}/store-manual', [\App\Http\Controllers\RqBatchController::class, 'storeManual'])->name('batch.store_manual');
 
-        // Input data manual
-        Route::get('/input',    [\App\Http\Controllers\AnalisisController::class, 'inputData'])->name('input');
-        Route::post('/store',   [\App\Http\Controllers\AnalisisController::class, 'store'])->name('store');
-
-        // Import & Export Excel
-        Route::post('/import',           [\App\Http\Controllers\AnalisisController::class, 'import'])->name('import');
-        Route::get('/export/{type}',     [\App\Http\Controllers\AnalisisController::class, 'export'])->name('export');
-
-        // CRUD
-        Route::get('/edit/{id}',         [\App\Http\Controllers\AnalisisController::class, 'edit'])->name('edit');
-        Route::put('/{id}',              [\App\Http\Controllers\AnalisisController::class, 'update'])->name('update');
-        Route::delete('/{id}',           [\App\Http\Controllers\AnalisisController::class, 'destroy'])->name('destroy');
+        // Rute Record Responden Individu
+        Route::get('/record/{id}/edit', [\App\Http\Controllers\RqBatchController::class, 'editRecord'])->name('record.edit');
+        Route::put('/record/{id}', [\App\Http\Controllers\RqBatchController::class, 'updateRecord'])->name('record.update');
+        Route::delete('/record/{id}', [\App\Http\Controllers\RqBatchController::class, 'destroyRecord'])->name('record.destroy');
     });
 });

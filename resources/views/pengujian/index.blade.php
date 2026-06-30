@@ -14,9 +14,100 @@
             <h2 class="text-2xl font-extrabold tracking-tight text-on-surface font-headline">Laporan Pengujian Lapangan</h2>
             <p class="text-on-surface-variant text-sm mt-1">Rekam jejak pembacaan sensor yang divalidasi langsung di lapangan melalui perangkat Mobile.</p>
         </div>
-        <div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface-container rounded-lg px-3 py-2 border border-surface-container-high">
-            <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-            <span class="font-bold">{{ $tests->total() }} titik</span> terekam
+        <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface-container rounded-lg px-3 py-2 border border-surface-container-high">
+                <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                <span class="font-bold">{{ $tests->total() }} titik</span> terekam
+            </div>
+            
+            {{-- Export Excel Dropdown --}}
+            <div x-data="{ openExport: false }" @click.away="openExport = false" class="relative">
+                <button @click="openExport = !openExport"
+                        class="inline-flex items-center gap-2 bg-secondary-container text-secondary border border-secondary/20 hover:brightness-95 px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Export Data
+                    <svg class="w-3.5 h-3.5 transition-transform" :class="openExport ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="openExport" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" style="display:none;"
+                     class="absolute right-0 mt-2 w-52 bg-white border border-surface-container-high rounded-xl shadow-xl overflow-hidden z-50">
+                    @php
+                        $xlsxReq = array_merge(request()->all(), ['format' => 'xlsx']);
+                        $csvReq  = array_merge(request()->all(), ['format' => 'csv']);
+                    @endphp
+                    <a href="{{ route('laporan.pengujian.export.excel', $xlsxReq) }}" class="flex items-center gap-2.5 px-4 py-3 text-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Format Excel (.xlsx)
+                    </a>
+                    <div class="border-t border-surface-container-high mx-3"></div>
+                    <a href="{{ route('laporan.pengujian.export.excel', $csvReq) }}" class="flex items-center gap-2.5 px-4 py-3 text-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low transition-colors">
+                        <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Format CSV (.csv)
+                    </a>
+                </div>
+            </div>
+
+            {{-- Export PDF --}}
+            <a href="{{ route('laporan.pengujian.export.pdf', request()->all()) }}" target="_blank"
+               class="inline-flex items-center gap-2 bg-error-container text-error border border-error/20 hover:brightness-95 px-4 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Export PDF
+            </a>
+        </div>
+    </div>
+
+    {{-- Filter Card --}}
+    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden"
+         x-data="{ showFilter: {{ request()->anyFilled(['from_date', 'to_date', 'location', 'metal']) ? 'true' : 'false' }} }">
+        
+        <div class="flex justify-between items-center px-5 py-4 cursor-pointer hover:bg-surface-container-low transition-colors"
+             @click="showFilter = !showFilter">
+            <h3 class="font-bold text-on-surface text-sm flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                Filter Spesifik
+                @if(request()->anyFilled(['from_date', 'to_date', 'location', 'metal']))
+                    <span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">Aktif</span>
+                @endif
+            </h3>
+            <svg class="w-4 h-4 text-outline transition-transform" :class="showFilter ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+
+        <div x-show="showFilter" x-transition class="px-5 pb-5 border-t border-surface-container-high pt-4">
+            <form action="{{ route('laporan.pengujian.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Tanggal Mulai</label>
+                    <input type="date" name="from_date" value="{{ request('from_date') }}"
+                           class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary block p-2.5 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Tanggal Akhir</label>
+                    <input type="date" name="to_date" value="{{ request('to_date') }}"
+                           class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary block p-2.5 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Logam Berat</label>
+                    <select name="metal"
+                            class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary block p-2.5 outline-none transition">
+                        <option value="" {{ request('metal') == '' ? 'selected' : '' }}>Semua</option>
+                        <option value="cr" {{ request('metal') == 'cr' ? 'selected' : '' }}>Chromium (Cr)</option>
+                        <option value="ni" {{ request('metal') == 'ni' ? 'selected' : '' }}>Nikel (Ni)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Cari Petugas / Koordinat</label>
+                    <input type="text" name="location" value="{{ request('location') }}" placeholder="Cari nama petugas, lat, lng..."
+                           class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary block p-2.5 outline-none transition">
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 bg-primary text-on-primary font-bold rounded-lg text-sm px-4 py-2.5 transition-all hover:brightness-110 shadow-sm">
+                        Terapkan
+                    </button>
+                    @if(request()->anyFilled(['from_date', 'to_date', 'location', 'metal']))
+                        <a href="{{ route('laporan.pengujian.index') }}" class="flex-1 text-center bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-medium rounded-lg text-sm px-4 py-2.5 transition-colors">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
         </div>
     </div>
 
@@ -37,7 +128,7 @@
 
         {{-- Tab 1: Tabel Data --}}
         <div id="view-table" class="tab-view overflow-x-auto">
-            <table class="w-full text-left border-collapse min-w-[1200px]">
+            <table class="w-full text-left border-collapse min-w-[1300px]">
                 <thead>
                     {{-- Group row --}}
                     <tr class="border-b border-surface-container-high bg-surface-container-low">
@@ -46,7 +137,7 @@
                         <th class="px-4 py-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest text-center border-r border-surface-container-high">Koordinat GPS</th>
                         <th class="px-4 py-3 text-[10px] font-black text-sky-700 uppercase tracking-widest text-center border-r border-surface-container-high bg-sky-50">Altitude (m)</th>
                         <th colspan="7" class="px-4 py-2.5 text-[10px] font-black text-emerald-700 uppercase tracking-widest text-center border-b border-r border-surface-container-high bg-emerald-50">Data Sensor Terkalibrasi</th>
-                        <th colspan="1" class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
+                        <th colspan="2" class="px-4 py-2.5 text-[10px] font-black text-purple-700 uppercase tracking-widest text-center bg-purple-50">Prediksi AI</th>
                     </tr>
                     {{-- Sub-column row --}}
                     <tr class="border-b-2 border-surface-container-high bg-surface-container-low text-[10px] font-bold uppercase tracking-wider">
@@ -61,8 +152,8 @@
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Suhu Udr (°C)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Kelembapan (%)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center border-r border-surface-container-high whitespace-nowrap">Tegangan (V)</th>
-                        <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap">CR Est. (mg·L⁻¹)</th>
-                        {{-- <th class="px-4 py-2 text-indigo-700 bg-indigo-50 text-center whitespace-nowrap">NI Est. (mg·L⁻¹)</th> --}}
+                        <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap border-r border-surface-container-high">CR Est. (mg·L⁻¹)</th>
+                        <th class="px-4 py-2 text-indigo-700 bg-indigo-50 text-center whitespace-nowrap">NI Est. (mg·L⁻¹)</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-container-high">
@@ -83,12 +174,12 @@
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->suhu_lingkungan ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center bg-emerald-50/40">{{ $test->kelembapan ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm font-mono text-emerald-700 text-center border-r border-surface-container-high bg-emerald-50/40">{{ $test->tegangan ?? '-' }}</td>
-                        <td class="px-4 py-3 text-sm font-mono font-bold text-purple-700 text-center bg-purple-50/40">{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}</td>
-                        {{-- <td class="px-4 py-3 text-sm font-mono font-bold text-indigo-700 text-center bg-indigo-50/40">{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}</td> --}}
+                        <td class="px-4 py-3 text-sm font-mono font-bold text-purple-700 text-center bg-purple-50/40 border-r border-surface-container-high">{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}</td>
+                        <td class="px-4 py-3 text-sm font-mono font-bold text-indigo-700 text-center bg-indigo-50/40">{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="13" class="px-4 py-16 text-center">
+                        <td colspan="14" class="px-4 py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="p-4 bg-surface-container rounded-full">
                                     <svg class="h-10 w-10 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -105,7 +196,7 @@
             {{-- Pagination --}}
             @if($tests->hasPages())
             <div class="px-5 py-4 border-t border-surface-container-high bg-surface-container-lowest">
-                {{ $tests->links() }}
+                {{ $tests->appends(request()->query())->links() }}
             </div>
             @endif
         </div>
@@ -203,8 +294,8 @@
                     suhu_lingkungan: '{{ $test->suhu_lingkungan ?? '-' }}',
                     kelembapan: '{{ $test->kelembapan ?? '-' }}',
                     tegangan:  '{{ $test->tegangan ?? '-' }}',
-                    cr:        '{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}'
-                    // ni:        '{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}'
+                    cr:        '{{ $test->cr_estimated !== null ? number_format($test->cr_estimated, 5) : '-' }}',
+                    ni:        '{{ $test->ni_estimated !== null ? number_format($test->ni_estimated, 5) : '-' }}'
                 }
             );
             @endforeach
@@ -248,32 +339,32 @@
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Suhu Air</span><br><b style="color:#006948">${data.suhu_air}°C</b></div>
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Udara</span><br><b style="color:#006948">${data.suhu_lingkungan}°C</b></div>
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Kelembapan</span><br><b style="color:#006948">${data.kelembapan}%</b></div>
-                     <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;text-align:center;grid-column: span 2;"><span style="color:#6d7a72;font-size:10px;">Cr⁶⁺ Estimated</span><br><b style="color:#7e22ce;font-size:12px;">${data.cr} mg·L⁻¹</b></div>
-                     <!-- <div style="background:#e0e7ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Ni²⁺ Estimated</span><br><b style="color:#4f46e5;font-size:12px;">${data.ni} mg·L⁻¹</b></div> -->
+                     <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Cr⁶⁺ Estimated</span><br><b style="color:#7e22ce;font-size:12px;">${data.cr} mg·L⁻¹</b></div>
+                     <div style="background:#e0e7ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Ni²⁺ Estimated</span><br><b style="color:#4f46e5;font-size:12px;">${data.ni} mg·L⁻¹</b></div>
                  </div>
              </div>
          `;
 
-        const marker = L.marker([lat, lng], { icon: defaultIcon }).addTo(mainMap);
-        marker.bindPopup(popupHtml, { maxWidth: 260, closeButton: false });
-        markers[id] = marker;
-    }
+         const marker = L.marker([lat, lng], { icon: defaultIcon }).addTo(mainMap);
+         marker.bindPopup(popupHtml, { maxWidth: 260, closeButton: false });
+         markers[id] = marker;
+     }
 
-    function jumpToMarker(id, lat, lng) {
-        if (!mainMap) return;
-        mainMap.flyTo([lat, lng], 18, { animate: true, duration: 1.0 });
+     function jumpToMarker(id, lat, lng) {
+         if (!mainMap) return;
+         mainMap.flyTo([lat, lng], 18, { animate: true, duration: 1.0 });
 
-        Object.values(markers).forEach(m => { m.setIcon(defaultIcon); m.setZIndexOffset(0); });
+         Object.values(markers).forEach(m => { m.setIcon(defaultIcon); m.setZIndexOffset(0); });
 
-        setTimeout(() => {
-            const targetMarker = markers[id];
-            if (targetMarker) {
-                targetMarker.setIcon(activeIcon);
-                targetMarker.setZIndexOffset(1000);
-                targetMarker.openPopup();
-            }
-        }, 1100);
-    }
+         setTimeout(() => {
+             const targetMarker = markers[id];
+             if (targetMarker) {
+                 targetMarker.setIcon(activeIcon);
+                 targetMarker.setZIndexOffset(1000);
+                 targetMarker.openPopup();
+             }
+         }, 1100);
+     }
 </script>
 
 <style>
