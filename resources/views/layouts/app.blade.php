@@ -276,7 +276,7 @@
         <!-- Subtle ambient glow -->
         <div class="fixed top-0 right-0 w-[40%] h-[40%] rounded-full bg-primary/5 blur-[150px] pointer-events-none z-0"></div>
 
-        <div class="relative z-10 w-full px-4 sm:px-6 lg:px-10 max-w-[1600px] mx-auto pb-10 flex-1 pt-6">
+        <div class="relative z-20 w-full px-4 sm:px-6 lg:px-10 max-w-[1600px] mx-auto pb-10 flex-1 pt-6">
             @yield('content')
         </div>
 

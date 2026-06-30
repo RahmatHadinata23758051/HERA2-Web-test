@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
         // Rute Batch Analisis
         Route::get('/batch', [\App\Http\Controllers\RqBatchController::class, 'index'])->name('index');
         Route::post('/batch', [\App\Http\Controllers\RqBatchController::class, 'store'])->name('batch.store');
+        Route::put('/batch/{id}', [\App\Http\Controllers\RqBatchController::class, 'update'])->name('batch.update');
         Route::delete('/batch/{id}', [\App\Http\Controllers\RqBatchController::class, 'destroy'])->name('batch.destroy');
         Route::get('/batch/{id}/{pollutant?}', [\App\Http\Controllers\RqBatchController::class, 'show'])->name('batch.show');
         Route::post('/batch/{id}/import', [\App\Http\Controllers\RqBatchController::class, 'import'])->name('batch.import');

@@ -82,7 +82,7 @@
 @endpush
 
 @section('content')
-<div class="space-y-6" x-data="{ openImportModal: false, openManualModal: false }">
+<div class="space-y-6" x-data="{ openImportModal: false, openManualModal: false, openConfirmModal: false, confirmTitle: '', confirmMessage: '', confirmAction: '' }">
 
     {{-- Breadcrumb & Title --}}
     <div class="bg-white p-5 rounded-xl shadow-sm border border-surface-container-high space-y-4">
@@ -281,13 +281,11 @@
                                        class="p-1 hover:bg-primary/10 text-on-surface-variant hover:text-primary rounded" title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
-                                    <form action="{{ route('analisis.record.destroy', $row->id) }}" method="POST"
-                                          onsubmit="return confirm('Hapus responden &quot;{{ $row->nama }}&quot;?');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="p-1 hover:bg-error-container text-on-surface-variant hover:text-error rounded" title="Hapus">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            @click="openConfirmModal = true; confirmTitle = 'Hapus Responden'; confirmMessage = 'Apakah Anda yakin ingin menghapus data responden &quot;{{ addslashes($row->nama) }}&quot;? Data akan dihapus secara permanen dari batch ini.'; confirmAction = '{{ route('analisis.record.destroy', $row->id) }}'"
+                                            class="p-1 hover:bg-error-container text-on-surface-variant hover:text-error rounded" title="Hapus">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
                                 </div>
                             </td>
 
@@ -888,6 +886,48 @@
         </div>
     </div>
     @endif
+
+    {{-- Modal Konfirmasi Hapus --}}
+    <div x-show="openConfirmModal"
+         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/50"
+         style="display: none;"
+         x-transition>
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full border border-surface-container-high overflow-hidden"
+             @click.away="openConfirmModal = false"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100">
+            
+            <div class="p-6 text-center space-y-4">
+                {{-- Hazard Warning Icon --}}
+                <div class="mx-auto w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center animate-bounce">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                
+                <div class="space-y-1">
+                    <h3 class="font-extrabold text-on-surface text-lg" x-text="confirmTitle">Konfirmasi Hapus</h3>
+                    <p class="text-xs text-on-surface-variant leading-relaxed" x-text="confirmMessage"></p>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-slate-50 border-t border-surface-container-high flex justify-center gap-3">
+                <button type="button" @click="openConfirmModal = false"
+                        class="px-4 py-2 border border-surface-container-high hover:bg-surface-container text-on-surface-variant rounded-lg text-sm font-bold transition-colors w-24">
+                    Batal
+                </button>
+                <form :action="confirmAction" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg text-sm font-bold transition-all shadow-sm w-24">
+                        Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
 </div>
 

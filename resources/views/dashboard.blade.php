@@ -49,50 +49,48 @@
 
 @section('content')
 <div class="space-y-8">
-    <!-- Header Title -->
-    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-surface-container-high rounded-xl">
+    <!-- Header Title & Diagnostics Status Bar -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center bg-white p-6 rounded-xl shadow-sm border border-surface-container-high gap-4">
         <div>
             <h2 class="text-3xl font-extrabold tracking-tight text-on-surface font-headline">Heavy Metal Monitoring System</h2>
             <p class="text-on-surface-variant mt-1 text-sm">Real-time IoT-based analysis for Chromium prediction and physical water sensing</p>
         </div>
-        <div class="flex items-center gap-4">
-            <button id="toggleFeedBtn" class="px-5 py-2.5 bg-primary hover:bg-primary-container transition shadow-sm text-white text-sm font-semibold rounded-lg flex items-center gap-2">
-                <svg id="feedIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        
+        <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <!-- Quality Badge -->
+            <div class="px-3.5 py-1.5 rounded-lg border flex items-center gap-2 transition-colors shadow-sm" id="masterStatusBadge" style="background: rgba(0, 105, 72, 0.05); border-color: rgba(0, 105, 72, 0.2);">
+                <div class="h-2 w-2 rounded-full bg-primary" id="masterStatusDot"></div>
+                <span class="font-extrabold tracking-wide text-primary text-xs" id="masterStatusLabel">QUALITY: NORMAL</span>
+            </div>
+
+            <!-- FastAPI & Stream Status Pills -->
+            <div class="flex items-center gap-3 text-xs bg-slate-50 border border-surface-container-high px-3.5 py-1.5 rounded-lg shadow-sm">
+                <!-- FastAPI -->
+                <div class="flex items-center gap-1.5">
+                    <div id="aiHealthDot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-on-surface-variant font-medium">AI:</span>
+                    <span id="aiHealthText" class="font-bold text-on-surface">Connected</span>
+                </div>
+                <div class="w-px h-3 bg-surface-container-high"></div>
+                <!-- Stream -->
+                <div class="flex items-center gap-1.5">
+                    <div id="wsHealthDot" class="w-2 h-2 rounded-full bg-yellow-400"></div>
+                    <span class="text-on-surface-variant font-medium">Stream:</span>
+                    <span id="wsHealthText" class="font-bold text-on-surface">Connecting...</span>
+                </div>
+                <div class="w-px h-3 bg-surface-container-high"></div>
+                <!-- Last Update -->
+                <div class="flex items-center gap-1.5">
+                    <span class="text-on-surface-variant font-medium">Last:</span>
+                    <span id="lastUpdateText" class="font-bold text-on-surface font-mono">--:--:--</span>
+                </div>
+            </div>
+
+            <!-- Pause Feed Button -->
+            <button id="toggleFeedBtn" class="px-4 py-2 bg-primary hover:bg-primary/90 transition shadow-sm text-white text-xs font-bold rounded-lg flex items-center gap-1.5">
+                <svg id="feedIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <span id="feedText">Pause Feed</span>
             </button>
-        </div>
-    </div>
-
-    <!-- Section 1: Target Status Bar -->
-    <div class="rounded-xl border border-surface-container-high bg-white p-5 flex flex-wrap gap-4 items-center justify-between shadow-sm">
-        <div class="flex items-center gap-8">
-            <div>
-                <span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">FastAPI Core</span>
-                <div class="flex items-center gap-2 mt-1">
-                    <div id="aiHealthDot" class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
-                    <span id="aiHealthText" class="text-sm font-bold text-on-surface">Connected</span>
-                </div>
-            </div>
-            <div class="w-px h-8 bg-surface-container-high"></div>
-            <div>
-                <span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">Stream State</span>
-                <div class="flex items-center gap-2 mt-1">
-                    <div id="wsHealthDot" class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                    <span id="wsHealthText" class="text-sm font-bold text-on-surface">Connecting...</span>
-                </div>
-            </div>
-            <div class="w-px h-8 bg-surface-container-high"></div>
-            <div>
-                <span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">Last Packet</span>
-                <div class="mt-1">
-                    <span id="lastUpdateText" class="text-sm font-bold text-on-surface font-mono">--:--:--</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="px-5 py-2 rounded-lg border flex items-center gap-3 transition-colors shadow-sm" id="masterStatusBadge" style="background: rgba(0, 105, 72, 0.05); border-color: rgba(0, 105, 72, 0.2);">
-            <div class="h-2 w-2 rounded-full bg-primary" id="masterStatusDot"></div>
-            <span class="font-bold tracking-wide text-primary text-sm" id="masterStatusLabel">QUALITY: NORMAL</span>
         </div>
     </div>
 
@@ -603,6 +601,8 @@
     let chartCr, chartNi = null, chartEcTds, chartPhSuhu;
     let lastUiUpdateTime = 0;
     const UI_THROTTLE_MS = 300000; // 5 minutes in milliseconds
+    let lastDataTime = null;
+    let streamStatusInterval = null;
 
     const limitChartPoints = 30;
     const limitTableRows = 10;
@@ -801,25 +801,56 @@
             });
     }
 
+    function updateStreamStatus() {
+        const wsDot = document.getElementById('wsHealthDot');
+        const wsText = document.getElementById('wsHealthText');
+        if (!wsDot || !wsText) return;
+
+        // Cek status koneksi websocket pusher
+        const pusherState = window.Echo && window.Echo.connector.pusher.connection && window.Echo.connector.pusher.connection.state;
+        
+        if (pusherState !== 'connected') {
+            wsDot.className = 'w-2 h-2 rounded-full bg-red-500';
+            wsText.innerText = 'Disconnected';
+            wsText.className = 'font-bold text-red-500';
+            return;
+        }
+
+        // Jika koneksi websocket tersambung, cek kapan data terakhir masuk
+        if (lastDataTime === null) {
+            wsDot.className = 'w-2 h-2 rounded-full bg-yellow-400 animate-pulse';
+            wsText.innerText = 'No Data';
+            wsText.className = 'font-bold text-yellow-600';
+        } else if (Date.now() - lastDataTime > 15000) { // 15 detik timeout jika tidak ada data masuk
+            wsDot.className = 'w-2 h-2 rounded-full bg-yellow-400 animate-pulse';
+            wsText.innerText = 'Idle (No Data)';
+            wsText.className = 'font-bold text-yellow-600';
+        } else {
+            wsDot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
+            wsText.innerText = 'Streaming';
+            wsText.className = 'font-bold text-green-600';
+        }
+    }
+
     function setupWebSocket() {
         if(!window.Echo) return;
 
         window.Echo.connector.pusher.connection.bind('state_change', function(states) {
-            const wsDot = document.getElementById('wsHealthDot');
-            const wsText = document.getElementById('wsHealthText');
-            if (states.current === 'connected') {
-                wsDot.className = 'w-2.5 h-2.5 rounded-full bg-green-500';
-                wsText.innerText = 'Connected';
-                wsText.classList.remove('text-error');
-            } else {
-                wsDot.className = 'w-2.5 h-2.5 rounded-full bg-error';
-                wsText.innerText = 'Disconnected';
-                wsText.classList.add('text-error');
-            }
+            updateStreamStatus();
         });
+
+        // Jalankan interval pemantauan status data masuk setiap 3 detik
+        if (streamStatusInterval) clearInterval(streamStatusInterval);
+        streamStatusInterval = setInterval(updateStreamStatus, 3000);
+
+        // Panggil update pertama kali
+        updateStreamStatus();
 
         window.Echo.channel('sensor-monitoring')
             .listen('.SensorDataUpdated', (e) => {
+                lastDataTime = Date.now();
+                updateStreamStatus();
+
                 const record = e.sensorData || e;
                 sensorCache.push(record);
                 if(sensorCache.length > 50) sensorCache.shift();

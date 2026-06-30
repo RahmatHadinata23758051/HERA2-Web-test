@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ openConfirmModal: false, confirmTitle: '', confirmMessage: '', confirmAction: '' }">
 
     {{-- Header --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-xl shadow-sm border border-surface-container-high">
@@ -77,15 +77,11 @@
                                 </a>
                                 {{-- Delete --}}
                                 @if($user->id !== auth()->id())
-                                <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                      x-data
-                                      @submit.prevent="if(confirm('Hapus akun {{ addslashes($user->name) }}? Tindakan ini tidak dapat dibatalkan.')) $el.submit()">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                            class="px-3 py-1.5 text-xs font-bold text-error bg-error-container hover:brightness-95 border border-error/20 rounded-lg transition-colors">
-                                        Hapus
-                                    </button>
-                                </form>
+                                <button type="button"
+                                        @click="openConfirmModal = true; confirmTitle = 'Hapus Akun Pengguna'; confirmMessage = 'Apakah Anda yakin ingin menghapus akun &quot;{{ addslashes($user->name) }}&quot;? Tindakan ini tidak dapat dibatalkan.'; confirmAction = '{{ route('admin.users.destroy', $user) }}'"
+                                        class="px-3 py-1.5 text-xs font-bold text-error bg-error-container hover:brightness-95 border border-error/20 rounded-lg transition-colors">
+                                    Hapus
+                                </button>
                                 @else
                                 <span class="px-3 py-1.5 text-xs text-outline cursor-not-allowed">Hapus</span>
                                 @endif
@@ -132,6 +128,48 @@
             </div>
         </div>
         @endif
+
+    {{-- Modal Konfirmasi Hapus --}}
+    <div x-show="openConfirmModal"
+         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/50"
+         style="display: none;"
+         x-transition>
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full border border-surface-container-high overflow-hidden"
+             @click.away="openConfirmModal = false"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100">
+            
+            <div class="p-6 text-center space-y-4">
+                {{-- Hazard Warning Icon --}}
+                <div class="mx-auto w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center animate-bounce">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                
+                <div class="space-y-1">
+                    <h3 class="font-extrabold text-on-surface text-lg" x-text="confirmTitle">Konfirmasi Hapus</h3>
+                    <p class="text-xs text-on-surface-variant leading-relaxed" x-text="confirmMessage"></p>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-slate-50 border-t border-surface-container-high flex justify-center gap-3">
+                <button type="button" @click="openConfirmModal = false"
+                        class="px-4 py-2 border border-surface-container-high hover:bg-surface-container text-on-surface-variant rounded-lg text-sm font-bold transition-colors w-24">
+                    Batal
+                </button>
+                <form :action="confirmAction" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg text-sm font-bold transition-all shadow-sm w-24">
+                        Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
+
 </div>
 @endsection

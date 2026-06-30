@@ -64,6 +64,33 @@ class RqBatchController extends Controller
     }
 
     /**
+     * Perbarui nama batch penelitian.
+     */
+    public function update(Request $request, $id)
+    {
+        $batch = RqBatch::findOrFail($id);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:rq_batches,name,' . $batch->id,
+        ]);
+
+        $oldName = $batch->name;
+        $batch->update([
+            'name' => $validated['name'],
+        ]);
+
+        ActivityLog::create([
+            'user_id' => auth()->id() ?? 1,
+            'action'  => 'Edit Batch Analisis',
+            'details' => 'Mengubah nama batch dari "' . $oldName . '" menjadi "' . $batch->name . '"'
+        ]);
+
+        return redirect()
+            ->route('analisis.index')
+            ->with('success', 'Nama batch analisis berhasil diubah menjadi "' . $batch->name . '".');
+    }
+
+    /**
      * Hapus batch penelitian beserta seluruh datanya.
      */
     public function destroy($id)
