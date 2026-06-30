@@ -1,3 +1,3 @@
-No,Responden,Umur,Wb,f,C,R,RfD,tavg,Dt (realtime)
-1,Sal,20,53,365,0.0044,900,0.003,10950,20
-2,Nrf,25,68,365,0.0002,1500,0.0003,10950,22
+No,Responden,Umur,Wb,f,C,R,RfD,tavg,Dt (realtime),Latitude,Longitude
+1,Sal,20,53,365,0.0044,900,0.003,10950,20,-5.4012,105.2601
+2,Nrf,25,68,365,0.0002,1500,0.0003,10950,22,-5.3978,105.2667
