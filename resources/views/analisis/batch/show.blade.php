@@ -818,7 +818,7 @@
                     {{-- Wb --}}
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant mb-1">Wb (Berat Badan - kg)</label>
-                        <input type="number" name="wb" required step="0.1" min="0.1" placeholder="Contoh: 60"
+                        <input type="number" name="wb" required step="any" min="0.1" placeholder="Contoh: 60"
                                class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg block p-2 outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary">
                     </div>
 
@@ -832,21 +832,21 @@
                     {{-- C --}}
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant mb-1">C (Konsentrasi - mg/L)</label>
-                        <input type="number" name="c" required step="0.00001" min="0" placeholder="Contoh: 0.0044"
+                        <input type="number" name="c" required step="any" min="0" placeholder="Contoh: 0.0044"
                                class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg block p-2 outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary">
                     </div>
 
                     {{-- R --}}
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant mb-1">R (Laju Asupan - L/hari)</label>
-                        <input type="number" name="r" required step="0.01" min="0" placeholder="Contoh: 2.0"
+                        <input type="number" name="r" required step="any" min="0" placeholder="Contoh: 2.0"
                                class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg block p-2 outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary">
                     </div>
 
                     {{-- RfD --}}
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant mb-1">RfD (Dosis Acuan - mg/kg/hari)</label>
-                        <input type="number" name="rfd" value="{{ $rfdDefault }}" step="0.00001" min="0"
+                        <input type="number" name="rfd" value="{{ $rfdDefault }}" step="any" min="0"
                                class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg block p-2 outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary">
                         <span class="text-[9px] text-outline">Biarkan default atau sesuaikan.</span>
                     </div>
@@ -862,21 +862,21 @@
                     {{-- Dt --}}
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant mb-1">Dt (Durasi Pajanan - tahun)</label>
-                        <input type="number" name="dt_input" required step="0.1" min="0.1" placeholder="Contoh: 20"
+                        <input type="number" name="dt_input" required step="any" min="0.1" placeholder="Contoh: 20"
                                class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg block p-2 outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary">
                     </div>
 
                     {{-- Latitude --}}
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant mb-1">Latitude (Opsional)</label>
-                        <input type="number" name="latitude" step="0.00000001" min="-90" max="90" placeholder="Contoh: -6.2301"
+                        <input type="number" name="latitude" step="any" min="-90" max="90" placeholder="Contoh: -6.2301"
                                class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg block p-2 outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary">
                     </div>
 
                     {{-- Longitude --}}
                     <div>
                         <label class="block text-xs font-bold text-on-surface-variant mb-1">Longitude (Opsional)</label>
-                        <input type="number" name="longitude" step="0.00000001" min="-180" max="180" placeholder="Contoh: 106.8402"
+                        <input type="number" name="longitude" step="any" min="-180" max="180" placeholder="Contoh: 106.8402"
                                class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg block p-2 outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary">
                     </div>
                 </div>
