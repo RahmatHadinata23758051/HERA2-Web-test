@@ -30,10 +30,10 @@ class WebFieldTestController extends Controller
         if ($request->filled('location')) {
             $loc = $request->location;
             $query->where(function ($q) use ($loc) {
-                $q->where('latitude', 'like', "%{$loc}%")
-                  ->orWhere('longitude', 'like', "%{$loc}%")
+                $q->where('latitude', 'ilike', "%{$loc}%")
+                  ->orWhere('longitude', 'ilike', "%{$loc}%")
                   ->orWhereHas('user', function ($qu) use ($loc) {
-                      $qu->where('name', 'like', "%{$loc}%");
+                      $qu->where('name', 'ilike', "%{$loc}%");
                   });
             });
         }
@@ -95,10 +95,10 @@ class WebFieldTestController extends Controller
         if ($request->filled('location')) {
             $loc = $request->location;
             $query->where(function ($q) use ($loc) {
-                $q->where('latitude', 'like', "%{$loc}%")
-                  ->orWhere('longitude', 'like', "%{$loc}%")
+                $q->where('latitude', 'ilike', "%{$loc}%")
+                  ->orWhere('longitude', 'ilike', "%{$loc}%")
                   ->orWhereHas('user', function ($qu) use ($loc) {
-                      $qu->where('name', 'like', "%{$loc}%");
+                      $qu->where('name', 'ilike', "%{$loc}%");
                   });
             });
         }

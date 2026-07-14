@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
     @keyframes radarPulseRed {
@@ -206,13 +207,20 @@
             {{-- Peta Sebaran Risiko Spasial Responden --}}
             <div class="bg-white border border-surface-container-high rounded-xl p-5 shadow-sm space-y-3">
                 <div class="flex items-center justify-between border-b border-surface-container-highest pb-3">
-                    <div>
+                    <div class="flex-1">
                         <h4 class="font-extrabold text-on-surface text-sm">Peta Sebaran Risiko Spasial Responden</h4>
                         <p class="text-xs text-on-surface-variant mt-0.5">Sebaran lokasi responden berdasarkan tingkat bahaya kesehatan (RQ Realtime) untuk logam ini.</p>
                     </div>
-                    <span class="px-2.5 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-full uppercase tracking-wider">
-                        {{ $mapRecords->count() }} Responden Terpetakan
-                    </span>
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-1 bg-primary/10 text-primary text-[10px] font-black rounded-full uppercase tracking-wider whitespace-nowrap">
+                            {{ $mapRecords->count() }} Responden Terpetakan
+                        </span>
+                        <button onclick="downloadMap()"
+                                class="p-2 bg-surface-container hover:bg-surface-container-high hover:text-primary rounded-lg text-on-surface-variant transition-colors flex-shrink-0"
+                                title="Unduh Peta (PNG)">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <div id="mapSebaran" style="height: 350px; width: 100%; background: #f8fafc; z-index:1; border-radius: 8px;"></div>
             </div>
@@ -367,6 +375,26 @@
             {{-- Dashboard Ringkasan Batch --}}
             <div class="space-y-6">
                 
+                {{-- Filter Kelompok Populasi --}}
+                <div class="bg-surface-container/20 border border-surface-container-high rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-0.5">
+                        <h4 class="font-extrabold text-on-surface text-sm">Filter Kelompok Populasi</h4>
+                        <p class="text-xs text-on-surface-variant">Saring hasil analisis risiko berdasarkan kategori kelompok umur responden.</p>
+                    </div>
+                    <form action="{{ route('analisis.batch.show', [$batch->id, 'dashboard']) }}" method="GET" class="flex items-center gap-2">
+                        <select name="population_group"
+                                class="bg-white border border-surface-container-high text-on-surface text-xs rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary block transition w-44 font-semibold">
+                            <option value="all" {{ ($populationGroup ?? 'all') === 'all' ? 'selected' : '' }}>Semua Populasi</option>
+                            <option value="adult" {{ ($populationGroup ?? '') === 'adult' ? 'selected' : '' }}>Dewasa (>= 18 tahun)</option>
+                            <option value="child" {{ ($populationGroup ?? '') === 'child' ? 'selected' : '' }}>Anak-anak (< 18 tahun)</option>
+                        </select>
+                        <button type="submit"
+                                class="px-4 py-2 bg-primary text-on-primary hover:brightness-110 font-bold rounded-lg text-xs transition-all shadow-sm">
+                            Terapkan
+                        </button>
+                    </form>
+                </div>
+
                 {{-- KPI Cards --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {{-- KPI Card 1: Total Responden --}}
@@ -408,14 +436,74 @@
                     </div>
                 </div>
 
+                {{-- Parameter Breakdown Grid --}}
+                <div class="space-y-3">
+                    <div>
+                        <h4 class="font-extrabold text-on-surface text-sm">Tingkat Risiko per Parameter Logam</h4>
+                        <p class="text-xs text-on-surface-variant">Rincian persentase responden berisiko (RQ > 1) dan rata-rata konsentrasi untuk masing-masing parameter logam.</p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        @foreach([
+                            'chromium' => ['label' => 'Kromium (Cr)', 'color' => '#6366f1', 'bg' => 'bg-indigo-50 border-indigo-100 text-indigo-800'],
+                            'pb'       => ['label' => 'Timbal (Pb)', 'color' => '#f43f5e', 'bg' => 'bg-rose-50 border-rose-100 text-rose-800'],
+                            'nickel'   => ['label' => 'Nikel (Ni)', 'color' => '#10b981', 'bg' => 'bg-emerald-50 border-emerald-100 text-emerald-800'],
+                            'arsenic'  => ['label' => 'Arsen (As)', 'color' => '#f59e0b', 'bg' => 'bg-amber-50 border-amber-100 text-amber-800'],
+                            'cd'       => ['label' => 'Kadmium (Cd)', 'color' => '#8b5cf6', 'bg' => 'bg-purple-50 border-purple-100 text-purple-800']
+                        ] as $key => $metalInfo)
+                        @php
+                            $data = $summaryData[$key] ?? ['count'=>0, 'avg_c'=>0, 'avg_rq_realtime'=>0, 'risk_pct_realtime'=>0];
+                            $isDangerous = $data['risk_pct_realtime'] > 0;
+                        @endphp
+                        <div class="bg-white border {{ $isDangerous ? 'border-red-200 shadow-sm' : 'border-surface-container-high' }} rounded-xl p-4 flex flex-col justify-between hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+                            {{-- Top Indicator Border --}}
+                            <div class="absolute top-0 left-0 right-0 h-1" style="background-color: {{ $metalInfo['color'] }}"></div>
+                            
+                            <div class="space-y-2 mt-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-black uppercase tracking-wider text-on-surface-variant">{{ $metalInfo['label'] }}</span>
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold {{ $isDangerous ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                        {{ $isDangerous ? 'Berisiko' : 'Aman' }}
+                                    </span>
+                                </div>
+                                <div class="space-y-1">
+                                    <h3 class="text-xl font-black {{ $isDangerous ? 'text-error' : 'text-on-surface' }} font-headline leading-none">
+                                        {{ number_format($data['risk_pct_realtime'], 1) }}%
+                                    </h3>
+                                    <p class="text-[9px] text-outline">Populasi Berisiko (RQ > 1)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-surface-container-high mt-3 pt-2 space-y-1 text-[10px] font-medium text-on-surface-variant">
+                                <div class="flex justify-between">
+                                    <span>Rerata C:</span>
+                                    <span class="font-bold font-mono">{{ number_format($data['avg_c'], 4) }} mg/L</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Rerata RQ:</span>
+                                    <span class="font-bold font-mono" style="color: {{ $metalInfo['color'] }}">{{ number_format($data['avg_rq_realtime'], 2) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 {{-- Chart Grid --}}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
-                    {{-- Chart 1: Proyeksi 30 Tahun (Multi-Line) --}}
-                    <div class="lg:col-span-2 bg-white border border-surface-container-high rounded-xl p-5 shadow-sm space-y-4">
-                        <div>
-                            <h4 class="font-extrabold text-on-surface text-base">Tren Proyeksi Risiko Lintas Waktu (30 Tahun)</h4>
-                            <p class="text-xs text-on-surface-variant">Menunjukkan peningkatan persentase responden berisiko (RQ > 1) seiring waktu paparan.</p>
+                    {{-- Chart 1: Tren Proyeksi Risiko Lintas Waktu (Multi-Line Chart) --}}
+                    <div class="lg:col-span-2 bg-white border border-surface-container-high rounded-xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                        <div class="flex justify-between items-start border-b border-surface-container-high pb-3">
+                            <div>
+                                <span class="px-2 py-0.5 border border-purple-200 bg-purple-50 text-purple-700 text-[10px] font-black rounded-full uppercase tracking-wider">Proyeksi Lintas Waktu</span>
+                                <h4 class="font-extrabold text-on-surface text-base mt-2">Tren Proyeksi Risiko Lintas Waktu (Hingga 30 Tahun ke Depan)</h4>
+                                <p class="text-xs text-on-surface-variant">Menunjukkan peningkatan persentase responden berisiko (RQ > 1) seiring bertambahnya waktu paparan untuk kelima parameter logam berat.</p>
+                            </div>
+                            <button onclick="downloadChart('trendChart', 'tren-proyeksi-risiko')"
+                                    class="p-2 bg-surface-container hover:bg-surface-container-high hover:text-primary rounded-lg text-on-surface-variant transition-colors flex-shrink-0"
+                                    title="Unduh Grafik (PNG)">
+                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </button>
                         </div>
                         <div class="h-[350px] relative">
                             <canvas id="trendChart"></canvas>
@@ -424,9 +512,16 @@
 
                     {{-- Chart 2: Komposisi Donat --}}
                     <div class="bg-white border border-surface-container-high rounded-xl p-5 shadow-sm flex flex-col justify-between space-y-4">
-                        <div>
-                            <h4 class="font-extrabold text-on-surface text-base">Status Kesehatan Populasi</h4>
-                            <p class="text-xs text-on-surface-variant">Proporsi responden Aman vs Berisiko (Realtime).</p>
+                        <div class="flex justify-between items-start gap-4">
+                            <div>
+                                <h4 class="font-extrabold text-on-surface text-base">Status Kesehatan Populasi</h4>
+                                <p class="text-xs text-on-surface-variant">Proporsi responden Aman vs Berisiko (Realtime).</p>
+                            </div>
+                            <button onclick="downloadChart('donutChart', 'komposisi-risiko-populasi')"
+                                    class="p-2 bg-surface-container hover:bg-surface-container-high hover:text-primary rounded-lg text-on-surface-variant transition-colors flex-shrink-0"
+                                    title="Unduh Grafik (PNG)">
+                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </button>
                         </div>
                         <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
                             <canvas id="donutChart"></canvas>
@@ -451,11 +546,18 @@
 
                     {{-- Chart 3: Horizontal Grouped Bar Chart (Rata-rata RQ vs Threshold) --}}
                     <div class="lg:col-span-3 bg-white border border-surface-container-high rounded-xl p-5 shadow-sm space-y-4">
-                        <div>
-                            <h4 class="font-extrabold text-on-surface text-base">Nilai Rata-rata Risk Quotient (RQ)</h4>
-                            <p class="text-xs text-on-surface-variant">Perbandingan rata-rata tingkat bahaya (RQ) paparan Realtime vs Proyeksi 30 Tahun (Ambang batas aman = 1.0).</p>
+                        <div class="flex justify-between items-start gap-4">
+                            <div>
+                                <h4 class="font-extrabold text-on-surface text-base">Nilai Rata-rata Risk Quotient (RQ)</h4>
+                                <p class="text-xs text-on-surface-variant">Perbandingan rata-rata tingkat bahaya (RQ) paparan Realtime vs Proyeksi 30 Tahun (Ambang batas aman = 1.0).</p>
+                            </div>
+                            <button onclick="downloadChart('barChart', 'rata-rata-risk-quotient')"
+                                    class="p-2 bg-surface-container hover:bg-surface-container-high hover:text-primary rounded-lg text-on-surface-variant transition-colors flex-shrink-0"
+                                    title="Unduh Grafik (PNG)">
+                                <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </button>
                         </div>
-                        <div class="h-[300px] relative">
+                        <div class="h-[320px] relative">
                             <canvas id="barChart"></canvas>
                         </div>
                     </div>
@@ -513,9 +615,29 @@
             {{-- Chart.js Script --}}
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
+                // Helper global untuk unduh chart ke PNG dengan background putih
+                function downloadChart(canvasId, fileName) {
+                    const canvas = document.getElementById(canvasId);
+                    if (!canvas) return;
+                    
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = canvas.width;
+                    tempCanvas.height = canvas.height;
+                    const tempCtx = tempCanvas.getContext('2d');
+                    
+                    tempCtx.fillStyle = '#ffffff';
+                    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                    tempCtx.drawImage(canvas, 0, 0);
+                    
+                    const link = document.createElement('a');
+                    link.download = fileName + '-' + @json($batch->name) + '.png';
+                    link.href = tempCanvas.toDataURL('image/png');
+                    link.click();
+                }
+
                 document.addEventListener('DOMContentLoaded', function() {
                     
-                    // 1. Line Chart: 30-Year Trend
+                    // 1. Line Chart: 30-Year Trend (Combined Multi-line)
                     const trendCtx = document.getElementById('trendChart').getContext('2d');
                     new Chart(trendCtx, {
                         type: 'line',
@@ -526,46 +648,71 @@
                                     label: 'Kromium',
                                     data: @json($trends['chromium'] ?? []),
                                     borderColor: '#6366f1',
-                                    backgroundColor: 'rgba(99, 102, 241, 0.05)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    borderWidth: 3
+                                    backgroundColor: '#6366f1',
+                                    fill: false,
+                                    tension: 0.35,
+                                    borderWidth: 2.5,
+                                    pointRadius: 3,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#ffffff',
+                                    pointBorderColor: '#6366f1',
+                                    pointBorderWidth: 2
                                 },
                                 {
                                     label: 'Timbal (Pb)',
                                     data: @json($trends['pb'] ?? []),
                                     borderColor: '#f43f5e',
-                                    backgroundColor: 'rgba(244, 63, 94, 0.05)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    borderWidth: 3
+                                    backgroundColor: '#f43f5e',
+                                    fill: false,
+                                    tension: 0.35,
+                                    borderWidth: 2.5,
+                                    pointRadius: 3,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#ffffff',
+                                    pointBorderColor: '#f43f5e',
+                                    pointBorderWidth: 2
                                 },
                                 {
                                     label: 'Nikel',
                                     data: @json($trends['nickel'] ?? []),
                                     borderColor: '#10b981',
-                                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    borderWidth: 3
+                                    backgroundColor: '#10b981',
+                                    fill: false,
+                                    tension: 0.35,
+                                    borderWidth: 2.5,
+                                    pointRadius: 3,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#ffffff',
+                                    pointBorderColor: '#10b981',
+                                    pointBorderWidth: 2
                                 },
                                 {
                                     label: 'Arsen',
                                     data: @json($trends['arsenic'] ?? []),
                                     borderColor: '#f59e0b',
-                                    backgroundColor: 'rgba(245, 158, 11, 0.05)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    borderWidth: 3
+                                    backgroundColor: '#f59e0b',
+                                    fill: false,
+                                    tension: 0.35,
+                                    borderWidth: 2.5,
+                                    pointRadius: 3,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#ffffff',
+                                    pointBorderColor: '#f59e0b',
+                                    pointBorderWidth: 2
                                 },
                                 {
                                     label: 'Kadmium',
                                     data: @json($trends['cd'] ?? []),
                                     borderColor: '#8b5cf6',
-                                    backgroundColor: 'rgba(139, 92, 246, 0.05)',
-                                    fill: true,
-                                    tension: 0.4,
-                                    borderWidth: 3
+                                    backgroundColor: '#8b5cf6',
+                                    fill: false,
+                                    tension: 0.35,
+                                    borderWidth: 2.5,
+                                    pointRadius: 3,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: '#ffffff',
+                                    pointBorderColor: '#8b5cf6',
+                                    pointBorderWidth: 2
                                 }
                             ]
                         },
@@ -575,7 +722,16 @@
                             plugins: {
                                 legend: {
                                     position: 'bottom',
-                                    labels: { font: { weight: 'bold' } }
+                                    align: 'start',
+                                    labels: {
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        padding: 14,
+                                        boxWidth: 8,
+                                        boxHeight: 8,
+                                        color: '#4b5563',
+                                        font: { size: 11, weight: 600 }
+                                    }
                                 },
                                 tooltip: {
                                     callbacks: {
@@ -586,10 +742,18 @@
                                 }
                             },
                             scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: '#9ca3af', font: { size: 10, weight: 500, family: 'Inter' } }
+                                },
                                 y: {
                                     min: 0,
                                     max: 100,
+                                    grid: { color: 'rgba(226, 232, 240, 0.6)', drawBorder: false },
                                     ticks: {
+                                        stepSize: 20,
+                                        color: '#9ca3af',
+                                        font: { size: 10, weight: 500, family: 'Inter' },
                                         callback: function(value) { return value + '%'; }
                                     }
                                 }
@@ -597,7 +761,7 @@
                         }
                     });
 
-                    // 2. Donut Chart: Risk Composition
+                    // 2. Donut Chart: Risk Composition (MUI-Style Premium Pie Chart - Full Circle)
                     const donutCtx = document.getElementById('donutChart').getContext('2d');
                     new Chart(donutCtx, {
                         type: 'doughnut',
@@ -607,12 +771,15 @@
                                 data: [{{ $atRiskCount }}, {{ $safeCount }}],
                                 backgroundColor: ['#f43f5e', '#10b981'],
                                 hoverOffset: 4,
-                                borderWidth: 0
+                                borderWidth: 0,
+                                borderRadius: 6, // cornerRadius: 5
+                                spacing: 4       // paddingAngle: 5
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            cutout: '70%',       // innerRadius
                             plugins: {
                                 legend: { display: false }
                             }
@@ -664,12 +831,27 @@
                             },
                             scales: {
                                 x: {
-                                    title: { display: true, text: 'Nilai Risk Quotient (RQ)' }
+                                    grid: { color: 'rgba(226, 232, 240, 0.6)', drawBorder: false },
+                                    ticks: { color: '#6b7280' },
+                                    title: {
+                                        display: true,
+                                        text: 'Nilai Indeks Risiko (Risk Quotient - RQ)',
+                                        font: { weight: 'bold', family: 'Inter' }
+                                    }
+                                },
+                                y: {
+                                    grid: { display: false },
+                                    ticks: { color: '#6b7280' },
+                                    title: {
+                                        display: true,
+                                        text: 'Parameter Logam Berat',
+                                        font: { weight: 'bold', family: 'Inter' }
+                                    }
                                 }
                             }
                         },
                         plugins: [{
-                            id: 'thresholdLine',
+                            id: 'thresholdLine2',
                             beforeDraw(chart) {
                                 const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
                                 ctx.save();
@@ -970,11 +1152,13 @@
         // 1. Definisikan Base Layers (Peta Standar & Citra Satelit)
         const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
+            crossOrigin: true,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         });
 
         const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 19,
+            crossOrigin: true,
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         });
 
@@ -1112,6 +1296,23 @@
         };
         legend.addTo(map);
     });
+
+    // Fungsi global untuk mengunduh peta sebagai PNG
+    function downloadMap() {
+        const mapElement = document.getElementById('mapSebaran');
+        if (!mapElement) return;
+
+        html2canvas(mapElement, {
+            useCORS: true,
+            allowTaint: false,
+            scale: 2 // Skala 2x agar hasil cetak/gambar tajam
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'peta-sebaran-spasial-risiko-' + @json($batch->name) + '-' + @json(\App\Models\RqAnalysis::$pollutantLabels[$pollutant]) + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
 </script>
 @endpush
 @endif

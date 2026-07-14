@@ -11,15 +11,18 @@
         </div>
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {{-- Search Bar --}}
-            <form action="{{ route('analisis.index') }}" method="GET" class="relative flex items-center">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama batch..."
-                       class="w-full sm:w-64 bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg pl-9 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary block transition">
-                <svg class="w-4 h-4 text-outline absolute left-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                @if(request()->filled('search'))
-                    <a href="{{ route('analisis.index') }}" class="absolute right-3 text-outline hover:text-on-surface" title="Clear">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </a>
-                @endif
+            <form action="{{ route('analisis.index') }}" method="GET" class="flex gap-2 items-center bg-surface-container-low border border-surface-container-high rounded-lg p-1.5 shadow-sm">
+                <div class="relative flex items-center flex-1">
+                    <svg class="w-4 h-4 text-outline absolute left-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama batch..."
+                           class="w-full sm:w-64 bg-transparent border-none text-on-surface text-sm pl-9 pr-8 py-1.5 outline-none">
+                    @if(request()->filled('search'))
+                        <a href="{{ route('analisis.index') }}" class="absolute right-2 text-outline hover:text-on-surface" title="Clear">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
+                </div>
+                <button type="submit" class="px-4 py-1.5 bg-primary text-on-primary rounded-md text-xs font-bold transition-all hover:brightness-110 shadow-sm">Cari</button>
             </form>
 
             <button @click="openCreateModal = true"

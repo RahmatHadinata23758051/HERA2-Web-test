@@ -30,7 +30,7 @@ class RqBatchController extends Controller
             ->with('user');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', "%" . $request->input('search') . "%");
+            $query->where('name', 'ilike', "%" . $request->input('search') . "%");
         }
 
         $batches = $query->orderBy('created_at', 'desc')->paginate(12);
@@ -121,8 +121,18 @@ class RqBatchController extends Controller
 
         // Jika pollutant adalah dashboard (halaman utama ringkasan)
         if ($pollutant === 'dashboard') {
+            $populationGroup = $request->input('population_group', 'all');
+
+            // Bangun query dasar terfilter
+            $baseQuery = RqAnalysis::where('rq_batch_id', $batch->id);
+            if ($populationGroup === 'adult') {
+                $baseQuery->where('umur', '>=', 18);
+            } elseif ($populationGroup === 'child') {
+                $baseQuery->where('umur', '<', 18);
+            }
+
             // Hitung total responden berdasarkan jumlah baris logam terbanyak (agar nama duplikat tidak tereliminasi)
-            $totalCount = RqAnalysis::where('rq_batch_id', $batch->id)
+            $totalCount = (clone $baseQuery)
                 ->groupBy('pollutant_type')
                 ->selectRaw('count(*) as count')
                 ->pluck('count')
@@ -133,7 +143,7 @@ class RqBatchController extends Controller
             $trends = [];
 
             foreach ($metals as $metal) {
-                $analyses = RqAnalysis::where('rq_batch_id', $batch->id)
+                $analyses = (clone $baseQuery)
                     ->where('pollutant_type', $metal)
                     ->get();
 
@@ -181,7 +191,7 @@ class RqBatchController extends Controller
             }
 
             // Komposisi risiko batch secara umum (berisiko di salah satu logam pada realtime)
-            $atRiskCount = RqAnalysis::where('rq_batch_id', $batch->id)
+            $atRiskCount = (clone $baseQuery)
                 ->where('rq_realtime', '>', 1)
                 ->distinct()
                 ->count('no_responden');
@@ -197,7 +207,8 @@ class RqBatchController extends Controller
                 'highestRiskMetal',
                 'highestRiskPct',
                 'summaryData',
-                'trends'
+                'trends',
+                'populationGroup'
             ));
         }
 

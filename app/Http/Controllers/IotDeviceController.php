@@ -14,9 +14,11 @@ class IotDeviceController extends Controller
         
         if ($request->filled('search')) {
             $s = $request->search;
-            $query->where('name', 'like', "%{$s}%")
-                  ->orWhere('location_name', 'like', "%{$s}%")
-                  ->orWhere('uid', 'like', "%{$s}%");
+            $query->where(function ($q) use ($s) {
+                $q->where('name', 'ilike', "%{$s}%")
+                  ->orWhere('location_name', 'ilike', "%{$s}%")
+                  ->orWhere('uid', 'ilike', "%{$s}%");
+            });
         }
 
         $devices = $query->paginate(15)->withQueryString();
