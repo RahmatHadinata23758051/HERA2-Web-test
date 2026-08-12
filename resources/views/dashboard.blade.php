@@ -119,19 +119,19 @@
             </div>
 
             <!-- Nickel -->
-            <div class="p-4 rounded-xl border border-indigo-200 bg-indigo-50/30 flex flex-col justify-between h-32 relative overflow-hidden group">
+            <div class="p-4 rounded-xl border border-indigo-500/20 bg-indigo-500/5 flex flex-col justify-between h-32 relative overflow-hidden group">
                 <div class="absolute -right-4 -bottom-4 text-indigo-500/10 pointer-events-none transition-transform group-hover:scale-110">
-                    <span class="material-symbols-outlined text-7xl">progress_activity</span>
+                    <span class="material-symbols-outlined text-7xl">check_circle</span>
                 </div>
                 <div class="flex justify-between items-start">
-                    <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full flex items-center gap-1 animate-pulse">
-                        <span class="material-symbols-outlined text-xs">progress_activity</span> Kalibrasi
+                    <span class="text-xs font-bold text-indigo-700 bg-indigo-100 px-2.5 py-1 rounded-full flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">check_circle</span> Terintegrasi
                     </span>
                     <span class="text-xs font-bold text-on-surface font-mono">Ni²⁺</span>
                 </div>
                 <div class="mt-4">
                     <h4 class="font-bold text-sm text-on-surface">Nickel (Dissolved)</h4>
-                    <p class="text-[10px] text-on-surface-variant mt-1 leading-normal">Tahap kalibrasi model prediksi & kesiapan CI/CD.</p>
+                    <p class="text-[10px] text-on-surface-variant mt-1 leading-normal">Pemantauan real-time & estimasi AI aktif sepenuhnya.</p>
                 </div>
             </div>
 
@@ -188,8 +188,8 @@
         </div>
     </div>
 
-    <!-- Section 1.5: 4 Metrik Kartu Atas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <!-- Section 1.5: 5 Metrik Kartu Atas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
         <!-- Total Pembacaan -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-surface-container-highest hover:border-primary/30 transition-all group">
             <div class="flex justify-between items-start mb-4">
@@ -238,7 +238,6 @@
             <p class="text-3xl font-bold font-headline text-on-surface">{{ $dailyStats['avg_cr'] }} <span class="text-sm font-medium text-on-surface-variant">mg·L⁻¹</span></p>
         </div>
 
-        {{-- Comment out Nickel metric for now
         <!-- Avg Ni -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-surface-container-highest hover:border-indigo-400/30 transition-all group">
             <div class="flex justify-between items-start mb-4">
@@ -248,9 +247,8 @@
                 <span class="text-xs font-bold text-indigo-600 px-2 py-1 bg-indigo-50 rounded-full">Stable</span>
             </div>
             <p class="text-on-surface-variant text-xs font-label uppercase tracking-wider mb-1">Rata-rata Ni</p>
-            <p class="text-3xl font-bold font-headline text-on-surface">{{ number_format($dailyStats['avg_ni'], 5) }} <span class="text-sm font-medium text-on-surface-variant">mg·L⁻¹</span></p>
+            <p class="text-3xl font-bold font-headline text-on-surface">{{ number_format($dailyStats['avg_ni'] ?? 0, 5) }} <span class="text-sm font-medium text-on-surface-variant">mg·L⁻¹</span></p>
         </div>
-        --}}
     </div>
 
     <!-- Section 2: Sensor Hub (Real-time Gauges) -->
@@ -325,7 +323,6 @@
                 </div>
             </div>
 
-            {{-- Comment out Nickel card for now
             <!-- Main AI Card (Nickel) Insight Card -->
             <div class="flip-container h-[185px] cursor-pointer group col-span-1 md:col-span-2 lg:col-span-1" onclick="this.classList.toggle('flipped')">
                 <div class="flip-card-inner">
@@ -378,7 +375,6 @@
                     </div>
                 </div>
             </div>
-            --}}
 
             <!-- 7 Physical Sensors -->
             @php
@@ -484,8 +480,8 @@
                 <span class="text-on-surface font-bold text-sm">Memuat Data Historis...</span>
             </div>
         </div>
-        <!-- Dual Metal Trend Charts (Nickel commented out, Chromium full-width) -->
-        <div>
+        <!-- Dual Metal Trend Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Cr Chart -->
             <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high">
                 <div class="flex justify-between items-center mb-6">
@@ -501,9 +497,8 @@
                 <div id="chartCr" class="w-full h-[280px]"></div>
             </div>
 
-            {{-- Comment out Ni Chart for now
             <!-- Ni Chart -->
-            <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high mt-6">
+            <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h3 class="text-lg font-bold font-headline text-on-surface mb-1">Nickel (Ni) Trend</h3>
@@ -516,7 +511,6 @@
                 </div>
                 <div id="chartNi" class="w-full h-[280px]"></div>
             </div>
-            --}}
         </div>
         
         <!-- Dual Charts -->
@@ -547,7 +541,7 @@
                         <tr>
                             <th class="px-6 py-4">Time</th>
                             <th class="px-6 py-4 text-right">Cr (mg·L⁻¹)</th>
-                            {{-- <th class="px-6 py-4 text-right">Ni (mg·L⁻¹)</th> --}}
+                            <th class="px-6 py-4 text-right">Ni (mg·L⁻¹)</th>
                             <th class="px-6 py-4 text-right">EC</th>
                             <th class="px-6 py-4 text-right">TDS</th>
                             <th class="px-6 py-4 text-right">pH</th>
@@ -714,7 +708,6 @@
         chartCr = new ApexCharts(document.querySelector("#chartCr"), optionsCr);
         chartCr.render();
 
-        /* Comment out Ni Chart for now
         // Ni Chart
         let optionsNi = {
             ...getLightModeOptions(),
@@ -735,7 +728,6 @@
         };
         chartNi = new ApexCharts(document.querySelector("#chartNi"), optionsNi);
         chartNi.render();
-        */
 
         let optionsEcTds = {
             ...getLightModeOptions(),
@@ -773,14 +765,14 @@
     function appendChartData(d) {
         let ts = new Date(d.created_at).getTime();
         dataCr.push([ts, d.cr_estimated]);
-        // dataNi.push([ts, d.ni_estimated || 0]);
+        dataNi.push([ts, d.ni_estimated || 0]);
         dataEc.push([ts, d.ec]);
         dataTds.push([ts, d.tds]);
         dataPh.push([ts, d.ph]);
         dataSuhu.push([ts, d.suhu_air]);
         
         if(dataCr.length > limitChartPoints) {
-            dataCr.shift(); /* dataNi.shift(); */ dataEc.shift(); dataTds.shift(); dataPh.shift(); dataSuhu.shift();
+            dataCr.shift(); dataNi.shift(); dataEc.shift(); dataTds.shift(); dataPh.shift(); dataSuhu.shift();
         }
     }
 
@@ -890,13 +882,11 @@
         updateCard('cr', data.cr_estimated, data.status, isInitial);
         
         // Nickel card — classify status independently using WHO Ni limits
-        /* Comment out Nickel updates for now
         const niVal = data.ni_estimated || 0;
         let niStatus = 'normal';
         if (niVal >= {{ $thresholds['ni_warning_max'] }}) niStatus = 'danger';
         else if (niVal >= {{ $thresholds['ni_normal_max'] }}) niStatus = 'warning';
         updateCard('ni', niVal, niStatus, isInitial);
-        */
         
         const keys = ['ec', 'tds', 'ph', 'suhu_air', 'suhu_lingkungan', 'kelembapan', 'tegangan'];
         keys.forEach(k => {
@@ -1007,13 +997,11 @@
             metalDetails += `<div>Cr⁶⁺ Warning Level: <span class="font-bold text-yellow-600">${crVal.toFixed(5)} mg·L⁻¹</span></div>`;
         }
         
-        /* Comment out Nickel alerts for now
         if (niVal >= {{ $thresholds['ni_warning_max'] }}) {
             metalDetails += `<div>Ni²⁺ Danger Level: <span class="font-bold text-error">${niVal.toFixed(5)} mg·L⁻¹</span></div>`;
         } else if (niVal >= {{ $thresholds['ni_normal_max'] }}) {
             metalDetails += `<div>Ni²⁺ Warning Level: <span class="font-bold text-yellow-600">${niVal.toFixed(5)} mg·L⁻¹</span></div>`;
         }
-        */
         
         if (!metalDetails) {
             metalDetails = `<div>Cr⁶⁺: ${crVal.toFixed(5)} mg·L⁻¹</div>`;
@@ -1051,7 +1039,7 @@
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4 font-mono text-xs text-on-surface-variant">${timeStr}</td>
                     <td class="px-6 py-4 text-right font-bold ${colText}">${row.cr_estimated.toFixed(5)}</td>
-                    {{-- <td class="px-6 py-4 text-right font-bold text-indigo-600">${niVal.toFixed(5)}</td> --}}
+                    <td class="px-6 py-4 text-right font-bold text-indigo-600">${niVal.toFixed(5)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.ec.toFixed(1)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.tds.toFixed(1)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.ph.toFixed(1)}</td>
@@ -1103,11 +1091,9 @@
         if (crVal >= {{ $thresholds['cr_warning_max'] }}) {
             warningMessage += `Chromium (Cr⁶⁺): ${crVal.toFixed(5)} mg·L⁻¹ (Limit: {{ $thresholds['cr_warning_max'] }} mg·L⁻¹) `;
         }
-        /* Comment out Nickel notifications for now
         if (niVal >= {{ $thresholds['ni_warning_max'] }}) {
             warningMessage += `Nickel (Ni²⁺): ${niVal.toFixed(5)} mg·L⁻¹ (Limit: {{ $thresholds['ni_warning_max'] }} mg·L⁻¹)`;
         }
-        */
         
         if (!warningMessage) return;
 
