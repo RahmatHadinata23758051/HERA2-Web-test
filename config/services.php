@@ -32,7 +32,7 @@ return [
     ],
 
     'ai' => [
-        'url' => env('AI_SERVICE_URL', 'http://localhost:8001'),
+        'url' => env('AI_SERVICE_URL', 'http://127.0.0.1:8001'),
         'secret' => env('INTERNAL_AI_SECRET', 'hera-internal-secret-key-2026'),
     ],
 

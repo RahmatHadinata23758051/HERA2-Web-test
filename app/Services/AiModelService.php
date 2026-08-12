@@ -13,7 +13,7 @@ class AiModelService
 
     public function __construct()
     {
-        $this->baseUrl   = config('services.ai.url', env('AI_SERVICE_URL', 'http://localhost:8001'));
+        $this->baseUrl   = config('services.ai.url', env('AI_SERVICE_URL', 'http://127.0.0.1:8001'));
         $this->secretKey = config('services.ai.secret', env('INTERNAL_AI_SECRET', 'hera-internal-secret-key-2026'));
     }
 

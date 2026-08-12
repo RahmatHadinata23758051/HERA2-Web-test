@@ -17,7 +17,7 @@ Route::post('/v1/telemetry/ingest', [\App\Http\Controllers\Api\SensorController:
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/health-check', function () {
         try {
-            $aiUrl = env('AI_SERVICE_URL', 'http://localhost:8001');
+            $aiUrl = env('AI_SERVICE_URL', 'http://127.0.0.1:8001');
             $response = Http::timeout(2)->get($aiUrl . '/health');
             if ($response->successful()) {
                 return $response->json();
