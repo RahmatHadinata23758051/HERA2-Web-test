@@ -43,9 +43,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/pengaturan', [\App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
         Route::put('/pengaturan', [\App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
 
-        // Threshold Chromium
+        // Threshold Chromium & Nickel
         Route::get('/pengaturan/threshold', [\App\Http\Controllers\ThresholdController::class, 'index'])->name('settings.threshold');
         Route::put('/pengaturan/threshold', [\App\Http\Controllers\ThresholdController::class, 'update'])->name('settings.threshold.update');
+
+        // Model Management & Dynamic Swapping
+        Route::get('/pengaturan/models', [\App\Http\Controllers\Admin\ModelManagementController::class, 'index'])->name('admin.models.index');
+        Route::post('/pengaturan/models/upload', [\App\Http\Controllers\Admin\ModelManagementController::class, 'upload'])->name('admin.models.upload');
 
         // Manajemen Perangkat IoT
         Route::resource('iot-devices', \App\Http\Controllers\IotDeviceController::class)->except(['show']);

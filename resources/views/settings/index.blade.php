@@ -118,7 +118,8 @@
 
     {{-- Threshold Card (Direksi only) --}}
     @if(auth()->user()->role === 'direksi')
-    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
+    <!-- Threshold Setting -->
+    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden mb-6">
         <div class="flex items-center justify-between px-6 py-5">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-amber-100 rounded-xl flex-shrink-0">
@@ -127,11 +128,11 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-bold text-on-surface text-sm">Threshold Kadar Chromium (Cr)</h3>
+                    <h3 class="font-bold text-on-surface text-sm">Threshold Kadar Chromium & Nickel</h3>
                     <p class="text-xs text-on-surface-variant mt-0.5">
                         Atur batas nilai <span class="font-bold text-primary">Normal</span>,
                         <span class="font-bold text-yellow-600">Warning</span>, dan
-                        <span class="font-bold text-error">Danger</span> untuk sensor Chromium.
+                        <span class="font-bold text-error">Danger</span> untuk sensor logam berat.
                         Perubahan langsung mempengaruhi alert, badge status, dan notifikasi sistem.
                     </p>
                 </div>
@@ -143,6 +144,28 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
                 Atur Threshold
+            </a>
+        </div>
+    </div>
+
+    <!-- Model AI Management -->
+    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-5">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-emerald-100 rounded-xl flex-shrink-0 text-emerald-600">
+                    <span class="material-symbols-outlined text-2xl">psychology</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-on-surface text-sm">Manajemen Model AI & Dynamic Swapping</h3>
+                    <p class="text-xs text-on-surface-variant mt-0.5">
+                        Unggah dan perbarui file model Machine Learning (.pkl) untuk Chromium (Cr⁶⁺) dan Nickel (Ni²⁺) secara live tanpa downtime.
+                    </p>
+                </div>
+            </div>
+            <a href="{{ route('admin.models.index') }}"
+               class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-bold shadow-sm ml-4">
+                <span class="material-symbols-outlined text-base">cloud_upload</span>
+                Kelola Model AI
             </a>
         </div>
     </div>

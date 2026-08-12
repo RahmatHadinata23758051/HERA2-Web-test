@@ -112,9 +112,12 @@
                     </span>
                     <span class="text-xs font-bold text-on-surface font-mono">Cr⁶⁺</span>
                 </div>
-                <div class="mt-4">
+                <div class="mt-2">
                     <h4 class="font-bold text-sm text-on-surface">Chromium (Hexavalent)</h4>
-                    <p class="text-[10px] text-on-surface-variant mt-1 leading-normal">Pemantauan real-time & estimasi AI aktif sepenuhnya.</p>
+                    <div class="mt-1 flex items-center gap-1 text-[10px] text-primary font-mono bg-primary/10 px-2 py-0.5 rounded-md w-max">
+                        <span class="material-symbols-outlined text-xs">description</span>
+                        <span id="cr-model-filename" class="truncate max-w-[170px]" title="Model File Name">best_model_chromium_v2.pkl</span>
+                    </div>
                 </div>
             </div>
 
@@ -129,9 +132,12 @@
                     </span>
                     <span class="text-xs font-bold text-on-surface font-mono">Ni²⁺</span>
                 </div>
-                <div class="mt-4">
+                <div class="mt-2">
                     <h4 class="font-bold text-sm text-on-surface">Nickel (Dissolved)</h4>
-                    <p class="text-[10px] text-on-surface-variant mt-1 leading-normal">Pemantauan real-time & estimasi AI aktif sepenuhnya.</p>
+                    <div class="mt-1 flex items-center gap-1 text-[10px] text-indigo-700 font-mono bg-indigo-100 px-2 py-0.5 rounded-md w-max">
+                        <span class="material-symbols-outlined text-xs">description</span>
+                        <span id="ni-model-filename" class="truncate max-w-[170px]" title="Model File Name">best_model_nickel_v2.pkl</span>
+                    </div>
                 </div>
             </div>
 
@@ -1062,6 +1068,15 @@
                     aiDot.className = 'w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse';
                     aiText.innerText = 'Connected';
                     aiText.classList.remove('text-error');
+
+                    if (data.chromium_filename) {
+                        const crEl = document.getElementById('cr-model-filename');
+                        if (crEl) crEl.innerText = data.chromium_filename;
+                    }
+                    if (data.nickel_filename) {
+                        const niEl = document.getElementById('ni-model-filename');
+                        if (niEl) niEl.innerText = data.nickel_filename;
+                    }
                 } else {
                     aiDot.className = 'w-2.5 h-2.5 rounded-full bg-error';
                     aiText.innerText = 'Offline';
