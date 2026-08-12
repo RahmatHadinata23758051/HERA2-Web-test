@@ -236,6 +236,20 @@
                     </div>
                 </div>
 
+                <!-- Custom Model / Algorithm Name (Optional) -->
+                <div>
+                    <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">
+                        Nama Model / Algoritma <span class="text-on-surface-variant font-normal lowercase">(opsional)</span>
+                    </label>
+                    <input type="text"
+                           name="model_name"
+                           placeholder="misal: XGBoost Regressor v2.1, Random Forest Tuned"
+                           class="w-full px-3.5 py-2.5 rounded-xl border border-surface-container-high text-xs text-on-surface focus:outline-none focus:border-primary transition-colors">
+                    <p class="text-[10px] text-on-surface-variant mt-1">
+                        Jika dikosongkan, nama model akan dideteksi dari file model.
+                    </p>
+                </div>
+
                 <!-- File Dropzone -->
                 <div>
                     <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">File Model Machine Learning (.pkl / .joblib)</label>

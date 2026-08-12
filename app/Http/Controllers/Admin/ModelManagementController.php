@@ -35,6 +35,7 @@ class ModelManagementController extends Controller
     {
         $request->validate([
             'target'     => 'required|in:chromium,nickel',
+            'model_name' => 'nullable|string|max:100',
             'model_file' => 'required|file|max:51200', // maks 50 MB
         ], [
             'target.required'     => 'Target parameter logam berat wajib dipilih.',
@@ -43,10 +44,11 @@ class ModelManagementController extends Controller
             'model_file.max'      => 'Ukuran file model tidak boleh melebihi 50 MB.',
         ]);
 
-        $target = $request->input('target');
-        $file   = $request->file('model_file');
+        $target    = $request->input('target');
+        $modelName = $request->input('model_name');
+        $file      = $request->file('model_file');
 
-        $result = $this->aiService->reloadModel($target, $file);
+        $result = $this->aiService->reloadModel($target, $file, $modelName);
 
         if ($result['success']) {
             $msg = $result['data']['message'] ?? 'Model berhasil diperbarui!';

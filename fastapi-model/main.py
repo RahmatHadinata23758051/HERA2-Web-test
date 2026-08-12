@@ -185,6 +185,7 @@ def get_models_info():
 @app.post("/api/v2/reload-model")
 async def reload_model(
     target: str = Form(...),
+    model_name: str = Form(None),
     file: UploadFile = File(...),
     x_internal_key: str = Header(None, alias="X-Internal-Key")
 ):
@@ -209,8 +210,10 @@ async def reload_model(
     if not is_valid:
         raise HTTPException(status_code=422, detail=f"Validasi dry-run gagal: {val_msg}")
 
-    # Simpan original filename
+    # Simpan original filename & custom model_name (jika diinputkan user)
     pack_obj["original_filename"] = file.filename or f"model_{target}.pkl"
+    if model_name and model_name.strip():
+        pack_obj["best_model"] = model_name.strip()
 
     # 4. Backup model lama & simpan file baru ke disk
     target_path = CHROMIUM_MODEL_PATH if target == "chromium" else NICKEL_MODEL_PATH

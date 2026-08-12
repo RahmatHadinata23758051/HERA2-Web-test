@@ -89,18 +89,18 @@ def run_qc_tests():
     print(f"[PASSED] File invalid berhasil ditolak (422 Unprocessable Entity). Response: {r.json()['detail']}")
 
     # 5. Test Live Hot-Reload Model Valid (Chromium)
-    print("\n[TEST 5] Testing Live Hot-Reload Model Valid (Chromium)...")
+    print("\n[TEST 5] Testing Live Hot-Reload Model Valid (Chromium) with custom model_name...")
     with open(valid_file, "rb") as f:
         r = requests.post(
             f"{BASE_URL}/api/v2/reload-model",
             headers={"X-Internal-Key": SECRET_KEY},
-            data={"target": "chromium"},
+            data={"target": "chromium", "model_name": "XGBoost Fine-Tuned v2.5"},
             files={"file": f}
         )
     assert r.status_code == 200, f"Expected 200, got {r.status_code}"
     res_data = r.json()
     assert res_data["status"] == "success", "Expected status == success"
-    print(f"[PASSED] Live Swap Chromium Berhasil! Message: {res_data['message']}")
+    print(f"[PASSED] Live Swap Chromium Berhasil dengan Custom Model Name! Message: {res_data['message']}")
 
     # 6. Test Prediction Inference Setelah Live Reload
     print("\n[TEST 6] Testing Post-Reload Prediction (/predict)...")

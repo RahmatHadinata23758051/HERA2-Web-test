@@ -35,11 +35,28 @@ class AiModelService
             Log::warning("Gagal terhubung ke AI Service /models/info: " . $e->getMessage());
         }
 
+        // Fallback lokal membaca file disk langsung jika FastAPI Service offline/restarting
+        $crPath = base_path('fastapi-model/models/best_model_chromium_v2.pkl');
+        $niPath = base_path('fastapi-model/models/best_model_nickel_v2.pkl');
+
+        $getFallbackInfo = function($path, $defaultName, $defaultFilename) {
+            if (file_exists($path)) {
+                return [
+                    'exists'        => true,
+                    'name'          => $defaultName,
+                    'filename'      => $defaultFilename,
+                    'size_kb'       => round(filesize($path) / 1024, 2),
+                    'last_modified' => date('Y-m-d H:i:s', filemtime($path))
+                ];
+            }
+            return ['exists' => false, 'name' => 'File Not Found', 'filename' => 'N/A', 'size_kb' => 0, 'last_modified' => 'N/A'];
+        };
+
         return [
             'online' => false,
             'models' => [
-                'chromium' => ['exists' => false, 'name' => 'Offline / Unknown', 'size_kb' => 0, 'last_modified' => 'N/A'],
-                'nickel'   => ['exists' => false, 'name' => 'Offline / Unknown', 'size_kb' => 0, 'last_modified' => 'N/A']
+                'chromium' => $getFallbackInfo($crPath, 'XGBoost Regressor (Standby)', 'best_model_chromium_v2.pkl'),
+                'nickel'   => $getFallbackInfo($niPath, 'Random Forest (Standby)', 'best_model_nickel_v2.pkl')
             ]
         ];
     }
@@ -47,9 +64,14 @@ class AiModelService
     /**
      * Tembak endpoint Hot-Reload FastAPI dengan file .pkl/.joblib multipart.
      */
-    public function reloadModel(string $target, UploadedFile $file): array
+    public function reloadModel(string $target, UploadedFile $file, ?string $modelName = null): array
     {
         try {
+            $payload = ['target' => $target];
+            if (!empty($modelName)) {
+                $payload['model_name'] = trim($modelName);
+            }
+
             $response = Http::timeout(15)
                 ->withHeaders([
                     'X-Internal-Key' => $this->secretKey,
@@ -59,9 +81,7 @@ class AiModelService
                     file_get_contents($file->getRealPath()),
                     $file->getClientOriginalName()
                 )
-                ->post("{$this->baseUrl}/api/v2/reload-model", [
-                    'target' => $target,
-                ]);
+                ->post("{$this->baseUrl}/api/v2/reload-model", $payload);
 
             if ($response->successful()) {
                 return [
