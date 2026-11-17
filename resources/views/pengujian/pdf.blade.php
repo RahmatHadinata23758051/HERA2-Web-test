@@ -89,7 +89,7 @@
             </tr>
             <tr>
                 <td><strong>Filter Logam</strong></td>
-                <td>: {{ request('metal') === 'cr' ? 'Hanya Chromium' : (request('metal') === 'ni' ? 'Hanya Nikel' : 'Semua') }}</td>
+                <td>: {{ request('metal') === 'cr' ? 'Chromium Heksavalen : Cr(VI)' : (request('metal') === 'ni' ? 'Nikel : Ni' : 'Semua') }}</td>
                 <td></td>
                 <td></td>
             </tr>
@@ -108,8 +108,8 @@
                 <th width="8%">TDS (ppm)</th>
                 <th width="8%">EC (mS)</th>
                 <th width="10%">Suhu Air/Udr</th>
-                <th width="9%">Cr Est. (mg/L)</th>
-                <th width="10%">Ni Est. (mg/L)</th>
+                <th width="9%">Cr(VI) Est. (µg/L)</th>
+                <th width="10%">Ni Est. (µg/L)</th>
             </tr>
         </thead>
         <tbody>

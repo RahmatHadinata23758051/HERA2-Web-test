@@ -303,12 +303,12 @@ def predict(data: SensorData):
         
         # Apply empirical calibration
         cr_pred_ug = apply_calibration(cr_pred_ug_raw, "chromium")
-        cr_val = cr_pred_ug / 1000.0  # ug/L -> mg/L
+        cr_val = cr_pred_ug  # in ug/L
 
-        # Classify status based on 50 ug/L (0.05 mg/L) WHO limit
-        if cr_val < 0.05:
+        # Classify status based on 50 ug/L limit
+        if cr_val < 50.0:
             cr_status = "normal"
-        elif cr_val <= 0.1:
+        elif cr_val <= 100.0:
             cr_status = "warning"
         else:
             cr_status = "danger"
@@ -322,12 +322,12 @@ def predict(data: SensorData):
         
         # Apply empirical calibration
         ni_pred_ug = apply_calibration(ni_pred_ug_raw, "nickel")
-        ni_val = ni_pred_ug / 1000.0  # ug/L -> mg/L
+        ni_val = ni_pred_ug  # in ug/L
 
-        # Classify status based on 20 ug/L (0.02 mg/L) WHO limit
-        if ni_val < 0.02:
+        # Classify status based on 20 ug/L (normal) and 70 ug/L (warning) limit
+        if ni_val < 20.0:
             ni_status = "normal"
-        elif ni_val <= 0.04:
+        elif ni_val <= 70.0:
             ni_status = "warning"
         else:
             ni_status = "danger"
@@ -340,21 +340,21 @@ def predict(data: SensorData):
         else:
             overall_status = "normal"
 
-        # 4. Formulate the response maintaining perfect backward-compatibility
+        # 4. Formulate the response maintaining standard ug/L units
         return {
-            "cr_estimated": round(cr_val, 5),
-            "ni_estimated": round(ni_val, 5),
+            "cr_estimated": round(cr_val, 4),
+            "ni_estimated": round(ni_val, 4),
             "status": overall_status,
-            "unit": "mg/L",
+            "unit": "µg/L",
             "chromium": {
-                "value": round(cr_val, 5),
+                "value": round(cr_val, 4),
                 "status": cr_status,
-                "unit": "mg/L"
+                "unit": "µg/L"
             },
             "nickel": {
-                "value": round(ni_val, 5),
+                "value": round(ni_val, 4),
                 "status": ni_status,
-                "unit": "mg/L"
+                "unit": "µg/L"
             }
         }
 

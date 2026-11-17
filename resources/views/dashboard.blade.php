@@ -110,10 +110,10 @@
                     <span class="text-xs font-bold text-primary bg-primary/15 px-2.5 py-1 rounded-full flex items-center gap-1">
                         <span class="material-symbols-outlined text-xs">check_circle</span> Terintegrasi
                     </span>
-                    <span class="text-xs font-bold text-on-surface font-mono">Cr⁶⁺</span>
+                    <span class="text-xs font-bold text-on-surface font-mono">Cr(VI)</span>
                 </div>
                 <div class="mt-2">
-                    <h4 class="font-bold text-sm text-on-surface">Chromium (Hexavalent)</h4>
+                    <h4 class="font-bold text-sm text-on-surface">Chromium Heksavalen : Cr(VI)</h4>
                     <div class="mt-1 flex items-center gap-1 text-[10px] text-primary font-mono bg-primary/10 px-2 py-0.5 rounded-md w-max">
                         <span class="material-symbols-outlined text-xs">description</span>
                         <span id="cr-model-filename" class="truncate max-w-[170px]" title="Model File Name">best_model_chromium_v2.pkl</span>
@@ -130,10 +130,10 @@
                     <span class="text-xs font-bold text-indigo-700 bg-indigo-100 px-2.5 py-1 rounded-full flex items-center gap-1">
                         <span class="material-symbols-outlined text-xs">check_circle</span> Terintegrasi
                     </span>
-                    <span class="text-xs font-bold text-on-surface font-mono">Ni²⁺</span>
+                    <span class="text-xs font-bold text-on-surface font-mono">Ni</span>
                 </div>
                 <div class="mt-2">
-                    <h4 class="font-bold text-sm text-on-surface">Nickel (Dissolved)</h4>
+                    <h4 class="font-bold text-sm text-on-surface">Nikel : Ni</h4>
                     <div class="mt-1 flex items-center gap-1 text-[10px] text-indigo-700 font-mono bg-indigo-100 px-2 py-0.5 rounded-md w-max">
                         <span class="material-symbols-outlined text-xs">description</span>
                         <span id="ni-model-filename" class="truncate max-w-[170px]" title="Model File Name">best_model_nickel_v2.pkl</span>
@@ -240,8 +240,8 @@
                 </div>
                 <span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded-full">Stable</span>
             </div>
-            <p class="text-on-surface-variant text-xs font-label uppercase tracking-wider mb-1">Rata-rata Cr</p>
-            <p class="text-3xl font-bold font-headline text-on-surface">{{ $dailyStats['avg_cr'] }} <span class="text-sm font-medium text-on-surface-variant">mg·L⁻¹</span></p>
+            <p class="text-on-surface-variant text-xs font-label uppercase tracking-wider mb-1">Rata-rata Cr(VI)</p>
+            <p class="text-3xl font-bold font-headline text-on-surface">{{ $dailyStats['avg_cr'] }} <span class="text-sm font-medium text-on-surface-variant">µg/L</span></p>
         </div>
 
         <!-- Avg Ni -->
@@ -253,7 +253,7 @@
                 <span class="text-xs font-bold text-indigo-600 px-2 py-1 bg-indigo-50 rounded-full">Stable</span>
             </div>
             <p class="text-on-surface-variant text-xs font-label uppercase tracking-wider mb-1">Rata-rata Ni</p>
-            <p class="text-3xl font-bold font-headline text-on-surface">{{ number_format($dailyStats['avg_ni'] ?? 0, 5) }} <span class="text-sm font-medium text-on-surface-variant">mg·L⁻¹</span></p>
+            <p class="text-3xl font-bold font-headline text-on-surface">{{ number_format($dailyStats['avg_ni'] ?? 0, 5) }} <span class="text-sm font-medium text-on-surface-variant">µg/L</span></p>
         </div>
     </div>
 
@@ -286,14 +286,14 @@
                         <div class="relative z-10 flex justify-between items-start">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary text-lg" data-icon="psychology">psychology</span>
-                                <h3 class="text-on-surface-variant font-bold text-xs">Chromium (Cr⁶⁺)</h3>
+                                <h3 class="text-on-surface-variant font-bold text-xs">Chromium Heksavalen : Cr(VI)</h3>
                             </div>
                             <div id="badge-cr" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary">NORMAL</div>
                         </div>
                         
                         <div class="relative z-10 mt-4 flex items-baseline gap-1.5">
                             <span class="text-2xl font-bold text-on-surface transition-colors duration-300" id="val-cr">--</span>
-                            <span class="text-xs text-on-surface-variant font-medium w-8">mg·L⁻¹</span>
+                            <span class="text-xs text-on-surface-variant font-medium w-8">µg/L</span>
                         </div>
                         
                         <div class="relative z-10 mt-4">
@@ -315,7 +315,7 @@
                             <div>
                                 <div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-1.5">
                                     <span class="material-symbols-outlined text-primary text-base">analytics</span>
-                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Chromium (Cr⁶⁺)</h4>
+                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Chromium Heksavalen : Cr(VI)</h4>
                                 </div>
                                 <p class="text-[11px] leading-relaxed text-on-surface-variant font-medium font-sans">
                                     {{ $glossary['cr'] }}
@@ -339,14 +339,14 @@
                         <div class="relative z-10 flex justify-between items-start">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-indigo-600 text-lg" data-icon="psychology">psychology</span>
-                                <h3 class="text-on-surface-variant font-bold text-xs">Nickel (Ni²⁺)</h3>
+                                <h3 class="text-on-surface-variant font-bold text-xs">Nikel : Ni</h3>
                             </div>
                             <div id="badge-ni" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600">NORMAL</div>
                         </div>
                         
                         <div class="relative z-10 mt-4 flex items-baseline gap-1.5">
                             <span class="text-2xl font-bold text-on-surface transition-colors duration-300" id="val-ni">--</span>
-                            <span class="text-xs text-on-surface-variant font-medium w-8">mg·L⁻¹</span>
+                            <span class="text-xs text-on-surface-variant font-medium w-8">µg/L</span>
                         </div>
                         
                         <div class="relative z-10 mt-4">
@@ -368,7 +368,7 @@
                             <div>
                                 <div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-1.5">
                                     <span class="material-symbols-outlined text-indigo-600 text-base">analytics</span>
-                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Nickel (Ni²⁺)</h4>
+                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Nikel : Ni</h4>
                                 </div>
                                 <p class="text-[11px] leading-relaxed text-on-surface-variant font-medium font-sans">
                                     {{ $glossary['ni'] }}
@@ -492,12 +492,12 @@
             <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h3 class="text-lg font-bold font-headline text-on-surface mb-1">Chromium (Cr) Trend</h3>
-                        <p class="text-xs text-on-surface-variant">Hexavalent chromium timeline</p>
+                        <h3 class="text-lg font-bold font-headline text-on-surface mb-1">Chromium Heksavalen : Cr(VI) Trend</h3>
+                        <p class="text-xs text-on-surface-variant">Hexavalent chromium timeline (µg/L)</p>
                     </div>
                     <div class="hidden sm:flex gap-2">
-                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> &gt;{{ $thresholds['cr_normal_max'] }}</span>
-                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-error rounded-full"></div> &gt;{{ $thresholds['cr_warning_max'] }}</span>
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> &gt;{{ $thresholds['cr_normal_max'] }} µg/L</span>
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-error rounded-full"></div> &gt;{{ $thresholds['cr_warning_max'] }} µg/L</span>
                     </div>
                 </div>
                 <div id="chartCr" class="w-full h-[280px]"></div>
@@ -507,12 +507,12 @@
             <div class="bg-white rounded-xl p-8 shadow-sm border border-surface-container-high">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h3 class="text-lg font-bold font-headline text-on-surface mb-1">Nickel (Ni) Trend</h3>
-                        <p class="text-xs text-on-surface-variant">Dissolved nickel timeline</p>
+                        <h3 class="text-lg font-bold font-headline text-on-surface mb-1">Nikel : Ni Trend</h3>
+                        <p class="text-xs text-on-surface-variant">Dissolved nickel timeline (µg/L)</p>
                     </div>
                     <div class="hidden sm:flex gap-2">
-                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> &gt;{{ $thresholds['ni_normal_max'] }}</span>
-                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-error rounded-full"></div> &gt;{{ $thresholds['ni_warning_max'] }}</span>
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> &gt;{{ $thresholds['ni_normal_max'] }} µg/L</span>
+                        <span class="flex items-center gap-1.5 text-[10px] font-bold text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-lg"><div class="w-2 h-2 bg-error rounded-full"></div> &gt;{{ $thresholds['ni_warning_max'] }} µg/L</span>
                     </div>
                 </div>
                 <div id="chartNi" class="w-full h-[280px]"></div>
@@ -546,8 +546,8 @@
                     <thead class="text-[10px] uppercase font-black tracking-widest text-on-surface-variant bg-surface-container-low border-b border-surface-container-high">
                         <tr>
                             <th class="px-6 py-4">Time</th>
-                            <th class="px-6 py-4 text-right">Cr (mg·L⁻¹)</th>
-                            <th class="px-6 py-4 text-right">Ni (mg·L⁻¹)</th>
+                            <th class="px-6 py-4 text-right">Cr(VI) (µg/L)</th>
+                            <th class="px-6 py-4 text-right">Ni (µg/L)</th>
                             <th class="px-6 py-4 text-right">EC</th>
                             <th class="px-6 py-4 text-right">TDS</th>
                             <th class="px-6 py-4 text-right">pH</th>
@@ -696,18 +696,18 @@
         // Cr Chart
         let optionsCr = {
             ...getLightModeOptions(),
-            series: [{ name: 'Cr Estimated', data: dataCr }],
+            series: [{ name: 'Cr(VI) Estimated', data: dataCr }],
             chart: { ...getLightModeOptions().chart, type: 'area', height: 280 },
             colors: ['#006948'],
             fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.2, opacityTo: 0.01, stops: [0, 100] } },
             xaxis: { type: 'datetime', labels: { datetimeUTC: false, style: { colors: '#64748b' } } },
-            yaxis: { title: { text: 'mg·L⁻¹' }, labels: { style: { colors: '#64748b' } }, min: 0 },
+            yaxis: { title: { text: 'µg/L' }, labels: { style: { colors: '#64748b' } }, min: 0 },
             annotations: {
                 y: [
                     { y: {{ $thresholds['cr_normal_max'] }},  borderColor: '#eab308', strokeDashArray: 3,
-                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["cr_normal_max"] }} mg·L⁻¹)' } },
+                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["cr_normal_max"] }} µg/L)' } },
                     { y: {{ $thresholds['cr_warning_max'] }}, borderColor: '#ba1a1a', strokeDashArray: 2,
-                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["cr_warning_max"] }} mg·L⁻¹)'  } }
+                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["cr_warning_max"] }} µg/L)'  } }
                 ]
             }
         };
@@ -722,13 +722,13 @@
             colors: ['#4338ca'],
             fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.2, opacityTo: 0.01, stops: [0, 100] } },
             xaxis: { type: 'datetime', labels: { datetimeUTC: false, style: { colors: '#64748b' } } },
-            yaxis: { title: { text: 'mg·L⁻¹' }, labels: { style: { colors: '#64748b' } }, min: 0 },
+            yaxis: { title: { text: 'µg/L' }, labels: { style: { colors: '#64748b' } }, min: 0 },
             annotations: {
                 y: [
                     { y: {{ $thresholds['ni_normal_max'] }},  borderColor: '#eab308', strokeDashArray: 3,
-                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["ni_normal_max"] }} mg·L⁻¹)' } },
+                      label: { borderColor: '#eab308', style: { color:'#fff', background:'#eab308', fontWeight:700, fontSize:'10px' }, text: 'Warning ({{ $thresholds["ni_normal_max"] }} µg/L)' } },
                     { y: {{ $thresholds['ni_warning_max'] }}, borderColor: '#ba1a1a', strokeDashArray: 2,
-                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["ni_warning_max"] }} mg·L⁻¹)'  } }
+                      label: { borderColor: '#ba1a1a', style: { color:'#fff', background:'#ba1a1a', fontWeight:700, fontSize:'10px' }, text: 'Danger ({{ $thresholds["ni_warning_max"] }} µg/L)'  } }
                 ]
             }
         };
@@ -998,19 +998,19 @@
         const niVal = parseFloat(data.ni_estimated || 0);
         
         if (crVal >= {{ $thresholds['cr_warning_max'] }}) {
-            metalDetails += `<div>Cr⁶⁺ Danger Level: <span class="font-bold text-error">${crVal.toFixed(5)} mg·L⁻¹</span></div>`;
+            metalDetails += `<div>Cr(VI) Danger Level: <span class="font-bold text-error">${crVal.toFixed(5)} µg/L</span></div>`;
         } else if (crVal >= {{ $thresholds['cr_normal_max'] }}) {
-            metalDetails += `<div>Cr⁶⁺ Warning Level: <span class="font-bold text-yellow-600">${crVal.toFixed(5)} mg·L⁻¹</span></div>`;
+            metalDetails += `<div>Cr(VI) Warning Level: <span class="font-bold text-yellow-600">${crVal.toFixed(5)} µg/L</span></div>`;
         }
         
         if (niVal >= {{ $thresholds['ni_warning_max'] }}) {
-            metalDetails += `<div>Ni²⁺ Danger Level: <span class="font-bold text-error">${niVal.toFixed(5)} mg·L⁻¹</span></div>`;
+            metalDetails += `<div>Ni Danger Level: <span class="font-bold text-error">${niVal.toFixed(5)} µg/L</span></div>`;
         } else if (niVal >= {{ $thresholds['ni_normal_max'] }}) {
-            metalDetails += `<div>Ni²⁺ Warning Level: <span class="font-bold text-yellow-600">${niVal.toFixed(5)} mg·L⁻¹</span></div>`;
+            metalDetails += `<div>Ni Warning Level: <span class="font-bold text-yellow-600">${niVal.toFixed(5)} µg/L</span></div>`;
         }
         
         if (!metalDetails) {
-            metalDetails = `<div>Cr⁶⁺: ${crVal.toFixed(5)} mg·L⁻¹</div>`;
+            metalDetails = `<div>Cr(VI): ${crVal.toFixed(5)} µg/L</div>`;
         }
 
         const markup = `

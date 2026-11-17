@@ -29,11 +29,14 @@ class WebFieldTestController extends Controller
         // Filter Lokasi / Petugas
         if ($request->filled('location')) {
             $loc = $request->location;
-            $query->where(function ($q) use ($loc) {
-                $q->where('latitude', 'ilike', "%{$loc}%")
-                  ->orWhere('longitude', 'ilike', "%{$loc}%")
-                  ->orWhereHas('user', function ($qu) use ($loc) {
-                      $qu->where('name', 'ilike', "%{$loc}%");
+            $isPgsql = config('database.default') === 'pgsql';
+            $ilike = $isPgsql ? 'ILIKE' : 'LIKE';
+
+            $query->where(function ($q) use ($loc, $ilike) {
+                $q->whereRaw("CAST(latitude AS TEXT) {$ilike} ?", ["%{$loc}%"])
+                  ->orWhereRaw("CAST(longitude AS TEXT) {$ilike} ?", ["%{$loc}%"])
+                  ->orWhereHas('user', function ($qu) use ($loc, $ilike) {
+                      $qu->where('name', $ilike, "%{$loc}%");
                   });
             });
         }
@@ -94,11 +97,14 @@ class WebFieldTestController extends Controller
         // Filter Lokasi / Petugas
         if ($request->filled('location')) {
             $loc = $request->location;
-            $query->where(function ($q) use ($loc) {
-                $q->where('latitude', 'ilike', "%{$loc}%")
-                  ->orWhere('longitude', 'ilike', "%{$loc}%")
-                  ->orWhereHas('user', function ($qu) use ($loc) {
-                      $qu->where('name', 'ilike', "%{$loc}%");
+            $isPgsql = config('database.default') === 'pgsql';
+            $ilike = $isPgsql ? 'ILIKE' : 'LIKE';
+
+            $query->where(function ($q) use ($loc, $ilike) {
+                $q->whereRaw("CAST(latitude AS TEXT) {$ilike} ?", ["%{$loc}%"])
+                  ->orWhereRaw("CAST(longitude AS TEXT) {$ilike} ?", ["%{$loc}%"])
+                  ->orWhereHas('user', function ($qu) use ($loc, $ilike) {
+                      $qu->where('name', $ilike, "%{$loc}%");
                   });
             });
         }

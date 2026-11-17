@@ -11,10 +11,10 @@ class Threshold extends Model
 
     // Default values (fallback jika DB kosong)
     public const DEFAULTS = [
-        'cr_normal_max'  => ['value' => 0.050000, 'unit' => 'mg/L', 'label' => 'Batas Atas Kondisi Normal Chromium'],
-        'cr_warning_max' => ['value' => 0.100000, 'unit' => 'mg/L', 'label' => 'Batas Atas Kondisi Warning Chromium'],
-        'ni_normal_max'  => ['value' => 0.020000, 'unit' => 'mg/L', 'label' => 'Batas Atas Kondisi Normal Nickel'],
-        'ni_warning_max' => ['value' => 0.040000, 'unit' => 'mg/L', 'label' => 'Batas Atas Kondisi Warning Nickel'],
+        'cr_normal_max'  => ['value' => 50.000000, 'unit' => 'µg/L', 'label' => 'Batas Atas Kondisi Normal Chromium Heksavalen : Cr(VI)'],
+        'cr_warning_max' => ['value' => 100.000000, 'unit' => 'µg/L', 'label' => 'Batas Atas Kondisi Warning Chromium Heksavalen : Cr(VI)'],
+        'ni_normal_max'  => ['value' => 20.000000, 'unit' => 'µg/L', 'label' => 'Batas Atas Kondisi Normal Nikel : Ni'],
+        'ni_warning_max' => ['value' => 70.000000, 'unit' => 'µg/L', 'label' => 'Batas Atas Kondisi Warning Nikel : Ni'],
     ];
 
     public function updatedBy()

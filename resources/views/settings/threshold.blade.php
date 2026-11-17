@@ -14,7 +14,7 @@
             </a>
             <div>
                 <h2 class="text-2xl font-extrabold tracking-tight text-on-surface font-headline">Pengaturan Threshold Logam Berat</h2>
-                <p class="text-on-surface-variant text-sm mt-0.5">Atur batas nilai normal dan warning untuk kadar Chromium (Cr) yang dipantau oleh sistem.</p>
+                <p class="text-on-surface-variant text-sm mt-0.5">Atur batas nilai normal dan warning untuk kadar Chromium Heksavalen : Cr(VI) dan Nikel : Ni (satuan µg/L) yang dipantau oleh sistem.</p>
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@
     <div class="bg-white rounded-xl border border-surface-container-high overflow-hidden shadow-sm">
         <div class="bg-surface-container-lowest border-b border-surface-container-high px-6 py-4">
             <h3 class="font-bold text-on-surface text-sm">Nilai Batas Threshold</h3>
-            <p class="text-xs text-on-surface-variant mt-0.5">Standar WHO untuk Chromium Heksavalen: Normal &lt;0.05 mg/L</p>
+            <p class="text-xs text-on-surface-variant mt-0.5">Standar Baku Mutu Air Minum/Bersih: Cr(VI) &lt; 50 µg/L, Ni &lt; 70 µg/L</p>
         </div>
 
         <form action="{{ route('settings.threshold.update') }}" method="POST" class="p-6 space-y-6">
@@ -71,7 +71,7 @@
                 warningMax: {{ old('cr_warning_max', $current['cr_warning_max']['value']) }}
             }">
                 <div class="px-4 py-3 bg-surface-container-low border-b border-surface-container-high">
-                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Chromium (Cr) — Preview Rentang Klasifikasi</p>
+                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Chromium Heksavalen : Cr(VI) — Preview Rentang Klasifikasi</p>
                 </div>
                 <div class="p-5 space-y-3">
                     {{-- Bar visual --}}
@@ -89,13 +89,13 @@
                     {{-- Range labels --}}
                     <div class="flex text-xs text-on-surface-variant">
                         <div class="flex-1 text-center">
-                            0 — <strong x-text="normalMax + ' mg/L'" class="text-primary"></strong>
+                            0 — <strong x-text="normalMax + ' µg/L'" class="text-primary"></strong>
                         </div>
                         <div class="flex-1 text-center">
-                            <strong x-text="normalMax + ' — ' + warningMax + ' mg/L'" class="text-yellow-700"></strong>
+                            <strong x-text="normalMax + ' — ' + warningMax + ' µg/L'" class="text-yellow-700"></strong>
                         </div>
                         <div class="flex-1 text-center">
-                            ≥ <strong x-text="warningMax + ' mg/L'" class="text-error"></strong>
+                            ≥ <strong x-text="warningMax + ' µg/L'" class="text-error"></strong>
                         </div>
                     </div>
                 </div>
@@ -107,10 +107,10 @@
                     <div>
                         <div class="flex items-center gap-2 mb-2">
                             <div class="w-3 h-3 rounded-full bg-primary"></div>
-                            <label class="text-sm font-bold text-on-surface">Batas Atas Normal Cr (mg/L)</label>
+                            <label class="text-sm font-bold text-on-surface">Batas Atas Normal Cr(VI) (µg/L)</label>
                         </div>
-                        <p class="text-xs text-on-surface-variant mb-2">Nilai Cr di bawah batas ini = Status NORMAL ✅</p>
-                        <input type="number" name="cr_normal_max" step="0.001" min="0.001" max="999"
+                        <p class="text-xs text-on-surface-variant mb-2">Nilai Cr(VI) di bawah batas ini = Status NORMAL ✅</p>
+                        <input type="number" name="cr_normal_max" step="0.001" min="0.001" max="99999"
                                value="{{ old('cr_normal_max', $current['cr_normal_max']['value']) }}"
                                x-model="normalMax"
                                class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface text-sm font-mono outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all @error('cr_normal_max') border-error @enderror"
@@ -130,10 +130,10 @@
                     <div>
                         <div class="flex items-center gap-2 mb-2">
                             <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                            <label class="text-sm font-bold text-on-surface">Batas Atas Warning Cr (mg/L)</label>
+                            <label class="text-sm font-bold text-on-surface">Batas Atas Warning Cr(VI) (µg/L)</label>
                         </div>
-                        <p class="text-xs text-on-surface-variant mb-2">Nilai Cr di bawah batas ini = Status WARNING ⚠️ (di atas = DANGER 🔴)</p>
-                        <input type="number" name="cr_warning_max" step="0.001" min="0.001" max="999"
+                        <p class="text-xs text-on-surface-variant mb-2">Nilai Cr(VI) di bawah batas ini = Status WARNING ⚠️ (di atas = DANGER 🔴)</p>
+                        <input type="number" name="cr_warning_max" step="0.001" min="0.001" max="99999"
                                value="{{ old('cr_warning_max', $current['cr_warning_max']['value']) }}"
                                x-model="warningMax"
                                class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface text-sm font-mono outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all @error('cr_warning_max') border-error @enderror"
@@ -151,14 +151,13 @@
                 </div>
             </div>
 
-            {{-- Comment out Nickel threshold settings preview and inputs for now
             {{-- Visual Preview Ni --}}
             <div class="rounded-xl overflow-hidden border border-indigo-200" x-data="{
                 niNormalMax:  {{ old('ni_normal_max',  $current['ni_normal_max']['value'])  }},
                 niWarningMax: {{ old('ni_warning_max', $current['ni_warning_max']['value']) }}
             }">
                 <div class="px-4 py-3 bg-indigo-50 border-b border-indigo-200">
-                    <p class="text-xs font-bold text-indigo-700 uppercase tracking-wider">Nickel (Ni) — Preview Rentang Klasifikasi</p>
+                    <p class="text-xs font-bold text-indigo-700 uppercase tracking-wider">Nikel : Ni — Preview Rentang Klasifikasi</p>
                 </div>
                 <div class="p-5 space-y-3">
                     {{-- Bar visual Ni --}}
@@ -176,13 +175,13 @@
                     {{-- Range labels Ni --}}
                     <div class="flex text-xs text-on-surface-variant">
                         <div class="flex-1 text-center">
-                            0 — <strong x-text="niNormalMax + ' mg/L'" class="text-indigo-600"></strong>
+                            0 — <strong x-text="niNormalMax + ' µg/L'" class="text-indigo-600"></strong>
                         </div>
                         <div class="flex-1 text-center">
-                            <strong x-text="niNormalMax + ' — ' + niWarningMax + ' mg/L'" class="text-yellow-700"></strong>
+                            <strong x-text="niNormalMax + ' — ' + niWarningMax + ' µg/L'" class="text-yellow-700"></strong>
                         </div>
                         <div class="flex-1 text-center">
-                            ≥ <strong x-text="niWarningMax + ' mg/L'" class="text-error"></strong>
+                            ≥ <strong x-text="niWarningMax + ' µg/L'" class="text-error"></strong>
                         </div>
                     </div>
                 </div>
@@ -194,10 +193,10 @@
                     <div>
                         <div class="flex items-center gap-2 mb-2">
                             <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
-                            <label class="text-sm font-bold text-on-surface">Batas Atas Normal Ni (mg/L)</label>
+                            <label class="text-sm font-bold text-on-surface">Batas Atas Normal Ni (µg/L)</label>
                         </div>
-                        <p class="text-xs text-on-surface-variant mb-2">Nilai Ni di bawah batas ini = Status NORMAL ✅ (WHO: 0.020 mg/L)</p>
-                        <input type="number" name="ni_normal_max" step="0.001" min="0.001" max="999"
+                        <p class="text-xs text-on-surface-variant mb-2">Nilai Ni di bawah batas ini = Status NORMAL ✅ (WHO: 20 µg/L)</p>
+                        <input type="number" name="ni_normal_max" step="0.001" min="0.001" max="99999"
                                value="{{ old('ni_normal_max', $current['ni_normal_max']['value']) }}"
                                x-model="niNormalMax"
                                class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface text-sm font-mono outline-none focus:ring-2 focus:ring-indigo-400/30 focus:border-indigo-500 transition-all @error('ni_normal_max') border-error @enderror"
@@ -217,10 +216,10 @@
                     <div>
                         <div class="flex items-center gap-2 mb-2">
                             <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                            <label class="text-sm font-bold text-on-surface">Batas Atas Warning Ni (mg/L)</label>
+                            <label class="text-sm font-bold text-on-surface">Batas Atas Warning Ni (µg/L)</label>
                         </div>
                         <p class="text-xs text-on-surface-variant mb-2">Nilai Ni di bawah batas ini = Status WARNING ⚠️ (di atas = DANGER 🔴)</p>
-                        <input type="number" name="ni_warning_max" step="0.001" min="0.001" max="999"
+                        <input type="number" name="ni_warning_max" step="0.001" min="0.001" max="99999"
                                value="{{ old('ni_warning_max', $current['ni_warning_max']['value']) }}"
                                x-model="niWarningMax"
                                class="w-full bg-surface-container-low border border-surface-container-high rounded-lg px-4 py-2.5 text-on-surface text-sm font-mono outline-none focus:ring-2 focus:ring-indigo-400/30 focus:border-indigo-500 transition-all @error('ni_warning_max') border-error @enderror"
@@ -237,7 +236,6 @@
                     </div>
                 </div>
             </div>
-            --}}
 
             {{-- Action Buttons --}}
             <div class="pt-2 flex justify-end gap-3">
@@ -275,31 +273,36 @@
                 <tbody class="divide-y divide-surface-container-high">
                     <tr class="text-on-surface-variant">
                         <td class="py-3 font-bold text-on-surface">WHO</td>
-                        <td class="py-3 text-center font-bold">Cr</td>
-                        <td class="py-3 text-center font-mono">&lt; 0.050 mg/L</td>
-                        <td class="py-3 text-center font-mono">&lt; 0.100 mg/L</td>
+                        <td class="py-3 text-center font-bold">Cr(VI)</td>
+                        <td class="py-3 text-center font-mono">&lt; 50 µg/L</td>
+                        <td class="py-3 text-center font-mono">&lt; 100 µg/L</td>
                         <td class="py-3 text-xs">Guidelines for Drinking-water Quality</td>
                     </tr>
-                    {{-- Comment Ni standard row out for now
                     <tr class="text-on-surface-variant">
                         <td class="py-3 font-bold text-on-surface">WHO</td>
                         <td class="py-3 text-center font-bold text-indigo-600">Ni</td>
-                        <td class="py-3 text-center font-mono">&lt; 0.020 mg/L</td>
-                        <td class="py-3 text-center font-mono">&lt; 0.070 mg/L</td>
+                        <td class="py-3 text-center font-mono">&lt; 20 µg/L</td>
+                        <td class="py-3 text-center font-mono">&lt; 70 µg/L</td>
                         <td class="py-3 text-xs">Guidelines for Drinking-water Quality (2022)</td>
                     </tr>
-                    --}}
                     <tr class="text-on-surface-variant">
                         <td class="py-3 font-bold text-on-surface">PP RI No.22/2021</td>
-                        <td class="py-3 text-center font-bold">Cr</td>
-                        <td class="py-3 text-center font-mono">&lt; 0.050 mg/L</td>
+                        <td class="py-3 text-center font-bold">Cr(VI)</td>
+                        <td class="py-3 text-center font-mono">&lt; 50 µg/L</td>
+                        <td class="py-3 text-center font-mono">—</td>
+                        <td class="py-3 text-xs">Baku Mutu Air Kelas I (air minum)</td>
+                    </tr>
+                    <tr class="text-on-surface-variant">
+                        <td class="py-3 font-bold text-on-surface">PP RI No.22/2021</td>
+                        <td class="py-3 text-center font-bold text-indigo-600">Ni</td>
+                        <td class="py-3 text-center font-mono">&lt; 50 µg/L</td>
                         <td class="py-3 text-center font-mono">—</td>
                         <td class="py-3 text-xs">Baku Mutu Air Kelas I (air minum)</td>
                     </tr>
                     <tr class="text-on-surface-variant">
                         <td class="py-3 font-bold text-on-surface">US EPA</td>
-                        <td class="py-3 text-center font-bold">Cr</td>
-                        <td class="py-3 text-center font-mono">&lt; 0.100 mg/L</td>
+                        <td class="py-3 text-center font-bold">Cr(VI)</td>
+                        <td class="py-3 text-center font-mono">&lt; 100 µg/L</td>
                         <td class="py-3 text-center font-mono">—</td>
                         <td class="py-3 text-xs">Maximum Contaminant Level (MCL)</td>
                     </tr>

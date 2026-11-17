@@ -56,6 +56,13 @@ class ProcessSensorIngestion implements ShouldQueue
 
                 // 3. Simpan Riwayat Tetap ke InfluxDB Container
                 $influxRepo->writeSensorData($this->sensorData);
+
+                // Simpan juga ke PostgreSQL sensor_readings sebagai fallback & cache terkini
+                try {
+                    \App\Models\SensorReading::create($this->sensorData);
+                } catch (\Throwable $e) {
+                    Log::warning("SensorReading DB write failed: " . $e->getMessage());
+                }
                 
                 // Tambahkan waktu timestamp murni untuk kebutuhan parsing Javascript Dashboard
                 $broadcastData = array_merge($this->sensorData, [

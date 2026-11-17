@@ -93,17 +93,17 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th width="5%">No</th>
-                <th width="20%">Tanggal & Waktu</th>
-                <th width="15%">Cr (mg·L⁻¹)</th>
-                {{-- <th width="10%">Ni (mg·L⁻¹)</th> --}}
-                <th width="8%">pH</th>
-                <th width="10%">EC (µS/cm)</th>
-                <th width="10%">TDS (mg·L⁻¹)</th>
-                <th width="12%">Suhu Air/Ling.</th>
-                <th width="10%">Kelembapan</th>
-                <th width="10%">Tegangan</th>
-                <th width="10%">Status</th>
+                <th width="4%">No</th>
+                <th width="18%">Tanggal & Waktu</th>
+                <th width="11%">Cr(VI) (µg/L)</th>
+                <th width="11%">Ni (µg/L)</th>
+                <th width="7%">pH</th>
+                <th width="9%">EC (µS/cm)</th>
+                <th width="9%">TDS (mg·L⁻¹)</th>
+                <th width="11%">Suhu Air/Ling.</th>
+                <th width="8%">Kelembapan</th>
+                <th width="6%">Tegangan</th>
+                <th width="6%">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -112,7 +112,7 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $row->created_at->format('d/m/Y H:i:s') }}</td>
                     <td>{{ number_format($row->cr_estimated, 5) }}</td>
-                    {{-- <td>{{ number_format($row->ni_estimated ?? 0, 5) }}</td> --}}
+                    <td>{{ number_format($row->ni_estimated ?? 0, 5) }}</td>
                     <td>{{ number_format($row->ph, 2) }}</td>
                     <td>{{ number_format($row->ec, 1) }}</td>
                     <td>{{ number_format($row->tds, 1) }}</td>

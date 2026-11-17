@@ -34,11 +34,14 @@ class FieldTestExport implements FromCollection, WithHeadings, WithMapping, With
         // Filter Lokasi / Petugas
         if ($this->request->filled('location')) {
             $loc = $this->request->location;
-            $query->where(function ($q) use ($loc) {
-                $q->where('latitude', 'like', "%{$loc}%")
-                  ->orWhere('longitude', 'like', "%{$loc}%")
-                  ->orWhereHas('user', function ($qu) use ($loc) {
-                      $qu->where('name', 'like', "%{$loc}%");
+            $isPgsql = config('database.default') === 'pgsql';
+            $ilike = $isPgsql ? 'ILIKE' : 'LIKE';
+
+            $query->where(function ($q) use ($loc, $ilike) {
+                $q->whereRaw("CAST(latitude AS TEXT) {$ilike} ?", ["%{$loc}%"])
+                  ->orWhereRaw("CAST(longitude AS TEXT) {$ilike} ?", ["%{$loc}%"])
+                  ->orWhereHas('user', function ($qu) use ($loc, $ilike) {
+                      $qu->where('name', $ilike, "%{$loc}%");
                   });
             });
         }
@@ -71,8 +74,8 @@ class FieldTestExport implements FromCollection, WithHeadings, WithMapping, With
             'Suhu Udara (°C)',
             'Kelembapan (%)',
             'Tegangan (V)',
-            'Cr Estimated (mg/L)',
-            'Ni Estimated (mg/L)'
+            'Cr(VI) Estimated (µg/L)',
+            'Ni Estimated (µg/L)'
         ];
     }
 

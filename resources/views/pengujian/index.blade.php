@@ -87,9 +87,9 @@
                     <label class="block text-xs font-bold text-on-surface-variant mb-1.5">Logam Berat</label>
                     <select name="metal"
                             class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary block p-2.5 outline-none transition">
-                        <option value="" {{ request('metal') == '' ? 'selected' : '' }}>Semua</option>
-                        <option value="cr" {{ request('metal') == 'cr' ? 'selected' : '' }}>Chromium (Cr)</option>
-                        <option value="ni" {{ request('metal') == 'ni' ? 'selected' : '' }}>Nikel (Ni)</option>
+                        <option value="" {{ request('metal') == '' ? 'selected' : '' }}>Semua Logam</option>
+                        <option value="cr" {{ request('metal') == 'cr' ? 'selected' : '' }}>Chromium Heksavalen : Cr(VI)</option>
+                        <option value="ni" {{ request('metal') == 'ni' ? 'selected' : '' }}>Nikel : Ni</option>
                     </select>
                 </div>
                 <div>
@@ -152,8 +152,8 @@
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Suhu Udr (°C)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center whitespace-nowrap">Kelembapan (%)</th>
                         <th class="px-4 py-2 text-emerald-700 bg-emerald-50 text-center border-r border-surface-container-high whitespace-nowrap">Tegangan (V)</th>
-                        <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap border-r border-surface-container-high">CR Est. (mg·L⁻¹)</th>
-                        <th class="px-4 py-2 text-indigo-700 bg-indigo-50 text-center whitespace-nowrap">NI Est. (mg·L⁻¹)</th>
+                        <th class="px-4 py-2 text-purple-700 bg-purple-50 text-center whitespace-nowrap border-r border-surface-container-high">Cr(VI) Est. (µg/L)</th>
+                        <th class="px-4 py-2 text-indigo-700 bg-indigo-50 text-center whitespace-nowrap">Ni Est. (µg/L)</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-container-high">
@@ -339,8 +339,8 @@
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Suhu Air</span><br><b style="color:#006948">${data.suhu_air}°C</b></div>
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Udara</span><br><b style="color:#006948">${data.suhu_lingkungan}°C</b></div>
                      <div style="background:#f2f4f6;padding:4px 6px;border-radius:6px;"><span style="color:#6d7a72;font-size:10px;">Kelembapan</span><br><b style="color:#006948">${data.kelembapan}%</b></div>
-                     <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Cr⁶⁺ Estimated</span><br><b style="color:#7e22ce;font-size:12px;">${data.cr} mg·L⁻¹</b></div>
-                     <div style="background:#e0e7ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Ni²⁺ Estimated</span><br><b style="color:#4f46e5;font-size:12px;">${data.ni} mg·L⁻¹</b></div>
+                     <div style="background:#f1e8ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Cr(VI) Estimated</span><br><b style="color:#7e22ce;font-size:12px;">${data.cr} µg/L</b></div>
+                     <div style="background:#e0e7ff;padding:4px 6px;border-radius:6px;text-align:center;"><span style="color:#6d7a72;font-size:10px;">Ni Estimated</span><br><b style="color:#4f46e5;font-size:12px;">${data.ni} µg/L</b></div>
                  </div>
              </div>
          `;
