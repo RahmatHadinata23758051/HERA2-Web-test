@@ -113,7 +113,7 @@
                     <span class="text-xs font-bold text-on-surface font-mono">Cr(VI)</span>
                 </div>
                 <div class="mt-2">
-                    <h4 class="font-bold text-sm text-on-surface">Chromium Heksavalen : Cr(VI)</h4>
+                    <h4 class="font-bold text-sm text-on-surface">Chromium Heksavalent : Cr(VI)</h4>
                     <div class="mt-1 flex items-center gap-1 text-[10px] text-primary font-mono bg-primary/10 px-2 py-0.5 rounded-md w-max">
                         <span class="material-symbols-outlined text-xs">description</span>
                         <span id="cr-model-filename" class="truncate max-w-[170px]" title="Model File Name">best_model_chromium_v2.pkl</span>
@@ -253,15 +253,15 @@
                 <span class="text-xs font-bold text-indigo-600 px-2 py-1 bg-indigo-50 rounded-full">Stable</span>
             </div>
             <p class="text-on-surface-variant text-xs font-label uppercase tracking-wider mb-1">Rata-rata Ni</p>
-            <p class="text-3xl font-bold font-headline text-on-surface">{{ number_format($dailyStats['avg_ni'] ?? 0, 5) }} <span class="text-sm font-medium text-on-surface-variant">µg/L</span></p>
+            <p class="text-3xl font-bold font-headline text-on-surface">{{ number_format($dailyStats['avg_ni'] ?? 0, 2) }} <span class="text-sm font-medium text-on-surface-variant">µg/L</span></p>
         </div>
     </div>
 
     <!-- Section 2: Sensor Hub (Real-time Gauges) -->
     @php
         $glossary = [
-            'cr' => 'Kromium Heksavalen (Cr⁶⁺): Logam berat beracun hasil limbah industri. AI memprediksi kadar Cr⁶⁺ secara real-time dari data sensor fisik untuk mencegah risiko kanker dan kerusakan lingkungan.',
-            'ni' => 'Nikel Terlarut (Ni²⁺): Unsur logam berat dari limbah industri baterai/plating. AI memprediksi estimasi Ni²⁺ secara dini untuk mencegah pencemaran kronis pada biota air dan manusia.',
+            'cr' => 'Chromium Heksavalent : Cr(VI) (µg/L): Logam berat beracun hasil limbah industri. AI memprediksi kadar Cr(VI) secara real-time dari data sensor fisik untuk mencegah risiko kanker dan kerusakan lingkungan.',
+            'ni' => 'Nikel : Ni (µg/L): Unsur logam berat dari limbah industri baterai/plating. AI memprediksi estimasi Ni secara dini untuk mencegah pencemaran kronis pada biota air dan manusia.',
             'ec' => 'Daya Hantar Listrik (EC): Mengukur kemampuan air mengalirkan arus listrik berdasarkan konsentrasi ion terlarut. Kenaikan drastis mendeteksi masuknya zat polutan secara instan.',
             'tds' => 'Total Padatan Terlarut (TDS): Konsentrasi total padatan senyawa terlarut dalam air. TDS tinggi menurunkan transparansi air dan mengindikasikan tingginya kejenuhan zat pencemar.',
             'ph' => 'Derajat Keasaman (pH): Mengukur kadar asam/basa air (skala 0-14). pH ekstrem sangat berbahaya bagi kehidupan perairan serta memicu korosi logam dan kelarutan racun berat.',
@@ -286,7 +286,7 @@
                         <div class="relative z-10 flex justify-between items-start">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary text-lg" data-icon="psychology">psychology</span>
-                                <h3 class="text-on-surface-variant font-bold text-xs">Chromium Heksavalen : Cr(VI)</h3>
+                                <h3 class="text-on-surface-variant font-bold text-xs">Chromium Heksavalent : Cr(VI)</h3>
                             </div>
                             <div id="badge-cr" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary">NORMAL</div>
                         </div>
@@ -298,7 +298,7 @@
                         
                         <div class="relative z-10 mt-4">
                             <div class="flex justify-between text-[9px] text-outline font-bold mb-1" id="minmax-cr">
-                                <span>MIN: --</span><span>MAX: --</span>
+                                <span>MIN: 0.00 µg/L</span><span>MAX: {{ number_format($thresholds['cr_warning_max'] ?? 100.0, 1) }} µg/L (Batas)</span>
                             </div>
                             <!-- Thick Progress Bar for AI -->
                             <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
@@ -315,7 +315,7 @@
                             <div>
                                 <div class="flex items-center gap-2 mb-2 border-b border-surface-container-high pb-1.5">
                                     <span class="material-symbols-outlined text-primary text-base">analytics</span>
-                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Chromium Heksavalen : Cr(VI)</h4>
+                                    <h4 class="text-on-surface font-black text-xs uppercase tracking-wider">Chromium Heksavalent : Cr(VI)</h4>
                                 </div>
                                 <p class="text-[11px] leading-relaxed text-on-surface-variant font-medium font-sans">
                                     {{ $glossary['cr'] }}
@@ -351,7 +351,7 @@
                         
                         <div class="relative z-10 mt-4">
                             <div class="flex justify-between text-[9px] text-outline font-bold mb-1" id="minmax-ni">
-                                <span>MIN: --</span><span>MAX: --</span>
+                                <span>MIN: 0.00 µg/L</span><span>MAX: {{ number_format($thresholds['ni_warning_max'] ?? 70.0, 1) }} µg/L (Batas)</span>
                             </div>
                             <!-- Progress Bar for AI Nickel -->
                             <div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
@@ -914,7 +914,7 @@
         const isAiCard = (id === 'cr' || id === 'ni');
         const valEl = document.getElementById(`val-${id}`);
         if(valEl) {
-            valEl.innerText = isAiCard ? val.toFixed(5) : val.toFixed(1);
+            valEl.innerText = isAiCard ? val.toFixed(2) : val.toFixed(1);
             if(!isInitial) {
                 valEl.classList.remove('value-update-flash');
                 void valEl.offsetWidth; 
@@ -971,11 +971,11 @@
         const minmaxEl = document.getElementById(`minmax-${id}`);
         if(minmaxEl && sensorCache.length > 0) {
             if(id === 'cr') {
-                let maxScale = ({{ $thresholds['cr_warning_max'] }} * 1.5).toFixed(3);
-                minmaxEl.innerHTML = `<span>MIN: 0.000</span><span>MAX: ${maxScale} (Limit)</span>`;
+                let maxScale = ({{ $thresholds['cr_warning_max'] }}).toFixed(1);
+                minmaxEl.innerHTML = `<span>MIN: 0.00 µg/L</span><span>MAX: ${maxScale} µg/L (Batas)</span>`;
             } else if(id === 'ni') {
-                let maxScale = ({{ $thresholds['ni_warning_max'] }} * 1.5).toFixed(5);
-                minmaxEl.innerHTML = `<span>MIN: 0.00000</span><span>MAX: ${maxScale} (Limit)</span>`;
+                let maxScale = ({{ $thresholds['ni_warning_max'] }}).toFixed(1);
+                minmaxEl.innerHTML = `<span>MIN: 0.00 µg/L</span><span>MAX: ${maxScale} µg/L (Batas)</span>`;
             } else {
                 let arr = sensorCache.map(r => r[id]).filter(v => v !== undefined && v !== null);
                 if(arr.length > 0) {
@@ -998,19 +998,19 @@
         const niVal = parseFloat(data.ni_estimated || 0);
         
         if (crVal >= {{ $thresholds['cr_warning_max'] }}) {
-            metalDetails += `<div>Cr(VI) Danger Level: <span class="font-bold text-error">${crVal.toFixed(5)} µg/L</span></div>`;
+            metalDetails += `<div>Chromium Heksavalent : Cr(VI) Danger Level: <span class="font-bold text-error">${crVal.toFixed(2)} µg/L</span></div>`;
         } else if (crVal >= {{ $thresholds['cr_normal_max'] }}) {
-            metalDetails += `<div>Cr(VI) Warning Level: <span class="font-bold text-yellow-600">${crVal.toFixed(5)} µg/L</span></div>`;
+            metalDetails += `<div>Chromium Heksavalent : Cr(VI) Warning Level: <span class="font-bold text-yellow-600">${crVal.toFixed(2)} µg/L</span></div>`;
         }
         
         if (niVal >= {{ $thresholds['ni_warning_max'] }}) {
-            metalDetails += `<div>Ni Danger Level: <span class="font-bold text-error">${niVal.toFixed(5)} µg/L</span></div>`;
+            metalDetails += `<div>Nikel : Ni Danger Level: <span class="font-bold text-error">${niVal.toFixed(2)} µg/L</span></div>`;
         } else if (niVal >= {{ $thresholds['ni_normal_max'] }}) {
-            metalDetails += `<div>Ni Warning Level: <span class="font-bold text-yellow-600">${niVal.toFixed(5)} µg/L</span></div>`;
+            metalDetails += `<div>Nikel : Ni Warning Level: <span class="font-bold text-yellow-600">${niVal.toFixed(2)} µg/L</span></div>`;
         }
         
         if (!metalDetails) {
-            metalDetails = `<div>Cr(VI): ${crVal.toFixed(5)} µg/L</div>`;
+            metalDetails = `<div>Chromium Heksavalent : Cr(VI): ${crVal.toFixed(2)} µg/L</div>`;
         }
 
         const markup = `
@@ -1044,8 +1044,8 @@
             tb.innerHTML += `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4 font-mono text-xs text-on-surface-variant">${timeStr}</td>
-                    <td class="px-6 py-4 text-right font-bold ${colText}">${row.cr_estimated.toFixed(5)}</td>
-                    <td class="px-6 py-4 text-right font-bold text-indigo-600">${niVal.toFixed(5)}</td>
+                    <td class="px-6 py-4 text-right font-bold ${colText}">${row.cr_estimated.toFixed(2)}</td>
+                    <td class="px-6 py-4 text-right font-bold text-indigo-600">${niVal.toFixed(2)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.ec.toFixed(1)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.tds.toFixed(1)}</td>
                     <td class="px-6 py-4 text-right text-on-surface text-sm font-medium">${row.ph.toFixed(1)}</td>
@@ -1104,10 +1104,10 @@
         
         let warningMessage = '';
         if (crVal >= {{ $thresholds['cr_warning_max'] }}) {
-            warningMessage += `Chromium (Cr⁶⁺): ${crVal.toFixed(5)} mg·L⁻¹ (Limit: {{ $thresholds['cr_warning_max'] }} mg·L⁻¹) `;
+            warningMessage += `Chromium Heksavalent : Cr(VI): ${crVal.toFixed(2)} µg/L (Limit: {{ $thresholds['cr_warning_max'] }} µg/L) `;
         }
         if (niVal >= {{ $thresholds['ni_warning_max'] }}) {
-            warningMessage += `Nickel (Ni²⁺): ${niVal.toFixed(5)} mg·L⁻¹ (Limit: {{ $thresholds['ni_warning_max'] }} mg·L⁻¹)`;
+            warningMessage += `Nikel : Ni: ${niVal.toFixed(2)} µg/L (Limit: {{ $thresholds['ni_warning_max'] }} µg/L)`;
         }
         
         if (!warningMessage) return;

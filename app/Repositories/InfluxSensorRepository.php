@@ -171,7 +171,7 @@ class InfluxSensorRepository
                 'warning' => $warning,
                 'danger' => $danger,
                 'avg_cr' => $countCr > 0 ? round($sumCr / $countCr, 2) : 0,
-                'avg_ni' => $countNi > 0 ? round($sumNi / $countNi, 5) : 0,
+                'avg_ni' => $countNi > 0 ? round($sumNi / $countNi, 2) : 0,
             ];
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning("InfluxDB daily stats failed (Offline/Connection error): " . $e->getMessage());

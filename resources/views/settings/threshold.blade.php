@@ -14,7 +14,7 @@
             </a>
             <div>
                 <h2 class="text-2xl font-extrabold tracking-tight text-on-surface font-headline">Pengaturan Threshold Logam Berat</h2>
-                <p class="text-on-surface-variant text-sm mt-0.5">Atur batas nilai normal dan warning untuk kadar Chromium Heksavalen : Cr(VI) dan Nikel : Ni (satuan µg/L) yang dipantau oleh sistem.</p>
+                <p class="text-on-surface-variant text-sm mt-0.5">Atur batas nilai normal dan warning untuk kadar Chromium Heksavalent : Cr(VI) dan Nikel : Ni (satuan µg/L) yang dipantau oleh sistem.</p>
             </div>
         </div>
     </div>
@@ -71,7 +71,7 @@
                 warningMax: {{ old('cr_warning_max', $current['cr_warning_max']['value']) }}
             }">
                 <div class="px-4 py-3 bg-surface-container-low border-b border-surface-container-high">
-                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Chromium Heksavalen : Cr(VI) — Preview Rentang Klasifikasi</p>
+                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Chromium Heksavalent : Cr(VI) — Preview Rentang Klasifikasi</p>
                 </div>
                 <div class="p-5 space-y-3">
                     {{-- Bar visual --}}

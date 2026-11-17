@@ -89,7 +89,7 @@
             </tr>
             <tr>
                 <td><strong>Filter Logam</strong></td>
-                <td>: {{ request('metal') === 'cr' ? 'Chromium Heksavalen : Cr(VI)' : (request('metal') === 'ni' ? 'Nikel : Ni' : 'Semua') }}</td>
+                <td>: {{ request('metal') === 'cr' ? 'Chromium Heksavalent : Cr(VI)' : (request('metal') === 'ni' ? 'Nikel : Ni' : 'Semua') }}</td>
                 <td></td>
                 <td></td>
             </tr>

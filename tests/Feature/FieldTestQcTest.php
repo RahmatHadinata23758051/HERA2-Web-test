@@ -94,7 +94,7 @@ class FieldTestQcTest extends TestCase
 
         $response = $this->actingAs($user)->get('/dashboard');
         $response->assertStatus(200);
-        $response->assertSee('Chromium Heksavalen : Cr(VI)');
+        $response->assertSee('Chromium Heksavalent : Cr(VI)');
         $response->assertSee('Nikel : Ni');
         $response->assertSee('µg/L');
     }
@@ -115,7 +115,7 @@ class FieldTestQcTest extends TestCase
 
         $response = $this->actingAs($user)->get('/pengaturan/threshold');
         $response->assertStatus(200);
-        $response->assertSee('Chromium Heksavalen : Cr(VI)');
+        $response->assertSee('Chromium Heksavalent : Cr(VI)');
         $response->assertSee('Nikel : Ni');
         $response->assertSee('µg/L');
     }

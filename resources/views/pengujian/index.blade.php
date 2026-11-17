@@ -88,7 +88,7 @@
                     <select name="metal"
                             class="w-full bg-surface-container-low border border-surface-container-high text-on-surface text-sm rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary block p-2.5 outline-none transition">
                         <option value="" {{ request('metal') == '' ? 'selected' : '' }}>Semua Logam</option>
-                        <option value="cr" {{ request('metal') == 'cr' ? 'selected' : '' }}>Chromium Heksavalen : Cr(VI)</option>
+                        <option value="cr" {{ request('metal') == 'cr' ? 'selected' : '' }}>Chromium Heksavalent : Cr(VI)</option>
                         <option value="ni" {{ request('metal') == 'ni' ? 'selected' : '' }}>Nikel : Ni</option>
                     </select>
                 </div>
