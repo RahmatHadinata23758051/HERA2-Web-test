@@ -41,6 +41,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 Route::prefix('mobile')->name('mobile.')->group(function () {
     Route::post('/login',    [MobileAuthController::class, 'login'])->name('login');
     Route::post('/register', [MobileAuthController::class, 'register'])->name('register');
+    Route::get('/app-version/latest', [\App\Http\Controllers\Api\AppVersionApiController::class, 'latest'])->name('app-version.latest');
+    Route::get('/app-version/check',  [\App\Http\Controllers\Api\AppVersionApiController::class, 'latest'])->name('app-version.check');
 });
 
 // Protected — Requires valid Bearer token

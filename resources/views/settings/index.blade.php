@@ -128,7 +128,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-bold text-on-surface text-sm">Threshold Kadar Chromium & Nickel</h3>
+                    <h3 class="font-bold text-on-surface text-sm">Threshold Kadar Chromium Heksavalent : Cr(VI) & Nikel : Ni</h3>
                     <p class="text-xs text-on-surface-variant mt-0.5">
                         Atur batas nilai <span class="font-bold text-primary">Normal</span>,
                         <span class="font-bold text-yellow-600">Warning</span>, dan
@@ -149,7 +149,7 @@
     </div>
 
     <!-- Model AI Management -->
-    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
+    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden mb-6">
         <div class="flex items-center justify-between px-6 py-5">
             <div class="flex items-center gap-4">
                 <div class="p-3 bg-emerald-100 rounded-xl flex-shrink-0 text-emerald-600">
@@ -158,7 +158,7 @@
                 <div>
                     <h3 class="font-bold text-on-surface text-sm">Manajemen Model AI & Dynamic Swapping</h3>
                     <p class="text-xs text-on-surface-variant mt-0.5">
-                        Unggah dan perbarui file model Machine Learning (.pkl) untuk Chromium (Cr⁶⁺) dan Nickel (Ni²⁺) secara live tanpa downtime.
+                        Unggah dan perbarui file model Machine Learning (.pkl) untuk Chromium Heksavalent : Cr(VI) dan Nikel : Ni secara live tanpa downtime.
                     </p>
                 </div>
             </div>
@@ -166,6 +166,28 @@
                class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-bold shadow-sm ml-4">
                 <span class="material-symbols-outlined text-base">cloud_upload</span>
                 Kelola Model AI
+            </a>
+        </div>
+    </div>
+
+    <!-- Mobile App Version & OTA Update Management -->
+    <div class="bg-white rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-5">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-100 rounded-xl flex-shrink-0 text-blue-600">
+                    <span class="material-symbols-outlined text-2xl">system_update</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-on-surface text-sm">Manajemen Versi Mobile App (In-App OTA Update)</h3>
+                    <p class="text-xs text-on-surface-variant mt-0.5">
+                        Rilis pembaruan APK client tanpa Google Play Store. Pengguna aplikasi Flutter akan mendapatkan notifikasi update otomatis dan progres download langsung di dalam aplikasi.
+                    </p>
+                </div>
+            </div>
+            <a href="{{ route('settings.app-version') }}"
+               class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-bold shadow-sm ml-4">
+                <span class="material-symbols-outlined text-base">install_mobile</span>
+                Kelola Versi APK
             </a>
         </div>
     </div>

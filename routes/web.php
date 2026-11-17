@@ -51,6 +51,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/pengaturan/models', [\App\Http\Controllers\Admin\ModelManagementController::class, 'index'])->name('admin.models.index');
         Route::post('/pengaturan/models/upload', [\App\Http\Controllers\Admin\ModelManagementController::class, 'upload'])->name('admin.models.upload');
 
+        // Manajemen Versi Mobile App (In-App Auto Update OTA)
+        Route::get('/pengaturan/app-version', [\App\Http\Controllers\AppVersionWebController::class, 'index'])->name('settings.app-version');
+        Route::post('/pengaturan/app-version', [\App\Http\Controllers\AppVersionWebController::class, 'store'])->name('settings.app-version.store');
+
         // Manajemen Perangkat IoT
         Route::resource('iot-devices', \App\Http\Controllers\IotDeviceController::class)->except(['show']);
 

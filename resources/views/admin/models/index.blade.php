@@ -79,8 +79,8 @@
                             <span class="material-symbols-outlined text-2xl">analytics</span>
                         </div>
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">Cr⁶⁺ Parameter</span>
-                            <h3 class="font-bold text-lg text-on-surface mt-0.5">Chromium (Hexavalent) Model</h3>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">Cr(VI) Parameter</span>
+                            <h3 class="font-bold text-lg text-on-surface mt-0.5">Chromium Heksavalent : Cr(VI) Model</h3>
                         </div>
                     </div>
                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 flex items-center gap-1 border border-emerald-200">
@@ -128,8 +128,8 @@
                             <span class="material-symbols-outlined text-2xl">analytics</span>
                         </div>
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">Ni²⁺ Parameter</span>
-                            <h3 class="font-bold text-lg text-on-surface mt-0.5">Nickel (Dissolved) Model</h3>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">Ni Parameter</span>
+                            <h3 class="font-bold text-lg text-on-surface mt-0.5">Nikel : Ni Model</h3>
                         </div>
                     </div>
                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 flex items-center gap-1 border border-indigo-200">
@@ -223,14 +223,14 @@
                                :class="selectedTarget === 'chromium' ? 'border-primary bg-primary/5 text-primary font-bold' : 'border-surface-container-high text-on-surface-variant'">
                             <div class="flex items-center gap-2">
                                 <input type="radio" name="target" value="chromium" x-model="selectedTarget" class="text-primary focus:ring-primary">
-                                <span class="text-xs">Chromium (Cr⁶⁺)</span>
+                                <span class="text-xs">Chromium Heksavalent : Cr(VI)</span>
                             </div>
                         </label>
                         <label class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all"
                                :class="selectedTarget === 'nickel' ? 'border-indigo-600 bg-indigo-50 text-indigo-600 font-bold' : 'border-surface-container-high text-on-surface-variant'">
                             <div class="flex items-center gap-2">
                                 <input type="radio" name="target" value="nickel" x-model="selectedTarget" class="text-indigo-600 focus:ring-indigo-600">
-                                <span class="text-xs">Nickel (Ni²⁺)</span>
+                                <span class="text-xs">Nikel : Ni</span>
                             </div>
                         </label>
                     </div>
