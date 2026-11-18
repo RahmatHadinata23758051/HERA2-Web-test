@@ -56,6 +56,29 @@ class MobileSensorController extends Controller
         $reading = $readings->first();
 
         if (!$reading) {
+            // Fallback ke PostgreSQL SensorReading jika InfluxDB belum memiliki data terbaru
+            $pg = \App\Models\SensorReading::latest()->first();
+            if ($pg) {
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'OK',
+                    'data'    => [[
+                        'created_at'       => $pg->created_at?->toIso8601String() ?? now()->toIso8601String(),
+                        'location'         => $pg->location ?? 'citarum_node_alpha',
+                        'ec'               => (float) $pg->ec,
+                        'tds'              => (float) $pg->tds,
+                        'ph'               => (float) $pg->ph,
+                        'suhu_air'         => (float) $pg->suhu_air,
+                        'suhu_lingkungan'  => (float) $pg->suhu_lingkungan,
+                        'kelembapan'       => (float) $pg->kelembapan,
+                        'tegangan'         => (float) $pg->tegangan,
+                        'cr_estimated'     => (float) ($pg->cr_estimated ?? 0),
+                        'ni_estimated'     => (float) ($pg->ni_estimated ?? 0),
+                        'status'           => $pg->status ?? 'normal',
+                    ]],
+                ]);
+            }
+
             return response()->json([
                 'status'  => false,
                 'message' => 'Belum ada data sensor.',
