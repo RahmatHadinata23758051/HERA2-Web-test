@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\SensorReading;
 use App\Models\Threshold;
+use App\Models\FieldTest;
 
 class DashboardController extends Controller
 {
@@ -23,7 +24,14 @@ class DashboardController extends Controller
             Threshold::getNiThresholds()
         );
 
-        return view('dashboard', compact('initialData', 'dailyStats', 'thresholds'));
+        // Ambil data pengujian lapangan (GPS) terbaru untuk posisi perangkat terkini di peta
+        $latestFieldTest = FieldTest::with('user')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->latest()
+            ->first();
+
+        return view('dashboard', compact('initialData', 'dailyStats', 'thresholds', 'latestFieldTest'));
     }
 }
 

@@ -581,9 +581,27 @@
         <div class="px-6 py-5 border-b border-surface-container-highest flex justify-between items-center bg-surface-container-lowest">
             <div>
                 <h3 class="text-lg font-bold font-headline text-on-surface">Lokasi Perangkat IoT</h3>
-                <p class="text-xs text-on-surface-variant mt-0.5 font-medium">Posisi geospasial Real-time Node Sensor</p>
+                <p id="mapSubtitle" class="text-xs text-on-surface-variant mt-0.5 font-medium">
+                    @if($latestFieldTest)
+                        Titik Pengujian GPS Terakhir • {{ number_format($latestFieldTest->latitude, 5) }}, {{ number_format($latestFieldTest->longitude, 5) }} ({{ $latestFieldTest->created_at ? $latestFieldTest->created_at->diffForHumans() : '-' }})
+                    @else
+                        Posisi geospasial Real-time Node Sensor
+                    @endif
+                </p>
             </div>
-            <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Node Online</span>
+            <div class="flex items-center gap-2">
+                <span id="mapBadge" class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">
+                    @if($latestFieldTest)
+                        Titik Uji GPS Terkini
+                    @else
+                        Node Online
+                    @endif
+                </span>
+                <a href="{{ route('laporan.pengujian.index') }}" class="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
+                    <span>Semua Titik</span>
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                </a>
+            </div>
         </div>
         <!-- Light Mode Map Holder Constraint -->
         <div id="sensorMap" style="height: 400px; width: 100%; background: #f8fafc; z-index:1;"></div>
@@ -878,6 +896,12 @@
                         triggerDangerNotification(record);
                     }
                 }
+            })
+            .listen('.new_testing_data', (e) => {
+                const test = e.testingData || e;
+                if (test && test.latitude && test.longitude && typeof window.updateMapLocation === 'function') {
+                    window.updateMapLocation(test);
+                }
             });
     }
 
@@ -1132,12 +1156,12 @@
     const mapEl = document.getElementById('sensorMap');
     if (!mapEl) return;
 
-    const LAT = -6.967585;
-    const LNG = 107.6590634;
-    const LOCATION_NAME = 'Main Node HQ, Bandung Raya';
+    const initialLat = {{ $latestFieldTest?->latitude ?? -6.967585 }};
+    const initialLng = {{ $latestFieldTest?->longitude ?? 107.6590634 }};
+    const hasInitialFieldTest = {{ $latestFieldTest ? 'true' : 'false' }};
 
     const map = L.map('sensorMap', {
-        center: [LAT, LNG],
+        center: [initialLat, initialLng],
         zoom: 15,
         zoomControl: true,
         attributionControl: false,
@@ -1161,22 +1185,102 @@
         popupAnchor: [0, -20],
     });
 
-    const marker = L.marker([LAT, LNG], { icon: lightDangerIcon }).addTo(map);
-    marker.bindPopup(`
-        <div style="font-family: 'Inter', sans-serif; min-width: 160px; text-align:center;">
-            <div style="font-weight: 800; font-size: 13px; color: #191c1e; margin-bottom: 4px;">
-                Main Node HQ
+    function createPopupHtml(data) {
+        const isGps = data.isGps ?? hasInitialFieldTest;
+        const title = isGps ? 'Titik Pengujian GPS Terkini' : 'Main Node HQ';
+        const coords = (data.lat !== undefined && data.lng !== undefined)
+            ? `${Number(data.lat).toFixed(6)}, ${Number(data.lng).toFixed(6)}`
+            : '{{ $latestFieldTest ? number_format($latestFieldTest->latitude, 6) . ", " . number_format($latestFieldTest->longitude, 6) : "Lokasi Stasiun Utama" }}';
+        const officer = data.officer || '{{ addslashes($latestFieldTest?->user?->name ?? "Petugas Lapangan") }}';
+        const timeStr = data.time || '{{ $latestFieldTest?->created_at ? $latestFieldTest->created_at->format("d M Y H:i") : "Transmisi Aktif" }}';
+        const altitudeStr = data.altitude || '{{ $latestFieldTest?->altitude !== null ? number_format($latestFieldTest->altitude, 1) . " m" : "-" }}';
+        const crStr = data.cr || '{{ $latestFieldTest?->cr_estimated !== null ? number_format($latestFieldTest->cr_estimated, 2) . " µg/L" : "-" }}';
+        const niStr = data.ni || '{{ $latestFieldTest?->ni_estimated !== null ? number_format($latestFieldTest->ni_estimated, 2) . " µg/L" : "-" }}';
+
+        return `
+            <div style="font-family: 'Inter', sans-serif; min-width: 210px; padding: 4px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">
+                    <span style="font-weight: 800; font-size: 13px; color: #191c1e;">${title}</span>
+                    <span style="padding: 2px 6px; background: #e6f4ea; border-radius: 4px; font-size: 9px; font-weight: 700; color: #006948;">
+                        ${isGps ? 'LIVE GPS' : 'HQ NODE'}
+                    </span>
+                </div>
+                <div style="font-size: 11px; color: #526058; line-height: 1.6; margin-bottom: 8px;">
+                    📍 <b>Koordinat:</b> ${coords}<br/>
+                    ${isGps ? `👤 <b>Petugas:</b> ${officer}<br/>` : ''}
+                    ⏱️ <b>Waktu:</b> ${timeStr}<br/>
+                    ⛰️ <b>Elevasi:</b> ${altitudeStr}
+                </div>
+                ${isGps ? `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; font-size: 11px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span style="color: #64748b;">Cr(VI) Est:</span>
+                        <b style="color: #006948;">${crStr}</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748b;">Ni Est:</span>
+                        <b style="color: #4338CA;">${niStr}</b>
+                    </div>
+                </div>
+                <div style="text-align: center; padding-top: 2px;">
+                    <a href="{{ route('laporan.pengujian.index') }}" style="font-size: 11px; font-weight: 700; color: #006948; text-decoration: underline;">
+                        Lihat Data Pengujian &rarr;
+                    </a>
+                </div>
+                ` : `
+                <div style="text-align: center; padding: 4px 8px; background: #e6f4ea; border-radius: 4px; font-size: 10px; font-weight: 700; color: #006948;">
+                    TRANSMITTING
+                </div>
+                `}
             </div>
-            <div style="font-size: 11px; color: #6d7a72; margin-bottom: 8px;">
-                ${LOCATION_NAME}
-            </div>
-            <div style="padding: 4px 8px; background: #e6f4ea; border-radius: 4px; font-size: 10px; font-weight: 700; color: #006948; display: inline-block;">
-                TRANSMITTING
-            </div>
-        </div>
-    `, { maxWidth: 240, className: 'clinical-popup' });
+        `;
+    }
+
+    const marker = L.marker([initialLat, initialLng], { icon: lightDangerIcon }).addTo(map);
+    marker.bindPopup(createPopupHtml({
+        isGps: hasInitialFieldTest,
+        lat: initialLat,
+        lng: initialLng,
+    }), { maxWidth: 280, className: 'clinical-popup' });
 
     marker.openPopup();
+
+    window.updateMapLocation = function(testData) {
+        if (!testData || !testData.latitude || !testData.longitude) return;
+        const newLat = parseFloat(testData.latitude);
+        const newLng = parseFloat(testData.longitude);
+        if (isNaN(newLat) || isNaN(newLng)) return;
+
+        marker.setLatLng([newLat, newLng]);
+        map.flyTo([newLat, newLng], 15, { animate: true, duration: 1.2 });
+
+        const officerName = (testData.user && testData.user.name) ? testData.user.name : 'Petugas Lapangan';
+        const now = new Date();
+        const timeFormatted = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+        const popupContent = createPopupHtml({
+            isGps: true,
+            lat: newLat,
+            lng: newLng,
+            officer: officerName,
+            time: timeFormatted,
+            altitude: testData.altitude != null ? Number(testData.altitude).toFixed(1) + ' m' : '-',
+            cr: testData.cr_estimated != null ? Number(testData.cr_estimated).toFixed(2) + ' µg/L' : '-',
+            ni: testData.ni_estimated != null ? Number(testData.ni_estimated).toFixed(2) + ' µg/L' : '-',
+        });
+
+        marker.setPopupContent(popupContent);
+        marker.openPopup();
+
+        const subtitleEl = document.getElementById('mapSubtitle');
+        if (subtitleEl) {
+            subtitleEl.textContent = `Titik Pengujian GPS Terakhir • ${newLat.toFixed(5)}, ${newLng.toFixed(5)} (Baru saja)`;
+        }
+        const badgeEl = document.getElementById('mapBadge');
+        if (badgeEl) {
+            badgeEl.textContent = 'Titik Uji GPS Terkini';
+        }
+    };
 
     if (!document.getElementById('leaflet-pulse-light-style')) {
         const style = document.createElement('style');
