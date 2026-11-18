@@ -13,12 +13,12 @@ class AppVersionSeeder extends Seeder
     public function run(): void
     {
         AppVersion::updateOrCreate(
-            ['build_number' => 3],
+            ['build_number' => 4],
             [
-                'version' => '2.2.0',
-                'download_url' => 'https://github.com/RahmatHadinata23758051/Mobile-Apps-Design/releases/download/v2.2.0/app-release.apk',
-                'changelog' => "- Redesain Modern Menyeluruh Seluruh Halaman Mobile (Login, Register, Home, Telemetri, Uji Lapangan, Riwayat, Profil)\n- Penyelarasan Tema Emerald HERA (#006948) konsisten dengan Dashboard Web\n- Kartu Telemetri Logam Berat Cr(VI) & Ni (µg/L) lebih rapi, presisi & interaktif\n- Tampilan Koordinat GPS Lapangan & Riwayat Pengujian dengan Desain Micro-Card",
-                'file_size' => '53.8 MB',
+                'version' => '2.3.0',
+                'download_url' => 'https://github.com/RahmatHadinata23758051/Mobile-Apps-Design/releases/download/v2.3.0/app-release.apk',
+                'changelog' => "- Perbaikan Flow Pengujian Lapangan (GPS): bypass toleransi mode pengujian dan dialog sukses interaktif estimasi Cr(VI) & Ni\n- Penyelarasan Nama Menu Mobile 1:1 dengan Web (Dashboard, Monitoring Telemetri, Pengujian Lapangan, Laporan Historis, Data Pengujian Lapangan, Profil Akun)\n- Diferensiasi Visual Tegas antara Log Sensor Otomatis IoT [NODE IOT] dan Hasil Uji GPS Petugas [UJI GPS]\n- Penyempurnaan Responsivitas UI pada Header Tabel Riwayat & Isolasi Error Auto-Refresh",
+                'file_size' => '54.2 MB',
                 'is_force_update' => false,
                 'is_active' => true,
             ]
